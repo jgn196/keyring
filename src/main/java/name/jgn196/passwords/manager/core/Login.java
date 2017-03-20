@@ -11,6 +11,16 @@ public class Login {
         this.userName = userName;
     }
 
+    public String secureSystem() {
+
+        return secureSystem;
+    }
+
+    public String userName() {
+
+        return userName;
+    }
+
     @Override
     public boolean equals(final Object obj) {
 
@@ -20,4 +30,6 @@ public class Login {
         final Login other = (Login) obj;
         return secureSystem.equals(other.secureSystem) && userName.equals(other.userName);
     }
+
+    // TODO - Implement hashcode
 }

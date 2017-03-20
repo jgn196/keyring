@@ -16,6 +16,11 @@ public class Password {
         this.chars = chars;
     }
 
+    public char[] characters() {
+
+        return chars;
+    }
+
     @Override
     public boolean equals(final Object obj) {
 
