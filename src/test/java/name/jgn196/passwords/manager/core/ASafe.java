@@ -4,8 +4,11 @@ import name.jgn196.passwords.manager.storage.SecureStore;
 import name.jgn196.passwords.manager.storage.StoreEntry;
 import org.junit.Test;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
 public class ASafe {
 
@@ -22,5 +25,31 @@ public class ASafe {
         }
 
         verify(store).store(new StoreEntry(login, password));
+    }
+
+    @Test
+    public void retrievesLoginPassword() throws Exception {
+
+        final SecureStore store = mock(SecureStore.class);
+        when(store.stream())
+                .thenReturn(Stream.of(
+                        new StoreEntry(new Login("www.site.net", "Bill"), Password.from("super_secret"))));
+
+        try (final Safe safe = new Safe(store)) {
+
+            assertEquals(
+                    Optional.of(Password.from("super_secret")),
+                    safe.passwordFor(new Login("www.site.net", "Bill")));
+        }
+    }
+
+    @Test
+    public void closesItsStore() throws Exception {
+
+        final SecureStore store = mock(SecureStore.class);
+
+        new Safe(store).close();
+
+        verify(store).close();
     }
 }

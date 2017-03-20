@@ -14,6 +14,16 @@ public class StoreEntry {
         this.password = password;
     }
 
+    public boolean isFor(final Login login) {
+
+        return this.login.equals(login);
+    }
+
+    public Password password() {
+
+        return password;
+    }
+
     @Override
     public boolean equals(Object obj) {
 
