@@ -19,6 +19,11 @@ public class StoreEntry {
         return this.login.equals(login);
     }
 
+    public Login login() {
+
+        return login;
+    }
+
     public Password password() {
 
         return password;

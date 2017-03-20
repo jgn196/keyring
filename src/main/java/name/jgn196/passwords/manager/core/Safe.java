@@ -4,6 +4,7 @@ import name.jgn196.passwords.manager.storage.SecureStore;
 import name.jgn196.passwords.manager.storage.StoreEntry;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class Safe implements AutoCloseable {
 
@@ -25,6 +26,11 @@ public class Safe implements AutoCloseable {
                 .filter(entry -> entry.isFor(login))
                 .map(StoreEntry::password)
                 .findFirst();
+    }
+
+    public Stream<Login> logins() {
+
+        return store.stream().map(StoreEntry::login);
     }
 
     public void close() throws Exception {

@@ -7,8 +7,9 @@ import org.junit.Test;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static java.util.stream.Collectors.toList;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class ASafe {
@@ -68,6 +69,27 @@ public class ASafe {
         try (final Safe safe = new Safe(store)) {
 
             assertFalse(safe.passwordFor(new Login("www.site.net", "Bill")).isPresent());
+        }
+    }
+
+    @Test
+    public void listsLogins() throws Exception {
+
+        final SecureStore store = mock(SecureStore.class);
+        when(store.stream())
+                .thenReturn(Stream.of(
+                        new StoreEntry(new Login("site 1", "Bill"), Password.from("ignored")),
+                        new StoreEntry(new Login("site 1", "Ted"), Password.from("ignored")),
+                        new StoreEntry(new Login("site 2", "Bill"), Password.from("ignored"))));
+
+        try (final Safe safe = new Safe(store)) {
+
+            assertThat(
+                    safe.logins().collect(toList()),
+                    hasItems(
+                            new Login("site 1", "Bill"),
+                            new Login("site 1", "Ted"),
+                            new Login("site 2", "Bill")));
         }
     }
 
