@@ -43,19 +43,24 @@ class FileStore extends SecureStore {
             final HashSet<StoreEntry> results = new HashSet<>();
             for (int i = 0; i < entryCount; i++) {
 
-                final String secureSystem = in.readUTF();
-                final String userName = in.readUTF();
-                final int passwordLength = in.readInt();
-                final char[] password = new char[passwordLength];
-                for (int j = 0; j < passwordLength; j++) {
-
-                    password[j] = in.readChar();
-                }
-                results.add(new StoreEntry(new Login(secureSystem, userName), new Password(password)));
+                results.add(readEntryFrom(in));
             }
 
             return results;
         }
+    }
+
+    private StoreEntry readEntryFrom(final DataInputStream in) throws IOException {
+
+        final String secureSystem = in.readUTF();
+        final String userName = in.readUTF();
+        final int passwordLength = in.readInt();
+        final char[] password = new char[passwordLength];
+        for (int j = 0; j < passwordLength; j++) {
+
+            password[j] = in.readChar();
+        }
+        return new StoreEntry(new Login(secureSystem, userName), new Password(password));
     }
 
     private void save(final Set<StoreEntry> entries) throws IOException {
@@ -65,14 +70,19 @@ class FileStore extends SecureStore {
             out.writeInt(entries.size());
             for (final StoreEntry entry : entries) {
 
-                out.writeUTF(entry.login().secureSystem());
-                out.writeUTF(entry.login().userName());
-                out.writeInt(entry.password().characters().length);
-                for (final char c : entry.password().characters()) {
-
-                    out.writeChar(c);
-                }
+                saveEntry(out, entry);
             }
+        }
+    }
+
+    private void saveEntry(final DataOutputStream out, final StoreEntry entry) throws IOException {
+
+        out.writeUTF(entry.login().secureSystem());
+        out.writeUTF(entry.login().userName());
+        out.writeInt(entry.password().characters().length);
+        for (final char c : entry.password().characters()) {
+
+            out.writeChar(c);
         }
     }
 
