@@ -2,7 +2,6 @@ package name.jgn196.passwords.manager.core;
 
 import java.util.Arrays;
 
-import static java.util.Arrays.copyOf;
 import static java.util.Arrays.fill;
 
 public class Password {
@@ -33,7 +32,11 @@ public class Password {
         return Arrays.equals(chars, ((Password) obj).chars);
     }
 
-    // TODO - Implement hashcode
+    @Override
+    public int hashCode() {
+
+        return Arrays.hashCode(chars);
+    }
 
     @Override
     public String toString() {
