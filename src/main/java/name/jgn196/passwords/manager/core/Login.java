@@ -31,5 +31,18 @@ public class Login {
         return secureSystem.equals(other.secureSystem) && userName.equals(other.userName);
     }
 
-    // TODO - Implement hashcode
+    @Override
+    public int hashCode() {
+
+        int result = 17;
+        result = 31 * result + secureSystem.hashCode();
+        result = 31 * result + userName.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+
+        return "Login ('" + userName + "' @ '" + secureSystem + "')";
+    }
 }
