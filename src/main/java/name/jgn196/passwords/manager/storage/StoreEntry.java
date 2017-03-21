@@ -38,4 +38,20 @@ public class StoreEntry {
         final StoreEntry other = (StoreEntry) obj;
         return login.equals(other.login) && password.equals(other.password);
     }
+
+    @Override
+    public int hashCode() {
+
+        int result = 17;
+        result = 31 * result + login.hashCode();
+        result = 31 * result + password.hashCode();
+
+        return result;
+    }
+
+    @Override
+    public String toString() {
+
+        return "StoreEntry (" + login + ", " + password + ")";
+    }
 }
