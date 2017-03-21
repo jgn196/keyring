@@ -2,6 +2,9 @@ package name.jgn196.passwords.manager.core;
 
 import java.util.Arrays;
 
+import static java.util.Arrays.copyOf;
+import static java.util.Arrays.fill;
+
 public class Password {
 
     private final char[] chars;
@@ -28,5 +31,16 @@ public class Password {
         if (! (obj instanceof Password)) return false;
 
         return Arrays.equals(chars, ((Password) obj).chars);
+    }
+
+    // TODO - Implement hashcode
+
+    @Override
+    public String toString() {
+
+        final char[] maskedPassword = new char[chars.length];
+        fill(maskedPassword, '*');
+
+        return "Password ("+ new String(maskedPassword) +")";
     }
 }
