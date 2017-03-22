@@ -39,50 +39,29 @@ class FileStore extends SecureStore {
 
         try (final DataInputStream in = new DataInputStream(new FileInputStream(file))) {
 
+            final EntryDeserialiser deserialiser = new EntryDeserialiser(in);
             final int entryCount = in.readInt();
             final HashSet<StoreEntry> results = new HashSet<>();
             for (int i = 0; i < entryCount; i++) {
 
-                results.add(readEntryFrom(in));
+                results.add(deserialiser.deserialise());
             }
 
             return results;
         }
     }
 
-    private StoreEntry readEntryFrom(final DataInputStream in) throws IOException {
-
-        final String secureSystem = in.readUTF();
-        final String userName = in.readUTF();
-        final int passwordLength = in.readInt();
-        final char[] password = new char[passwordLength];
-        for (int j = 0; j < passwordLength; j++) {
-
-            password[j] = in.readChar();
-        }
-        return new StoreEntry(new Login(secureSystem, userName), new Password(password));
-    }
-
     private void save(final Set<StoreEntry> entries) throws IOException {
 
         try (final DataOutputStream out = new DataOutputStream(new FileOutputStream(file))) {
 
+            final EntrySerialiser serialiser = new EntrySerialiser(out);
+
             out.writeInt(entries.size());
             for (final StoreEntry entry : entries) {
 
-                saveEntry(out, entry);
+                serialiser.serialise(entry);
             }
-        }
-    }
-
-    private void saveEntry(final DataOutputStream out, final StoreEntry entry) throws IOException {
-
-        out.writeUTF(entry.login().secureSystem());
-        out.writeUTF(entry.login().userName());
-        out.writeInt(entry.password().characters().length);
-        for (final char c : entry.password().characters()) {
-
-            out.writeChar(c);
         }
     }
 
