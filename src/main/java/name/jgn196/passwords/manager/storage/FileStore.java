@@ -1,9 +1,9 @@
 package name.jgn196.passwords.manager.storage;
 
-import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 class FileStore extends SecureStore {
 
     private final File file;
+    private final StoreFormat format = new StoreFormat();
     private final Password filePassword; // TODO - Implement encryption
 
     FileStore(final File file, final Password filePassword) {
@@ -37,32 +38,12 @@ class FileStore extends SecureStore {
 
         if (!file.exists()) return new HashSet<>();
 
-        try (final DataInputStream in = new DataInputStream(new FileInputStream(file))) {
-
-            final EntryDeserialiser deserialiser = new EntryDeserialiser(in);
-            final int entryCount = in.readInt();
-            final HashSet<StoreEntry> results = new HashSet<>();
-            for (int i = 0; i < entryCount; i++) {
-
-                results.add(deserialiser.deserialise());
-            }
-
-            return results;
-        }
+        return new HashSet<>(format.deserialiseEntries(Files.readAllBytes(file.toPath())));
     }
 
     private void save(final Set<StoreEntry> entries) throws IOException {
 
-        try (final DataOutputStream out = new DataOutputStream(new FileOutputStream(file))) {
-
-            final EntrySerialiser serialiser = new EntrySerialiser(out);
-
-            out.writeInt(entries.size());
-            for (final StoreEntry entry : entries) {
-
-                serialiser.serialise(entry);
-            }
-        }
+        Files.write(file.toPath(), format.serialise(entries));
     }
 
     @Override
