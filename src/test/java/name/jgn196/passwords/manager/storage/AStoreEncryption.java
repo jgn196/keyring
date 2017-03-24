@@ -6,12 +6,12 @@ import org.junit.Test;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 import static java.util.Arrays.copyOfRange;
 import static java.util.stream.IntStream.rangeClosed;
@@ -29,7 +29,7 @@ public class AStoreEncryption {
             IllegalBlockSizeException,
             BadPaddingException,
             InvalidAlgorithmParameterException,
-            InvalidKeySpecException {
+            InvalidKeySpecException, IOException {
 
         final byte[] plainText = "plain text".getBytes();
         final byte[] result = new StoreEncryption(Password.from("password")).encrypt(plainText);
