@@ -3,14 +3,6 @@ package name.jgn196.passwords.manager.storage;
 import name.jgn196.passwords.manager.core.Password;
 import org.junit.Test;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 
 import static java.util.Arrays.copyOfRange;
@@ -22,14 +14,7 @@ import static org.junit.Assert.assertThat;
 public class AStoreEncryption {
 
     @Test
-    public void encryptsDataFromPassword() throws
-            NoSuchPaddingException,
-            InvalidKeyException,
-            NoSuchAlgorithmException,
-            IllegalBlockSizeException,
-            BadPaddingException,
-            InvalidAlgorithmParameterException,
-            InvalidKeySpecException, IOException {
+    public void encryptsDataFromPassword() {
 
         final byte[] plainText = "plain text".getBytes();
         final byte[] result = new StoreEncryption(Password.from("password")).encrypt(plainText);

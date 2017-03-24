@@ -21,20 +21,20 @@ class StoreEncryption {
     private final Cipher cipher;
     private final SecretKey key;
 
-    StoreEncryption(final Password password) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException {
+    StoreEncryption(final Password password) {
+        try {
 
-        cipher = Cipher.getInstance("PBEWithMD5AndDES");
-        key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(new PBEKeySpec(password.characters()));
+            cipher = Cipher.getInstance("PBEWithMD5AndDES");
+            key = SecretKeyFactory
+                    .getInstance("PBEWithMD5AndDES")
+                    .generateSecret(new PBEKeySpec(password.characters()));
+
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    byte[] encrypt(final byte[] plainText) throws
-            NoSuchAlgorithmException,
-            InvalidKeySpecException,
-            NoSuchPaddingException,
-            InvalidAlgorithmParameterException,
-            InvalidKeyException,
-            BadPaddingException,
-            IllegalBlockSizeException, IOException {
+    byte[] encrypt(final byte[] plainText) {
 
         try (final ByteArrayOutputStream result = new ByteArrayOutputStream()) {
 
@@ -45,6 +45,14 @@ class StoreEncryption {
             result.write(cipher.doFinal(plainText));
 
             return result.toByteArray();
+
+        } catch (IOException |
+                BadPaddingException |
+                IllegalBlockSizeException |
+                InvalidKeyException |
+                InvalidAlgorithmParameterException e) {
+
+            throw new RuntimeException(e);
         }
     }
 
