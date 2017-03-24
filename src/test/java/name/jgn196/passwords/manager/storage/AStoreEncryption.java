@@ -38,7 +38,29 @@ public class AStoreEncryption {
         final byte[] plainText = "plain text".getBytes();
         final byte[] cipherText = new StoreEncryption(Password.from("password")).encrypt(plainText);
 
-        assertArrayEquals(plainText, new StoreEncryption(Password.from("p@ssword")).decrypt(cipherText));
+        new StoreEncryption(Password.from("p@ssword")).decrypt(cipherText);
+    }
+
+    @Test(expected = DecryptionFailed.class)
+    public void decryptsCorruptSalt() {
+
+        final byte[] plainText = "plain text".getBytes();
+        final StoreEncryption encryption = new StoreEncryption(Password.from("password"));
+        final byte[] cipherText = encryption.encrypt(plainText);
+        cipherText[0] ^= 0xFF;
+
+        encryption.decrypt(cipherText);
+    }
+
+    @Test(expected = DecryptionFailed.class)
+    public void decryptsCorruptCipherText() {
+
+        final byte[] plainText = "plain text".getBytes();
+        final StoreEncryption encryption = new StoreEncryption(Password.from("password"));
+        final byte[] cipherText = encryption.encrypt(plainText);
+        cipherText[8] ^= 0xFF;
+
+        encryption.decrypt(cipherText);
     }
 
     private boolean contains(final byte[] searchIn, final byte[] searchTerm) {

@@ -5,13 +5,13 @@ import name.jgn196.passwords.manager.core.Password;
 import javax.crypto.*;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 
 import static java.util.Arrays.copyOfRange;
 
@@ -39,13 +39,15 @@ class StoreEncryption {
 
     byte[] encrypt(final byte[] plainText) {
 
-        try (final ByteArrayOutputStream result = new ByteArrayOutputStream()) {
+        try (final ByteArrayOutputStream result = new ByteArrayOutputStream();
+             final DataOutputStream out = new DataOutputStream(result)) {
 
             final byte[] salt = generatedSalt();
             cipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(salt, ITERATIONS));
 
-            result.write(salt);
-            result.write(cipher.doFinal(plainText));
+            out.write(salt);
+            out.writeInt(Arrays.hashCode(plainText));
+            out.write(cipher.doFinal(plainText));
 
             return result.toByteArray();
 
@@ -68,14 +70,25 @@ class StoreEncryption {
     }
 
     byte[] decrypt(final byte[] cipherText) {
-        try {
+        try (final DataInputStream in = new DataInputStream(new ByteArrayInputStream(cipherText))) {
 
-            final byte[] salt = copyOfRange(cipherText, 0, SALT_SIZE);
+            final byte[] salt = new byte[SALT_SIZE];
+            in.read(salt);
+
+            final int plainTextHash = in.readInt();
+
+            final int cipherTextSize = cipherText.length - SALT_SIZE - 4;
+            final byte[] ct = new byte[cipherTextSize];
+            in.read(ct);
             cipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(salt, ITERATIONS));
 
-            return cipher.doFinal(copyOfRange(cipherText, SALT_SIZE, cipherText.length));
+            final byte[] plainText = cipher.doFinal(ct);
+            if (plainTextHash != Arrays.hashCode(plainText))
+                throw new DecryptionFailed("Decrypted data failed hash test.");
 
-        } catch (InvalidKeyException | IllegalBlockSizeException | InvalidAlgorithmParameterException e) {
+            return plainText;
+
+        } catch (InvalidKeyException | IllegalBlockSizeException | InvalidAlgorithmParameterException | IOException e) {
 
             throw new RuntimeException(e);
         } catch (BadPaddingException e) {
