@@ -32,6 +32,15 @@ public class AStoreEncryption {
         assertArrayEquals(plainText, encryption.decrypt(cipherText));
     }
 
+    @Test(expected = DecryptionFailed.class)
+    public void decryptsUsingWrongPassword() {
+
+        final byte[] plainText = "plain text".getBytes();
+        final byte[] cipherText = new StoreEncryption(Password.from("password")).encrypt(plainText);
+
+        assertArrayEquals(plainText, new StoreEncryption(Password.from("p@ssword")).decrypt(cipherText));
+    }
+
     private boolean contains(final byte[] searchIn, final byte[] searchTerm) {
 
         return rangeClosed(0, searchIn.length - searchTerm.length)

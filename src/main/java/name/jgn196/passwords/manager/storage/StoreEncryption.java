@@ -68,7 +68,6 @@ class StoreEncryption {
     }
 
     byte[] decrypt(final byte[] cipherText) {
-
         try {
 
             final byte[] salt = copyOfRange(cipherText, 0, SALT_SIZE);
@@ -76,12 +75,12 @@ class StoreEncryption {
 
             return cipher.doFinal(copyOfRange(cipherText, SALT_SIZE, cipherText.length));
 
-        } catch (InvalidKeyException |
-                InvalidAlgorithmParameterException |
-                BadPaddingException |
-                IllegalBlockSizeException e) {
+        } catch (InvalidKeyException | IllegalBlockSizeException | InvalidAlgorithmParameterException e) {
 
             throw new RuntimeException(e);
+        } catch (BadPaddingException e) {
+
+            throw new DecryptionFailed(e);
         }
     }
 }
