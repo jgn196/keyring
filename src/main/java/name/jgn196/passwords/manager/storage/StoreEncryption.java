@@ -69,20 +69,16 @@ class StoreEncryption {
         return result;
     }
 
-    byte[] decrypt(final byte[] cipherText) {
-        try (final DataInputStream in = new DataInputStream(new ByteArrayInputStream(cipherText))) {
+    byte[] decrypt(final byte[] encryptedData) {
+        try (final DataInputStream in = new DataInputStream(new ByteArrayInputStream(encryptedData))) {
 
-            final byte[] salt = new byte[SALT_SIZE];
-            in.read(salt);
-
+            final byte[] salt = readSaltFrom(in);
             final int plainTextHash = in.readInt();
+            final byte[] cipherText = readCipherTextFrom(encryptedData);
 
-            final int cipherTextSize = cipherText.length - SALT_SIZE - 4;
-            final byte[] ct = new byte[cipherTextSize];
-            in.read(ct);
             cipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(salt, ITERATIONS));
+            final byte[] plainText = cipher.doFinal(cipherText);
 
-            final byte[] plainText = cipher.doFinal(ct);
             if (plainTextHash != Arrays.hashCode(plainText))
                 throw new DecryptionFailed("Decrypted data failed hash test.");
 
@@ -95,5 +91,19 @@ class StoreEncryption {
 
             throw new DecryptionFailed(e);
         }
+    }
+
+    private byte[] readSaltFrom(final DataInputStream in) throws IOException {
+
+        final byte[] salt = new byte[SALT_SIZE];
+        if (in.read(salt) != SALT_SIZE)
+            throw new IOException("Failed to read SALT from in memory stream.");
+
+        return salt;
+    }
+
+    private byte[] readCipherTextFrom(final byte[] encryptedData) throws IOException {
+
+        return copyOfRange(encryptedData, SALT_SIZE + 4, encryptedData.length);
     }
 }
