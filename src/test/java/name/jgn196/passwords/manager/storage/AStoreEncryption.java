@@ -8,8 +8,7 @@ import java.util.Arrays;
 import static java.util.Arrays.copyOfRange;
 import static java.util.stream.IntStream.rangeClosed;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 public class AStoreEncryption {
 
@@ -21,6 +20,16 @@ public class AStoreEncryption {
 
         assertThat(result.length, greaterThanOrEqualTo(plainText.length));
         assertFalse("Result contains plain text.", contains(result, plainText));
+    }
+
+    @Test
+    public void decryptsUsingPassword() {
+
+        final StoreEncryption encryption = new StoreEncryption(Password.from("password"));
+        final byte[] plainText = "plain text".getBytes();
+        final byte[] cipherText = encryption.encrypt(plainText);
+
+        assertArrayEquals(plainText, encryption.decrypt(cipherText));
     }
 
     private boolean contains(final byte[] searchIn, final byte[] searchTerm) {

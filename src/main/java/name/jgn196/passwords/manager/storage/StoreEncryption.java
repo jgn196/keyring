@@ -13,10 +13,13 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 
+import static java.util.Arrays.copyOfRange;
+
 class StoreEncryption {
 
     private static final int ITERATIONS = 20;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+    private static final int SALT_SIZE = 8;
 
     private final Cipher cipher;
     private final SecretKey key;
@@ -58,9 +61,27 @@ class StoreEncryption {
 
     private byte[] generatedSalt() {
 
-        final byte[] result = new byte[8];
+        final byte[] result = new byte[SALT_SIZE];
         SECURE_RANDOM.nextBytes(result);
 
         return result;
+    }
+
+    byte[] decrypt(final byte[] cipherText) {
+
+        try {
+
+            final byte[] salt = copyOfRange(cipherText, 0, SALT_SIZE);
+            cipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(salt, ITERATIONS));
+
+            return cipher.doFinal(copyOfRange(cipherText, SALT_SIZE, cipherText.length));
+
+        } catch (InvalidKeyException |
+                InvalidAlgorithmParameterException |
+                BadPaddingException |
+                IllegalBlockSizeException e) {
+
+            throw new RuntimeException(e);
+        }
     }
 }
