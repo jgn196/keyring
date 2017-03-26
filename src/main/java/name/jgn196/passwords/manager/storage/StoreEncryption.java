@@ -11,7 +11,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Arrays;
+import java.util.zip.CRC32;
+import java.util.zip.Checksum;
 
 import static java.util.Arrays.copyOfRange;
 
@@ -46,7 +47,10 @@ class StoreEncryption {
             cipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(salt, ITERATIONS));
 
             out.write(salt);
-            out.writeInt(Arrays.hashCode(plainText));
+
+            final Checksum crc32 = new CRC32();
+            crc32.update(plainText, 0, plainText.length);
+            out.writeLong(crc32.getValue());
             out.write(cipher.doFinal(plainText));
 
             return result.toByteArray();
@@ -73,13 +77,15 @@ class StoreEncryption {
         try (final DataInputStream in = new DataInputStream(new ByteArrayInputStream(encryptedData))) {
 
             final byte[] salt = readSaltFrom(in);
-            final int plainTextHash = in.readInt();
+            final long plainTextCrc = in.readLong();
             final byte[] cipherText = readCipherTextFrom(encryptedData);
 
             cipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(salt, ITERATIONS));
             final byte[] plainText = cipher.doFinal(cipherText);
 
-            if (plainTextHash != Arrays.hashCode(plainText))
+            final Checksum crc32 = new CRC32();
+            crc32.update(plainText, 0, plainText.length);
+            if (plainTextCrc != crc32.getValue())
                 throw new DecryptionFailed("Decrypted data failed hash test.");
 
             return plainText;
@@ -104,6 +110,6 @@ class StoreEncryption {
 
     private byte[] readCipherTextFrom(final byte[] encryptedData) throws IOException {
 
-        return copyOfRange(encryptedData, SALT_SIZE + 4, encryptedData.length);
+        return copyOfRange(encryptedData, SALT_SIZE + 8, encryptedData.length);
     }
 }
