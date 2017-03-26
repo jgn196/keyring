@@ -21,6 +21,8 @@ class StoreEncryption {
     private static final int ITERATIONS = 20;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final int SALT_SIZE = 8;
+    private static final int CHECKSUM_SIZE = 8;
+    static final CRC32 CRC_32 = new CRC32();
 
     private final Cipher cipher;
     private final SecretKey key;
@@ -44,14 +46,10 @@ class StoreEncryption {
              final DataOutputStream out = new DataOutputStream(result)) {
 
             final byte[] salt = generatedSalt();
-            cipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(salt, ITERATIONS));
 
             out.write(salt);
-
-            final Checksum crc32 = new CRC32();
-            crc32.update(plainText, 0, plainText.length);
-            out.writeLong(crc32.getValue());
-            out.write(cipher.doFinal(plainText));
+            out.writeLong(checksumOf(plainText));
+            out.write(encryptWithSalt(plainText, salt));
 
             return result.toByteArray();
 
@@ -73,19 +71,28 @@ class StoreEncryption {
         return result;
     }
 
+    private long checksumOf(final byte[] plainText) {
+
+        CRC_32.reset();
+        CRC_32.update(plainText, 0, plainText.length);
+        return CRC_32.getValue();
+    }
+
+    private byte[] encryptWithSalt(final byte[] plainText, final byte[] salt) throws
+            InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+
+        cipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(salt, ITERATIONS));
+        return cipher.doFinal(plainText);
+    }
+
     byte[] decrypt(final byte[] encryptedData) {
         try (final DataInputStream in = new DataInputStream(new ByteArrayInputStream(encryptedData))) {
 
             final byte[] salt = readSaltFrom(in);
-            final long plainTextCrc = in.readLong();
-            final byte[] cipherText = readCipherTextFrom(encryptedData);
+            final long checksum = in.readLong();
+            final byte[] plainText = decryptWithSalt(salt, readCipherTextFrom(encryptedData));
 
-            cipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(salt, ITERATIONS));
-            final byte[] plainText = cipher.doFinal(cipherText);
-
-            final Checksum crc32 = new CRC32();
-            crc32.update(plainText, 0, plainText.length);
-            if (plainTextCrc != crc32.getValue())
+            if (checksum != checksumOf(plainText))
                 throw new DecryptionFailed("Decrypted data failed hash test.");
 
             return plainText;
@@ -110,6 +117,13 @@ class StoreEncryption {
 
     private byte[] readCipherTextFrom(final byte[] encryptedData) throws IOException {
 
-        return copyOfRange(encryptedData, SALT_SIZE + 8, encryptedData.length);
+        return copyOfRange(encryptedData, SALT_SIZE + CHECKSUM_SIZE, encryptedData.length);
+    }
+
+    private byte[] decryptWithSalt(final byte[] salt, final byte[] cipherText) throws
+            InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+
+        cipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(salt, ITERATIONS));
+        return cipher.doFinal(cipherText);
     }
 }
