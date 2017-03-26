@@ -12,7 +12,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.zip.CRC32;
-import java.util.zip.Checksum;
 
 import static java.util.Arrays.copyOfRange;
 
@@ -22,7 +21,7 @@ class StoreEncryption {
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final int SALT_SIZE = 8;
     private static final int CHECKSUM_SIZE = 8;
-    static final CRC32 CRC_32 = new CRC32();
+    private static final CRC32 CRC_32 = new CRC32();
 
     private final Cipher cipher;
     private final SecretKey key;
