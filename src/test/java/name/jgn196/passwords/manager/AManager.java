@@ -27,7 +27,7 @@ public class AManager {
 
         Manager.main();
 
-        usagePrinted();
+        assertEquals(Manager.USAGE, capturedOutput());
     }
 
     @Test
@@ -35,17 +35,19 @@ public class AManager {
 
         givenNoDataFile();
 
-        Manager.main("list");
+        Manager.main(Manager.LIST_COMMAND);
 
-        assertEquals("No data file.", capturedOutput());
+        assertEquals(Manager.NO_DATA_FILE_MESSAGE, capturedOutput());
     }
 
-    private void usagePrinted() {
+    @Test
+    public void getPasswordWhenThereIsNoDataFile() throws IOException {
 
-        assertEquals(
-                "Commands:\n" +
-                "\tlist\tLists all the stored logins.",
-                capturedOutput());
+        givenNoDataFile();
+
+        Manager.main(Manager.GET_COMMAND, "www.site.com", "Bill");
+
+        assertEquals(Manager.NO_DATA_FILE_MESSAGE, capturedOutput());
     }
 
     private String capturedOutput() {
@@ -55,7 +57,9 @@ public class AManager {
 
     private void givenNoDataFile() throws IOException {
 
-        if (Files.exists(Paths.get("passwords.dat")))
-            Files.delete(Paths.get("passwords.dat"));
+        final String dataFileName = "passwords.dat";
+
+        if (Files.exists(Paths.get(dataFileName)))
+            Files.delete(Paths.get(dataFileName));
     }
 }
