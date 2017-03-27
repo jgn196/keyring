@@ -1,5 +1,6 @@
 package name.jgn196.passwords.manager;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,10 +15,12 @@ import static org.junit.Assert.assertEquals;
 public class AManager {
 
     private ByteArrayOutputStream out;
+    private PrintStream originalOut;
 
     @Before
     public void captureOutput() {
 
+        originalOut = System.out;
         out = new ByteArrayOutputStream();
         System.setOut(new PrintStream(out));
     }
@@ -48,6 +51,12 @@ public class AManager {
         Manager.main(Manager.GET_COMMAND, "www.site.com", "Bill");
 
         assertEquals(Manager.NO_DATA_FILE_MESSAGE, capturedOutput());
+    }
+
+    @After
+    public void restoreOutput() {
+
+        System.setOut(originalOut);
     }
 
     private String capturedOutput() {

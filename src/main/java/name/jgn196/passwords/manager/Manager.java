@@ -1,5 +1,7 @@
 package name.jgn196.passwords.manager;
 
+import java.util.Optional;
+
 public class Manager {
 
     static final String LIST_COMMAND = "list";
@@ -11,9 +13,17 @@ public class Manager {
 
     public static void main(final String... args) {
 
-        if (args.length > 0 && (args[0].equals(LIST_COMMAND) || args[0].equals(GET_COMMAND)))
+        final Optional<String> command = commandFrom(args);
+
+        if (command.isPresent())
             System.out.print(NO_DATA_FILE_MESSAGE);
         else
             System.out.print(USAGE);
+    }
+
+    private static Optional<String> commandFrom(final String[] args) {
+
+        if (args.length > 0) return Optional.of(args[0]);
+        return Optional.empty();
     }
 }
