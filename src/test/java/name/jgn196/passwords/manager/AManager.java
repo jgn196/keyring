@@ -43,7 +43,7 @@ public class AManager {
 
         Manager.main();
 
-        assertEquals(Manager.USAGE, capturedOutput());
+        assertEquals(HelpCommand.USAGE, capturedOutput());
     }
 
     @Test
@@ -51,9 +51,9 @@ public class AManager {
 
         givenNoDataFile();
 
-        Manager.main(Manager.LIST_COMMAND);
+        Manager.main(Command.LIST_COMMAND);
 
-        assertEquals(Manager.NO_DATA_FILE_MESSAGE, capturedOutput());
+        assertEquals(NoDataFileCommand.NO_DATA_FILE_MESSAGE, capturedOutput());
     }
 
     @Test
@@ -61,9 +61,9 @@ public class AManager {
 
         givenNoDataFile();
 
-        Manager.main(Manager.GET_COMMAND, "www.site.com", "Bill");
+        Manager.main(Command.GET_COMMAND, "www.site.com", "Bill");
 
-        assertEquals(Manager.NO_DATA_FILE_MESSAGE, capturedOutput());
+        assertEquals(NoDataFileCommand.NO_DATA_FILE_MESSAGE, capturedOutput());
     }
 
     @Test
@@ -73,7 +73,7 @@ public class AManager {
         sendInput("bill_password");
         sendInput("file_password");
 
-        Manager.main(Manager.PUT_COMMAND, "www.site.com", "Bill");
+        Manager.main(Command.PUT_COMMAND, "www.site.com", "Bill");
 
         assertThat(
                 capturedOutput(),
