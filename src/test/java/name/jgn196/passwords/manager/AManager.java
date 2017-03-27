@@ -73,7 +73,7 @@ public class AManager {
         sendInput("bill_password");
         sendInput("file_password");
 
-        Manager.main("put", "www.site.com", "Bill");
+        Manager.main(Manager.PUT_COMMAND, "www.site.com", "Bill");
 
         assertThat(
                 capturedOutput(),
