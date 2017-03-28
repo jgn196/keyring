@@ -24,10 +24,4 @@ class PutCommand extends Command {
         console.print("Password for Bill @ www.site.com:");
         return new Password(console.readPassword());
     }
-
-    private Password readStorePassword(final Console console) {
-
-        console.print("Password for store:");
-        return new Password(console.readPassword());
-    }
 }

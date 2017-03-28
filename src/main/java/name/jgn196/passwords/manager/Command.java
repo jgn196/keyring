@@ -29,6 +29,12 @@ abstract class Command {
         }
     }
 
+    static Password readStorePassword(final Console console) {
+
+        console.print("Password for store:");
+        return new Password(console.readPassword());
+    }
+
     abstract void run(Console console);
 }
 
@@ -49,12 +55,6 @@ class GetCommand extends Command {
                             new Safe(new FileStore(Paths.get("passwords.dat").toFile(), storePassword))
                                     .passwordFor(new Login("www.site.com", "Bill")).get().characters()));
         }
-    }
-
-    private Password readStorePassword(final Console console) {
-
-        console.print("Password for store:");
-        return new Password(console.readPassword());
     }
 }
 
