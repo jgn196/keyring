@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.junit.Assert.*;
 
@@ -40,7 +41,7 @@ public class AManager {
     }
 
     @Test
-    public void getPasswordWhenThereIsNoDataFile() throws IOException {
+    public void getsPasswordWhenThereIsNoDataFile() throws IOException {
 
         givenNoDataFile();
 
@@ -50,7 +51,7 @@ public class AManager {
     }
 
     @Test
-    public void storeFirstPassword() throws IOException {
+    public void storesFirstPassword() throws IOException {
 
         givenNoDataFile();
         givenInput("bill_password", "file_password");
@@ -61,6 +62,18 @@ public class AManager {
                 capturedOutput(),
                 stringContainsInOrder(asList("Password for Bill @ www.site.com:", "Password for store:")));
         assertTrue(Files.exists(Paths.get("passwords.dat")));
+    }
+
+    @Test
+    public void getsPassword() throws IOException {
+
+        givenNoDataFile();
+        givenInput("bill_password", "file_password");
+        Manager.main(Command.PUT_COMMAND, "www.site.com", "Bill");
+
+        Manager.main(Command.GET_COMMAND, "www.site.com", "Bill");
+
+        assertThat(capturedOutput(), endsWith("bill_password"));
     }
 
     private void givenNoDataFile() throws IOException {

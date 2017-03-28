@@ -4,9 +4,10 @@ import java.util.Arrays;
 
 import static java.util.Arrays.fill;
 
-public class Password {
+public class Password implements AutoCloseable {
 
     private final char[] chars;
+    private boolean closed = false;
 
     public static Password from(final String secret) {
 
@@ -19,6 +20,8 @@ public class Password {
     }
 
     public char[] characters() {
+
+        if (closed) throw new IllegalStateException("Password is closed.");
 
         return chars;
     }
@@ -45,5 +48,11 @@ public class Password {
         fill(maskedPassword, '*');
 
         return "Password ("+ new String(maskedPassword) +")";
+    }
+
+    @Override
+    public void close() {
+
+        fill(chars, ' ');
     }
 }
