@@ -8,13 +8,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-class FileStore extends SecureStore {
+public class FileStore extends SecureStore {
 
     private final File file;
     private final StoreFormat format = new StoreFormat();
     private final Password filePassword; // TODO - Implement encryption
 
-    FileStore(final File file, final Password filePassword) {
+    public FileStore(final File file, final Password filePassword) {
 
         this.file = file;
         this.filePassword = filePassword;
