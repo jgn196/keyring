@@ -1,10 +1,8 @@
 package name.jgn196.passwords.manager;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -14,83 +12,53 @@ import static org.junit.Assert.*;
 
 public class AManager {
 
-    private ByteArrayOutputStream out;
-    private PrintStream originalOut;
-    private PrintStream inputPipe;
-    private InputStream originalIn;
-
-    @Before
-    public void captureOutput() {
-
-        originalOut = System.out;
-        out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out));
-    }
-
-    @Before
-    public void openInputPipe() throws IOException {
-
-        final PipedOutputStream src = new PipedOutputStream();
-
-        originalIn = System.in;
-        inputPipe = new PrintStream(src);
-
-        System.setIn(new PipedInputStream(src));
-    }
-
     @Test
     public void printsUsage() throws IOException {
 
+        final TestConsole console = new TestConsole();
+        Manager.useConsole(console);
         Manager.main();
 
-        assertEquals(HelpCommand.USAGE, capturedOutput());
+        assertEquals(HelpCommand.USAGE, console.capturedOutput());
     }
 
     @Test
     public void listsNoLoginsWhenThereIsNoDataFile() throws IOException {
 
+        final TestConsole console = new TestConsole();
         givenNoDataFile();
-
+        Manager.useConsole(console);
         Manager.main(Command.LIST_COMMAND);
 
-        assertEquals(NoDataFileCommand.NO_DATA_FILE_MESSAGE, capturedOutput());
+        assertEquals(NoDataFileCommand.NO_DATA_FILE_MESSAGE, console.capturedOutput());
     }
 
     @Test
     public void getPasswordWhenThereIsNoDataFile() throws IOException {
 
+        final TestConsole console = new TestConsole();
         givenNoDataFile();
+        Manager.useConsole(console);
 
         Manager.main(Command.GET_COMMAND, "www.site.com", "Bill");
 
-        assertEquals(NoDataFileCommand.NO_DATA_FILE_MESSAGE, capturedOutput());
+        assertEquals(NoDataFileCommand.NO_DATA_FILE_MESSAGE, console.capturedOutput());
     }
 
     @Test
     public void storeFirstPassword() throws IOException {
 
+        final TestConsole console = new TestConsole();
         givenNoDataFile();
-        sendInput("bill_password");
-        sendInput("file_password");
+        Manager.useConsole(console);
+        console.prepareInput("bill_password", "file_password");
 
         Manager.main(Command.PUT_COMMAND, "www.site.com", "Bill");
 
         assertThat(
-                capturedOutput(),
+                console.capturedOutput(),
                 stringContainsInOrder(asList("Password for Bill @ www.site.com:", "Password for store:")));
         assertTrue(Files.exists(Paths.get("passwords.dat")));
-    }
-
-    @After
-    public void restoreOutput() {
-
-        System.setOut(originalOut);
-    }
-
-    @After
-    public void restoreInput() {
-
-        System.setIn(originalIn);
     }
 
     private void givenNoDataFile() throws IOException {
@@ -99,15 +67,5 @@ public class AManager {
 
         if (Files.exists(Paths.get(dataFileName)))
             Files.delete(Paths.get(dataFileName));
-    }
-
-    private String capturedOutput() {
-
-        return new String(out.toByteArray());
-    }
-
-    private void sendInput(final String input) {
-
-        inputPipe.println(input);
     }
 }

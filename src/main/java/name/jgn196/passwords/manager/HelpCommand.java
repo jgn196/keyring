@@ -7,8 +7,8 @@ class HelpCommand extends Command {
             "\tget\tGet a password for a login.";
 
     @Override
-    public void run() {
+    public void run(final Console console) {
 
-        System.out.print(USAGE);
+        console.print(USAGE);
     }
 }

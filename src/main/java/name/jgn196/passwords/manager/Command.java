@@ -1,6 +1,6 @@
 package name.jgn196.passwords.manager;
 
-abstract class Command implements Runnable {
+abstract class Command {
 
     static final String LIST_COMMAND = "list";
     static final String GET_COMMAND = "get";
@@ -20,6 +20,8 @@ abstract class Command implements Runnable {
                 return new HelpCommand();
         }
     }
+
+    abstract void run(Console console);
 }
 
 class NoDataFileCommand extends Command {
@@ -27,8 +29,8 @@ class NoDataFileCommand extends Command {
     static final String NO_DATA_FILE_MESSAGE = "No data file.";
 
     @Override
-    public void run() {
+    public void run(final Console console) {
 
-        System.out.print(NO_DATA_FILE_MESSAGE);
+        console.print(NO_DATA_FILE_MESSAGE);
     }
 }
