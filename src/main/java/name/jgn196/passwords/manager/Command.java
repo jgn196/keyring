@@ -1,13 +1,6 @@
 package name.jgn196.passwords.manager;
 
-import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
-import name.jgn196.passwords.manager.core.Safe;
-import name.jgn196.passwords.manager.storage.FileStore;
-
-import java.nio.file.Paths;
-
-import static name.jgn196.passwords.manager.Manager.STORE_FILE_NAME;
 
 abstract class Command {
 
@@ -23,9 +16,9 @@ abstract class Command {
             case LIST_COMMAND:
                 return new NoDataFileCommand();
             case GET_COMMAND:
-                return new GetCommand();
+                return new GetCommand(args);
             case PUT_COMMAND:
-                return new PutCommand();
+                return new PutCommand(args);
             default:
                 return new HelpCommand();
         }

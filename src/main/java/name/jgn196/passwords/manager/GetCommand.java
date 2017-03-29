@@ -11,6 +11,13 @@ import static name.jgn196.passwords.manager.Manager.STORE_FILE_NAME;
 
 class GetCommand extends Command {
 
+    private final Login login;
+
+    GetCommand(final String[] args) {
+
+        login = new Login(args[1], args[2]);
+    }
+
     @Override
     void run(final Console console) {
 
@@ -24,7 +31,7 @@ class GetCommand extends Command {
             console.print(
                     new String(
                             new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword))
-                                    .passwordFor(new Login("www.site.com", "Bill")).get().characters()));
+                                    .passwordFor(login).get().characters()));
         }
     }
 }

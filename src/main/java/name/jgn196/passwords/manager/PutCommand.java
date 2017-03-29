@@ -11,19 +11,26 @@ import static name.jgn196.passwords.manager.Manager.STORE_FILE_NAME;
 
 class PutCommand extends Command {
 
+    private final Login login;
+
+    PutCommand(final String[] args) {
+
+        login = new Login(args[1], args[2]);
+    }
+
     @Override
     public void run(final Console console) {
         try (final Password password = readPassword(console);
              final Password storePassword = readStorePassword(console)) {
 
             new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword))
-                    .store(new Login("www.site.com", "Bill"), password);
+                    .store(login, password);
         }
     }
 
     private Password readPassword(final Console console) {
 
-        console.print("Password for Bill @ www.site.com:");
+        console.print("Password for " + login.userName() + " @ " + login.secureSystem() + ":");
         return new Password(console.readPassword());
     }
 }
