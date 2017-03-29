@@ -20,11 +20,12 @@ class PutCommand extends Command {
 
     @Override
     public void run(final Console console) {
-        try (final Password password = readPassword(console);
-             final Password storePassword = readStorePassword(console)) {
 
-            new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword))
-                    .store(login, password);
+        try (final Password password = readPassword(console);
+             final Password storePassword = readStorePassword(console);
+             final Safe safe = new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword))) {
+
+            safe.store(login, password);
         }
     }
 

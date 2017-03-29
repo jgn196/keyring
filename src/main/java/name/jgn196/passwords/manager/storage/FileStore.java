@@ -59,7 +59,7 @@ public class FileStore extends SecureStore {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
 
         // TODO - Wipe password
     }

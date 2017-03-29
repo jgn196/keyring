@@ -26,12 +26,10 @@ class GetCommand extends Command {
             return;
         }
 
-        try (final Password storePassword = readStorePassword(console)) {
+        try (final Password storePassword = readStorePassword(console);
+             final Safe safe = new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword))) {
 
-            console.print(
-                    new String(
-                            new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword))
-                                    .passwordFor(login).get().characters()));
+            console.print(new String(safe.passwordFor(login).get().characters()));
         }
     }
 }

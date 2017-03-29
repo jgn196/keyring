@@ -33,8 +33,12 @@ public class Safe implements AutoCloseable {
         return store.stream().map(StoreEntry::login);
     }
 
-    public void close() throws Exception {
+    public void close() {
+        try {
 
-        store.close();
+            store.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
