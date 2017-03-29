@@ -4,6 +4,8 @@ import java.io.IOException;
 
 public class Manager {
 
+    static final String STORE_FILE_NAME = "passwords.dat";
+
     private static Console console = new Console() {
         @Override
         public void print(final String text) {
@@ -27,10 +29,4 @@ public class Manager {
 
         Command.parseCommandFrom(args).run(console);
     }
-}
-
-interface Console {
-
-    void print(final String text);
-    char[] readPassword();
 }

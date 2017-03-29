@@ -7,6 +7,8 @@ import name.jgn196.passwords.manager.storage.FileStore;
 
 import java.nio.file.Paths;
 
+import static name.jgn196.passwords.manager.Manager.STORE_FILE_NAME;
+
 class PutCommand extends Command {
 
     @Override
@@ -14,7 +16,7 @@ class PutCommand extends Command {
         try (final Password password = readPassword(console);
              final Password storePassword = readStorePassword(console)) {
 
-            new Safe(new FileStore(Paths.get("passwords.dat").toFile(), storePassword))
+            new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword))
                     .store(new Login("www.site.com", "Bill"), password);
         }
     }
