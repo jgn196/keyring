@@ -40,26 +40,6 @@ abstract class Command {
     abstract void run(Console console);
 }
 
-class GetCommand extends Command {
-
-    @Override
-    void run(final Console console) {
-
-        if (!Paths.get(STORE_FILE_NAME).toFile().exists()) {
-            new NoDataFileCommand().run(console);
-            return;
-        }
-
-        try (final Password storePassword = readStorePassword(console)) {
-
-            console.print(
-                    new String(
-                            new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword))
-                                    .passwordFor(new Login("www.site.com", "Bill")).get().characters()));
-        }
-    }
-}
-
 class NoDataFileCommand extends Command {
 
     static final String NO_DATA_FILE_MESSAGE = "No data file.";
