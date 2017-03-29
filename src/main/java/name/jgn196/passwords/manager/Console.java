@@ -1,7 +1,14 @@
 package name.jgn196.passwords.manager;
 
-interface Console {
+class Console {
 
-    void print(final String text);
-    char[] readPassword();
+    void print(final String text) {
+
+        System.console().printf(text);
+    }
+
+    char[] readPassword() {
+
+        return System.console().readPassword();
+    }
 }

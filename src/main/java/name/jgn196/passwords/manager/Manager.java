@@ -6,19 +6,7 @@ public class Manager {
 
     static final String STORE_FILE_NAME = "passwords.dat";
 
-    private static Console console = new Console() {
-        @Override
-        public void print(final String text) {
-
-            System.console().printf(text);
-        }
-
-        @Override
-        public char[] readPassword() {
-
-            return System.console().readPassword();
-        }
-    };
+    private static Console console = new Console();
 
     static void useConsole(final Console console) {
 

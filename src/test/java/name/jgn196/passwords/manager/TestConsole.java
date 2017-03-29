@@ -1,6 +1,6 @@
 package name.jgn196.passwords.manager;
 
-class TestConsole implements Console {
+class TestConsole extends Console {
 
     private final StringBuffer capturedOutput = new StringBuffer();
 
