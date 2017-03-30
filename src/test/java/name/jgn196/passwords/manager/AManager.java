@@ -43,7 +43,7 @@ public class AManager {
     }
 
     @Test
-    public void getsPasswordWhenThereIsNoDataFile() throws IOException {
+    public void failsToGetPasswordWhenThereIsNoDataFile() throws IOException {
 
         givenNoDataFile();
 
@@ -64,7 +64,7 @@ public class AManager {
     }
 
     @Test
-    public void storesPassword() throws IOException {
+    public void promptsForPasswordsWhenStoring() throws IOException {
 
         givenInput("bill_password", "file_password");
 
@@ -89,15 +89,26 @@ public class AManager {
     }
 
     @Test
-    public void getsPassword() throws IOException {
+    public void getsStoredPassword() throws IOException {
 
-        givenNoDataFile();
         givenInput("bill_password", "file_password", "file_password");
         Manager.main(Command.PUT_COMMAND, "www.site.com", "Bill");
 
         Manager.main(Command.GET_COMMAND, "www.site.com", "Bill");
 
         assertThat(capturedOutput(), endsWith("bill_password"));
+    }
+
+    @Test
+    public void failsToGetMissingPassword() throws IOException {
+
+        givenNoDataFile();
+        givenInput("bill_password", "file_password", "file_password");
+        Manager.main(Command.PUT_COMMAND, "www.site.com", "Bill");
+
+        Manager.main(Command.GET_COMMAND, "www.site.com", "Ted");
+
+        assertThat(capturedOutput(), endsWith("Password for Ted @ www.site.com not found."));
     }
 
     private void givenNoDataFile() throws IOException {

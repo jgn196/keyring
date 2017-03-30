@@ -6,6 +6,7 @@ import name.jgn196.passwords.manager.core.Safe;
 import name.jgn196.passwords.manager.storage.FileStore;
 
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import static name.jgn196.passwords.manager.Manager.STORE_FILE_NAME;
 
@@ -29,7 +30,12 @@ class GetCommand extends Command {
         try (final Password storePassword = readStorePassword(console);
              final Safe safe = new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword))) {
 
-            console.print(new String(safe.passwordFor(login).get().characters()));
+            final Optional<Password> password = safe.passwordFor(login);
+
+            if (password.isPresent())
+                console.print(new String(password.get().characters()));
+            else
+                console.print("Password for " + login.userName() + " @ " + login.secureSystem() + " not found.");
         }
     }
 }
