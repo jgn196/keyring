@@ -10,7 +10,7 @@ import static name.jgn196.passwords.manager.Manager.STORE_FILE_NAME;
 
 class ListCommand extends Command {
 
-    static final String NO_DATA_FILE_MESSAGE = "No data file."; // TODO - Move to base class
+    static final String NAME = "list";
 
     @Override
     public void run(final Console console) {

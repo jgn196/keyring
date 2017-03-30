@@ -8,9 +8,12 @@ import name.jgn196.passwords.manager.storage.FileStore;
 import java.nio.file.Paths;
 import java.util.Optional;
 
+import static name.jgn196.passwords.manager.Command.NO_DATA_FILE_MESSAGE;
 import static name.jgn196.passwords.manager.Manager.STORE_FILE_NAME;
 
 class GetCommand extends Command {
+
+    static final String NAME = "get";
 
     private final Login login;
 
@@ -23,7 +26,7 @@ class GetCommand extends Command {
     void run(final Console console) {
 
         if (!Paths.get(STORE_FILE_NAME).toFile().exists()) {
-            new ListCommand().run(console);
+            console.print(NO_DATA_FILE_MESSAGE);
             return;
         }
 

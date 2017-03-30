@@ -11,6 +11,8 @@ import static name.jgn196.passwords.manager.Manager.STORE_FILE_NAME;
 
 class PutCommand extends Command {
 
+    static final String NAME = "put";
+
     private final Login login;
 
     PutCommand(final String[] args) {

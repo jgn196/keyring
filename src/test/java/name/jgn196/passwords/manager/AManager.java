@@ -37,9 +37,9 @@ public class AManager {
 
         givenNoDataFile();
 
-        Manager.main(Command.LIST_COMMAND);
+        Manager.main(ListCommand.NAME);
 
-        assertEquals(ListCommand.NO_DATA_FILE_MESSAGE, capturedOutput());
+        assertEquals(Command.NO_DATA_FILE_MESSAGE, capturedOutput());
     }
 
     @Test
@@ -47,9 +47,9 @@ public class AManager {
 
         givenNoDataFile();
 
-        Manager.main(Command.GET_COMMAND, "www.site.com", "Bill");
+        Manager.main(GetCommand.NAME, "www.site.com", "Bill");
 
-        assertEquals(ListCommand.NO_DATA_FILE_MESSAGE, capturedOutput());
+        assertEquals(Command.NO_DATA_FILE_MESSAGE, capturedOutput());
     }
 
     @Test
@@ -58,7 +58,7 @@ public class AManager {
         givenNoDataFile();
         givenInput("bill_password", "file_password");
 
-        Manager.main(Command.PUT_COMMAND, "www.site.com", "Bill");
+        Manager.main(PutCommand.NAME, "www.site.com", "Bill");
 
         assertTrue(Files.exists(Paths.get(STORE_FILE_NAME)));
     }
@@ -68,7 +68,7 @@ public class AManager {
 
         givenInput("bill_password", "file_password");
 
-        Manager.main(Command.PUT_COMMAND, "www.site.com", "Bill");
+        Manager.main(PutCommand.NAME, "www.site.com", "Bill");
 
         assertThat(
                 capturedOutput(),
@@ -81,7 +81,7 @@ public class AManager {
         final String password = "bill_password";
         givenInput(password, "file_password");
 
-        Manager.main(Command.PUT_COMMAND, "www.site.com", "Bill");
+        Manager.main(PutCommand.NAME, "www.site.com", "Bill");
 
         assertFalse(
                 "Found password '" + password + "' in plain text in store file.",
@@ -92,9 +92,9 @@ public class AManager {
     public void getsStoredPassword() throws IOException {
 
         givenInput("bill_password", "file_password", "file_password");
-        Manager.main(Command.PUT_COMMAND, "www.site.com", "Bill");
+        Manager.main(PutCommand.NAME, "www.site.com", "Bill");
 
-        Manager.main(Command.GET_COMMAND, "www.site.com", "Bill");
+        Manager.main(GetCommand.NAME, "www.site.com", "Bill");
 
         assertThat(capturedOutput(), endsWith("bill_password"));
     }
@@ -104,9 +104,9 @@ public class AManager {
 
         givenNoDataFile();
         givenInput("bill_password", "file_password", "file_password");
-        Manager.main(Command.PUT_COMMAND, "www.site.com", "Bill");
+        Manager.main(PutCommand.NAME, "www.site.com", "Bill");
 
-        Manager.main(Command.GET_COMMAND, "www.site.com", "Ted");
+        Manager.main(GetCommand.NAME, "www.site.com", "Ted");
 
         assertThat(capturedOutput(), endsWith("Password for Ted @ www.site.com not found."));
     }
@@ -116,9 +116,9 @@ public class AManager {
 
         givenNoDataFile();
         givenInput("bill_password", "file_password", "file_password");
-        Manager.main(Command.PUT_COMMAND, "www.site.com", "Bill");
+        Manager.main(PutCommand.NAME, "www.site.com", "Bill");
 
-        Manager.main(Command.LIST_COMMAND);
+        Manager.main(ListCommand.NAME);
 
         assertThat(capturedOutput(), endsWith("Passwords stored for:\n\tBill @ www.site.com\n"));
     }
