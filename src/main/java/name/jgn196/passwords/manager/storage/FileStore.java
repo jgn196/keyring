@@ -12,12 +12,12 @@ public class FileStore extends SecureStore {
 
     private final File file;
     private final StoreFormat format = new StoreFormat();
-    private final Password filePassword; // TODO - Implement encryption
+    private final StoreEncryption encryption;
 
     public FileStore(final File file, final Password filePassword) {
 
         this.file = file;
-        this.filePassword = filePassword;
+        encryption = new StoreEncryption(filePassword);
     }
 
     @Override
@@ -38,12 +38,12 @@ public class FileStore extends SecureStore {
 
         if (!file.exists()) return new HashSet<>();
 
-        return new HashSet<>(format.deserialiseEntries(Files.readAllBytes(file.toPath())));
+        return new HashSet<>(format.deserialiseEntries(encryption.decrypt(Files.readAllBytes(file.toPath()))));
     }
 
     private void save(final Set<StoreEntry> entries) throws IOException {
 
-        Files.write(file.toPath(), format.serialise(entries));
+        Files.write(file.toPath(), encryption.encrypt(format.serialise(entries)));
     }
 
     @Override

@@ -1,7 +1,6 @@
 package name.jgn196.passwords.manager;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -77,7 +76,6 @@ public class AManager {
     }
 
     @Test
-    @Ignore // TODO - Wire in encryption
     public void encryptsPasswordInStoreFile() throws IOException {
 
         final String password = "bill_password";
@@ -94,7 +92,7 @@ public class AManager {
     public void getsPassword() throws IOException {
 
         givenNoDataFile();
-        givenInput("bill_password", "file_password");
+        givenInput("bill_password", "file_password", "file_password");
         Manager.main(Command.PUT_COMMAND, "www.site.com", "Bill");
 
         Manager.main(Command.GET_COMMAND, "www.site.com", "Bill");
