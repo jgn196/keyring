@@ -39,7 +39,7 @@ public class AManager {
 
         Manager.main(Command.LIST_COMMAND);
 
-        assertEquals(NoDataFileCommand.NO_DATA_FILE_MESSAGE, capturedOutput());
+        assertEquals(ListCommand.NO_DATA_FILE_MESSAGE, capturedOutput());
     }
 
     @Test
@@ -49,7 +49,7 @@ public class AManager {
 
         Manager.main(Command.GET_COMMAND, "www.site.com", "Bill");
 
-        assertEquals(NoDataFileCommand.NO_DATA_FILE_MESSAGE, capturedOutput());
+        assertEquals(ListCommand.NO_DATA_FILE_MESSAGE, capturedOutput());
     }
 
     @Test
@@ -109,6 +109,18 @@ public class AManager {
         Manager.main(Command.GET_COMMAND, "www.site.com", "Ted");
 
         assertThat(capturedOutput(), endsWith("Password for Ted @ www.site.com not found."));
+    }
+
+    @Test
+    public void listsLogins() throws IOException {
+
+        givenNoDataFile();
+        givenInput("bill_password", "file_password", "file_password");
+        Manager.main(Command.PUT_COMMAND, "www.site.com", "Bill");
+
+        Manager.main(Command.LIST_COMMAND);
+
+        assertThat(capturedOutput(), endsWith("Passwords stored for:\n\tBill @ www.site.com\n"));
     }
 
     private void givenNoDataFile() throws IOException {

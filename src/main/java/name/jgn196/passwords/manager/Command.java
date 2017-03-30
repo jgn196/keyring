@@ -4,6 +4,7 @@ import name.jgn196.passwords.manager.core.Password;
 
 abstract class Command {
 
+    // TODO - These should live in their respective command classes.
     static final String LIST_COMMAND = "list";
     static final String GET_COMMAND = "get";
     static final String PUT_COMMAND = "put";
@@ -14,7 +15,7 @@ abstract class Command {
 
         switch (commandWord) {
             case LIST_COMMAND:
-                return new NoDataFileCommand();
+                return new ListCommand();
             case GET_COMMAND:
                 return new GetCommand(args);
             case PUT_COMMAND:
@@ -33,13 +34,3 @@ abstract class Command {
     abstract void run(Console console);
 }
 
-class NoDataFileCommand extends Command {
-
-    static final String NO_DATA_FILE_MESSAGE = "No data file.";
-
-    @Override
-    public void run(final Console console) {
-
-        console.print(NO_DATA_FILE_MESSAGE);
-    }
-}
