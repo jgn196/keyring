@@ -45,4 +45,9 @@ public class Login {
 
         return "Login ('" + userName + "' @ '" + secureSystem + "')";
     }
+
+    public String displayText() {
+
+        return userName + " @ " + secureSystem;
+    }
 }

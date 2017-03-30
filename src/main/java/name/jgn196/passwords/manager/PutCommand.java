@@ -31,7 +31,7 @@ class PutCommand extends Command {
 
     private Password readPassword(final Console console) {
 
-        console.print("Password for " + login.userName() + " @ " + login.secureSystem() + ":");
+        console.print("Password for " + login.displayText() + ":");
         return new Password(console.readPassword());
     }
 }
