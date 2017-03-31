@@ -1,0 +1,1 @@
+Add manager and store cloning to other devices.

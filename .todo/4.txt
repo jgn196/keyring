@@ -1,0 +1,1 @@
+Add store merging and updating.
