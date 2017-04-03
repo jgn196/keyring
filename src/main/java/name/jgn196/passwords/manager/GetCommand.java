@@ -50,7 +50,7 @@ class GetCommand extends Command {
 
     private boolean parseArguments() {
 
-        if (args.length < 2) {
+        if (args.length < 3) {
             console.print("get usage: system user");
             return false;
         }

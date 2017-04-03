@@ -11,7 +11,7 @@ public class APutCommand {
 
         final TestConsole console = new TestConsole();
 
-        new PutCommand().run(console);
+        new PutCommand("put").run(console);
 
         assertEquals("put usage: system user", console.capturedOutput());
     }

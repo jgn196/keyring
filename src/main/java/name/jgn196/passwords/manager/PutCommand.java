@@ -40,11 +40,12 @@ class PutCommand extends Command {
 
     private boolean parseArguments() {
 
-        if (args.length < 2) {
+        if (args.length < 3) {
 
             console.print("put usage: system user");
             return false;
         }
+
         login = new Login(args[1], args[2]);
         return true;
     }

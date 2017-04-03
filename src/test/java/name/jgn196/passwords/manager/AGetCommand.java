@@ -11,7 +11,7 @@ public class AGetCommand {
 
         final TestConsole console = new TestConsole();
 
-        new GetCommand().run(console);
+        new GetCommand("get").run(console);
 
         assertEquals("get usage: system user", console.capturedOutput());
     }
