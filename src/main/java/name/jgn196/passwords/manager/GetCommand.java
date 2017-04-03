@@ -8,22 +8,28 @@ import name.jgn196.passwords.manager.storage.FileStore;
 import java.nio.file.Paths;
 import java.util.Optional;
 
-import static name.jgn196.passwords.manager.Command.NO_DATA_FILE_MESSAGE;
 import static name.jgn196.passwords.manager.Manager.STORE_FILE_NAME;
 
 class GetCommand extends Command {
 
     static final String NAME = "get";
 
-    private final Login login;
+    private final String[] args;
 
-    GetCommand(final String[] args) {
+    private Console console;
+    private Login login;
 
-        login = new Login(args[1], args[2]);
+    GetCommand(final String... args) {
+
+        this.args = args;
     }
 
     @Override
     void run(final Console console) {
+
+        this.console = console;
+
+        if (!parseArguments()) return;
 
         if (!Paths.get(STORE_FILE_NAME).toFile().exists()) {
             console.print(NO_DATA_FILE_MESSAGE);
@@ -40,5 +46,15 @@ class GetCommand extends Command {
             else
                 console.print("Password for " + login.displayText() + " not found.");
         }
+    }
+
+    private boolean parseArguments() {
+
+        if (args.length < 2) {
+            console.print("get usage: system user");
+            return false;
+        }
+        login = new Login(args[1], args[2]);
+        return true;
     }
 }

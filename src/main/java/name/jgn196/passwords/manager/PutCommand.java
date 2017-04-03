@@ -13,15 +13,22 @@ class PutCommand extends Command {
 
     static final String NAME = "put";
 
-    private final Login login;
+    private final String[] args;
 
-    PutCommand(final String[] args) {
+    private Console console;
+    private Login login;
 
-        login = new Login(args[1], args[2]);
+    PutCommand(final String... args) {
+
+        this.args = args;
     }
 
     @Override
     public void run(final Console console) {
+
+        this.console = console;
+
+        if (!parseArguments()) return;
 
         try (final Password password = readPassword(console);
              final Password storePassword = readStorePassword(console);
@@ -29,6 +36,17 @@ class PutCommand extends Command {
 
             safe.store(login, password);
         }
+    }
+
+    private boolean parseArguments() {
+
+        if (args.length < 2) {
+
+            console.print("put usage: system user");
+            return false;
+        }
+        login = new Login(args[1], args[2]);
+        return true;
     }
 
     private Password readPassword(final Console console) {
