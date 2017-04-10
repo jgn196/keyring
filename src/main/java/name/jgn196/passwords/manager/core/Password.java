@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import static java.util.Arrays.fill;
 
-public class Password implements AutoCloseable {
+public final class Password implements AutoCloseable {
 
     private final char[] chars;
     private boolean closed = false;
@@ -44,15 +44,21 @@ public class Password implements AutoCloseable {
     @Override
     public String toString() {
 
+        return "Password ("+ maskedPassword() +")" + (closed ? " [closed]" : "");
+    }
+
+    private String maskedPassword() {
+
         final char[] maskedPassword = new char[chars.length];
         fill(maskedPassword, '*');
 
-        return "Password ("+ new String(maskedPassword) +")";
+        return new String(maskedPassword);
     }
 
     @Override
     public void close() {
 
         fill(chars, ' ');
+        closed = true;
     }
 }
