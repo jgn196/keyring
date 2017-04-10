@@ -9,11 +9,14 @@ import java.util.HashSet;
 
 class StoreFormat {
 
+    static final int VERSION = 1;
+
     byte[] serialise(final Collection<StoreEntry> entries) throws IOException {
 
         try (final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                 final DataOutputStream out = new DataOutputStream(buffer)) {
 
+            out.writeInt(VERSION);
             out.writeInt(entries.size());
             for (final StoreEntry entry : entries) {
 
@@ -35,22 +38,31 @@ class StoreFormat {
         }
     }
 
-    Collection<StoreEntry> deserialiseEntries(final byte[] formatted) throws IOException {
+    Collection<StoreEntry> deserialise(final byte[] formatted) throws IOException {
 
         try (final DataInputStream in = new DataInputStream(new ByteArrayInputStream(formatted))) {
+
+            readAndCheckVersion(in);
 
             final int entryCount = in.readInt();
             final HashSet<StoreEntry> results = new HashSet<>();
             for (int i = 0; i < entryCount; i++) {
 
-                results.add(deserialiseEntry(in));
+                results.add(deserialise(in));
             }
 
             return results;
         }
     }
 
-    private StoreEntry deserialiseEntry(final DataInputStream in) throws IOException {
+    private void readAndCheckVersion(final DataInputStream in) throws IOException {
+
+        final int version = in.readInt();
+        if (version != VERSION)
+            throw new UnsupportedStoreFormat(version);
+    }
+
+    private StoreEntry deserialise(final DataInputStream in) throws IOException {
 
         final String secureSystem = in.readUTF();
         final String userName = in.readUTF();
