@@ -31,8 +31,13 @@ class StoreFormat {
 
         out.writeUTF(entry.login().secureSystem());
         out.writeUTF(entry.login().userName());
-        out.writeInt(entry.password().characters().length);
-        for (final char c : entry.password().characters()) {
+        serialise(entry.password(), out);
+    }
+
+    private void serialise(final Password password, final DataOutputStream out) throws IOException {
+
+        out.writeInt(password.characters().length);
+        for (final char c : password.characters()) {
 
             out.writeChar(c);
         }
@@ -66,12 +71,18 @@ class StoreFormat {
 
         final String secureSystem = in.readUTF();
         final String userName = in.readUTF();
+        final Password password = readPassword(in);
+        return new StoreEntry(new Login(secureSystem, userName), password);
+    }
+
+    private Password readPassword(final DataInputStream in) throws IOException {
+
         final int passwordLength = in.readInt();
         final char[] password = new char[passwordLength];
         for (int i = 0; i < passwordLength; i++) {
 
             password[i] = in.readChar();
         }
-        return new StoreEntry(new Login(secureSystem, userName), new Password(password));
+        return new Password(password);
     }
 }

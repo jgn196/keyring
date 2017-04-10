@@ -61,6 +61,6 @@ public class FileStore extends SecureStore {
     @Override
     public void close() {
 
-        // TODO - Wipe password
+        // TODO - Wipe passwords
     }
 }

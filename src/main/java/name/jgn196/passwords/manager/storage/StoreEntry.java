@@ -3,6 +3,7 @@ package name.jgn196.passwords.manager.storage;
 import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
 
+// TODO - Should be closeable - wipe password on close
 public class StoreEntry {
 
     private final Login login;
