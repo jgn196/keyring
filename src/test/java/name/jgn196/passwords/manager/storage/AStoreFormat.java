@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -46,8 +47,13 @@ public class AStoreFormat {
     public void willNotReadStoreWithIncorrectVersion() throws IOException {
 
         final byte[] formatted = new StoreFormat().serialise(asList(STORE_ENTRIES));
-        formatted[0] ^= 0xff; // Change the leading version field
+        changeVersionField(formatted);
 
         new StoreFormat().deserialise(formatted);
+    }
+
+    private void changeVersionField(final byte[] formatted) {
+
+        ByteBuffer.wrap(formatted).putInt(StoreFormat.VERSION + 1);
     }
 }
