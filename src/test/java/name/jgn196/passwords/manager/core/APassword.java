@@ -51,6 +51,18 @@ public class APassword {
     @Test
     public void doesNotIncludeTheCharactersInToStringOutput() {
 
-        assertThat(Password.from("secret").toString(), not(containsString("secret")));
+        assertThat(Password.from("secret").toString(), containsString("******"));
+    }
+
+    @Test
+    public void toStringTellsYouIfItIsClosed() {
+
+        final Password password = Password.from("secret");
+
+        assertThat(password.toString(), not(containsString("closed")));
+
+        password.close();
+
+        assertThat(password.toString(), containsString("closed"));
     }
 }
