@@ -1,6 +1,6 @@
 package name.jgn196.passwords.manager.core;
 
-public class Login {
+public final class Login {
 
     private final String secureSystem;
     private final String userName;
@@ -28,15 +28,18 @@ public class Login {
         if (!(obj instanceof Login)) return false;
 
         final Login other = (Login) obj;
-        return secureSystem.equals(other.secureSystem) && userName.equals(other.userName);
+        final boolean systemsEqual = secureSystem == null ?
+                other.secureSystem == null : secureSystem.equals(other.secureSystem);
+        final boolean usersEqual = userName == null ? other.userName == null : userName.equals(other.userName);
+        return systemsEqual && usersEqual;
     }
 
     @Override
     public int hashCode() {
 
         int result = 17;
-        result = 31 * result + secureSystem.hashCode();
-        result = 31 * result + userName.hashCode();
+        result = 31 * result + (secureSystem == null ? 0 : secureSystem.hashCode());
+        result = 31 * result + (userName == null ? 0 : userName.hashCode());
         return result;
     }
 
@@ -46,8 +49,4 @@ public class Login {
         return "Login ('" + userName + "' @ '" + secureSystem + "')";
     }
 
-    public String displayText() {
-
-        return userName + " @ " + secureSystem;
-    }
 }

@@ -25,7 +25,7 @@ class ListCommand extends Command {
 
             console.print("Passwords stored for:\n");
             safe.logins()
-                    .forEach(login -> console.print("\t" + login.displayText() + "\n"));
+                    .forEach(login -> console.print("\t" + displayText(login) + "\n"));
         }
     }
 }

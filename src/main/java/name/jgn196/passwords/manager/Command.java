@@ -1,5 +1,6 @@
 package name.jgn196.passwords.manager;
 
+import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
 
 abstract class Command {
@@ -26,6 +27,11 @@ abstract class Command {
 
         console.print("Password for store:");
         return new Password(console.readPassword());
+    }
+
+    static String displayText(final Login login) {
+
+        return login.userName() + " @ " + login.secureSystem();
     }
 
     abstract void run(Console console);

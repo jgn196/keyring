@@ -44,7 +44,7 @@ class GetCommand extends Command {
             if (password.isPresent())
                 console.print(new String(password.get().characters()));
             else
-                console.print("Password for " + login.displayText() + " not found.");
+                console.print("Password for " + displayText(login) + " not found.");
         }
     }
 

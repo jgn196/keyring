@@ -52,7 +52,7 @@ class PutCommand extends Command {
 
     private Password readPassword(final Console console) {
 
-        console.print("Password for " + login.displayText() + ":");
+        console.print("Password for " + displayText(login) + ":");
         return new Password(console.readPassword());
     }
 }
