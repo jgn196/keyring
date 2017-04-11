@@ -28,19 +28,18 @@ public class AFileStore {
     @Test
     public void storesEntries() throws Exception {
 
-        try (final FileStore store = new FileStore(testFile, Password.from("secret"))) {
+        new FileStore(testFile, Password.from("secret"))
+                .store(new StoreEntry(new Login("www.site.com", "Bill"), Password.from("another secret")));
 
-            store.store(new StoreEntry(new Login("www.site.com", "Bill"), Password.from("another secret")));
+        assertTrue("Store file hasn't been created.", testFile.exists());
 
-            assertTrue("Store file hasn't been created.", testFile.exists());
-        }
 
-        try (final FileStore store = new FileStore(testFile, Password.from("secret"))) {
+        assertThat(
+                new FileStore(testFile, Password.from("secret"))
+                        .stream()
+                        .collect(toList()),
+                hasItem(new StoreEntry(new Login("www.site.com", "Bill"), Password.from("another secret"))));
 
-            assertThat(
-                    store.stream().collect(toList()),
-                    hasItem(new StoreEntry(new Login("www.site.com", "Bill"), Password.from("another secret"))));
-        }
     }
 
     @After

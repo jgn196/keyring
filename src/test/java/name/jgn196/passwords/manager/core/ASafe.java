@@ -20,11 +20,9 @@ public class ASafe {
         final SecureStore store = mock(SecureStore.class);
         final Login login = new Login("www.site.net", "Bill");
         final Password password = Password.from("super_secret");
+        final Safe safe = new Safe(store);
 
-        try (final Safe safe = new Safe(store)) {
-
-            safe.store(login, password);
-        }
+        safe.store(login, password);
 
         verify(store).store(new StoreEntry(login, password));
     }
@@ -39,12 +37,11 @@ public class ASafe {
                         new StoreEntry(new Login("www.site.net", "ignore me"), Password.from("incorrect")),
                         new StoreEntry(new Login("www.site.net", "Bill"), Password.from("super_secret"))));
 
-        try (final Safe safe = new Safe(store)) {
+        final Safe safe = new Safe(store);
 
-            assertEquals(
-                    Optional.of(Password.from("super_secret")),
-                    safe.passwordFor(new Login("www.site.net", "Bill")));
-        }
+        assertEquals(
+                Optional.of(Password.from("super_secret")),
+                safe.passwordFor(new Login("www.site.net", "Bill")));
     }
 
     @Test
@@ -53,10 +50,9 @@ public class ASafe {
         final SecureStore store = mock(SecureStore.class);
         when(store.stream()).thenReturn(Stream.empty());
 
-        try (final Safe safe = new Safe(store)) {
+        final Safe safe = new Safe(store);
 
-            assertFalse(safe.passwordFor(new Login("www.site.net", "Bill")).isPresent());
-        }
+        assertFalse(safe.passwordFor(new Login("www.site.net", "Bill")).isPresent());
     }
 
     @Test
@@ -66,10 +62,9 @@ public class ASafe {
         when(store.stream())
                 .thenReturn(Stream.of(new StoreEntry(new Login("ignore me", "ignore me"), Password.from("incorrect"))));
 
-        try (final Safe safe = new Safe(store)) {
+        final Safe safe = new Safe(store);
 
-            assertFalse(safe.passwordFor(new Login("www.site.net", "Bill")).isPresent());
-        }
+        assertFalse(safe.passwordFor(new Login("www.site.net", "Bill")).isPresent());
     }
 
     @Test
@@ -82,24 +77,13 @@ public class ASafe {
                         new StoreEntry(new Login("site 1", "Ted"), Password.from("ignored")),
                         new StoreEntry(new Login("site 2", "Bill"), Password.from("ignored"))));
 
-        try (final Safe safe = new Safe(store)) {
+        final Safe safe = new Safe(store);
 
-            assertThat(
-                    safe.logins().collect(toList()),
-                    hasItems(
-                            new Login("site 1", "Bill"),
-                            new Login("site 1", "Ted"),
-                            new Login("site 2", "Bill")));
-        }
-    }
-
-    @Test
-    public void closesItsStore() throws Exception {
-
-        final SecureStore store = mock(SecureStore.class);
-
-        new Safe(store).close();
-
-        verify(store).close();
+        assertThat(
+                safe.logins().collect(toList()),
+                hasItems(
+                        new Login("site 1", "Bill"),
+                        new Login("site 1", "Ted"),
+                        new Login("site 2", "Bill")));
     }
 }

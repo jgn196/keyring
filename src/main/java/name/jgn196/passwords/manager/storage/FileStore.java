@@ -57,10 +57,4 @@ public class FileStore extends SecureStore {
             return Stream.empty();
         }
     }
-
-    @Override
-    public void close() {
-
-        // TODO - Wipe passwords
-    }
 }

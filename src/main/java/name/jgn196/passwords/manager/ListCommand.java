@@ -20,11 +20,11 @@ class ListCommand extends Command {
             return;
         }
 
-        try (final Password storePassword = readStorePassword(console);
-             final Safe safe = new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword))) {
+        try (final Password storePassword = readStorePassword(console)) {
 
             console.print("Passwords stored for:\n");
-            safe.logins()
+            new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword))
+                    .logins()
                     .forEach(login -> console.print("\t" + displayText(login) + "\n"));
         }
     }

@@ -31,10 +31,10 @@ class PutCommand extends Command {
         if (!parseArguments()) return;
 
         try (final Password password = readPassword(console);
-             final Password storePassword = readStorePassword(console);
-             final Safe safe = new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword))) {
+             final Password storePassword = readStorePassword(console)) {
 
-            safe.store(login, password);
+            new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword))
+                    .store(login, password);
         }
     }
 

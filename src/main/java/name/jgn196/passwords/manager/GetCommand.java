@@ -36,9 +36,9 @@ class GetCommand extends Command {
             return;
         }
 
-        try (final Password storePassword = readStorePassword(console);
-             final Safe safe = new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword))) {
+        try (final Password storePassword = readStorePassword(console)) {
 
+            final Safe safe = new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword));
             final Optional<Password> password = safe.passwordFor(login);
 
             if (password.isPresent())
