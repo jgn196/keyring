@@ -14,10 +14,17 @@ public class FileStore extends SecureStore {
     private final StoreFormat format = new StoreFormat();
     private final StoreEncryption encryption;
 
+    private FileIO io = new FileIO.Implementation();
+
     public FileStore(final File file, final Password filePassword) {
 
         this.file = file;
         encryption = new StoreEncryption(filePassword);
+    }
+
+    void inject(final FileIO io) {
+
+        this.io = io;
     }
 
     @Override
@@ -36,25 +43,31 @@ public class FileStore extends SecureStore {
 
     private Set<StoreEntry> storeContents() throws IOException {
 
-        if (!file.exists()) return new HashSet<>();
+        if (!io.fileExists(file)) return new HashSet<>();
 
-        return new HashSet<>(format.deserialise(encryption.decrypt(Files.readAllBytes(file.toPath()))));
+        return new HashSet<>(format.deserialise(encryption.decrypt(io.readAllFrom(file))));
     }
 
     private void save(final Set<StoreEntry> entries) throws IOException {
 
-        Files.write(file.toPath(), encryption.encrypt(format.serialise(entries)));
+        io.writeAllTo(file, encryption.encrypt(format.serialise(entries)));
     }
 
     @Override
-    public Stream<StoreEntry> stream() {
+    public Stream<StoreEntry> stream() throws StoreReadFailed {
         try {
 
             return storeContents().stream();
         } catch (IOException e) {
 
-            e.printStackTrace();
-            return Stream.empty();
+            throw new StoreReadFailed(e);
         }
+    }
+}
+
+class StoreReadFailed extends RuntimeException {
+
+    StoreReadFailed(IOException e) {
+        super(e);
     }
 }
