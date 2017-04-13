@@ -1,10 +1,10 @@
 package name.jgn196.passwords.manager.storage;
 
-import javax.crypto.BadPaddingException;
+import org.bouncycastle.crypto.InvalidCipherTextException;
 
 public class DecryptionFailed extends RuntimeException {
 
-    DecryptionFailed(BadPaddingException e) {
+    DecryptionFailed(InvalidCipherTextException e) {
 
         super(e);
     }

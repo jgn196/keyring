@@ -1,18 +1,20 @@
 package name.jgn196.passwords.manager.storage;
 
 import name.jgn196.passwords.manager.core.Password;
+import org.bouncycastle.crypto.InvalidCipherTextException;
+import org.bouncycastle.crypto.PBEParametersGenerator;
+import org.bouncycastle.crypto.digests.SHA256Digest;
+import org.bouncycastle.crypto.engines.AESEngine;
+import org.bouncycastle.crypto.generators.PKCS12ParametersGenerator;
+import org.bouncycastle.crypto.modes.CBCBlockCipher;
+import org.bouncycastle.crypto.paddings.PKCS7Padding;
+import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 
-import javax.crypto.*;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.PBEParameterSpec;
 import java.io.*;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
 import java.util.zip.CRC32;
 
+import static java.util.Arrays.copyOf;
 import static java.util.Arrays.copyOfRange;
 
 class StoreEncryption {
@@ -23,20 +25,11 @@ class StoreEncryption {
     private static final int CHECKSUM_SIZE = 8;
     private static final CRC32 CRC_32 = new CRC32();
 
-    private final Cipher cipher;
-    private final SecretKey key;
+    private final Password password; // TODO - wipe this on close
 
     StoreEncryption(final Password password) {
-        try {
 
-            cipher = Cipher.getInstance("PBEWithMD5AndDES");
-            key = SecretKeyFactory
-                    .getInstance("PBEWithMD5AndDES")
-                    .generateSecret(new PBEKeySpec(password.characters()));
-
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeySpecException e) {
-            throw new RuntimeException(e);
-        }
+        this.password = password;
     }
 
     byte[] encrypt(final byte[] plainText) {
@@ -53,10 +46,7 @@ class StoreEncryption {
             return result.toByteArray();
 
         } catch (IOException |
-                BadPaddingException |
-                IllegalBlockSizeException |
-                InvalidKeyException |
-                InvalidAlgorithmParameterException e) {
+                InvalidCipherTextException e) {
 
             throw new RuntimeException(e);
         }
@@ -77,11 +67,27 @@ class StoreEncryption {
         return CRC_32.getValue();
     }
 
-    private byte[] encryptWithSalt(final byte[] plainText, final byte[] salt) throws
-            InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+    private byte[] encryptWithSalt(final byte[] plainText, final byte[] salt) throws InvalidCipherTextException {
 
-        cipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(salt, ITERATIONS));
-        return cipher.doFinal(plainText);
+        final PKCS12ParametersGenerator parametersGenerator = new PKCS12ParametersGenerator(new SHA256Digest());
+        parametersGenerator.init(
+                PBEParametersGenerator.PKCS12PasswordToBytes(password.characters()),
+                salt,
+                ITERATIONS);
+
+        final CBCBlockCipher blockCipher = new CBCBlockCipher(new AESEngine());
+
+        final PaddedBufferedBlockCipher paddedCipher = new PaddedBufferedBlockCipher(blockCipher, new PKCS7Padding());
+        paddedCipher.init(
+                true, // True = encrypting
+                parametersGenerator.generateDerivedParameters(256, 128));
+
+        final byte[] result = new byte[paddedCipher.getOutputSize(plainText.length)];
+
+        int bytesCopied = paddedCipher.processBytes(plainText, 0, plainText.length, result, 0);
+        paddedCipher.doFinal(result, bytesCopied);
+
+        return result;
     }
 
     byte[] decrypt(final byte[] encryptedData) {
@@ -96,10 +102,10 @@ class StoreEncryption {
 
             return plainText;
 
-        } catch (InvalidKeyException | IllegalBlockSizeException | InvalidAlgorithmParameterException | IOException e) {
+        } catch (IOException e) {
 
             throw new RuntimeException(e);
-        } catch (BadPaddingException e) {
+        } catch (InvalidCipherTextException e) {
 
             throw new DecryptionFailed(e);
         }
@@ -119,10 +125,26 @@ class StoreEncryption {
         return copyOfRange(encryptedData, SALT_SIZE + CHECKSUM_SIZE, encryptedData.length);
     }
 
-    private byte[] decryptWithSalt(final byte[] salt, final byte[] cipherText) throws
-            InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+    private byte[] decryptWithSalt(final byte[] salt, final byte[] cipherText) throws InvalidCipherTextException {
 
-        cipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(salt, ITERATIONS));
-        return cipher.doFinal(cipherText);
+        final PKCS12ParametersGenerator parametersGenerator = new PKCS12ParametersGenerator(new SHA256Digest());
+        parametersGenerator.init(
+                PBEParametersGenerator.PKCS12PasswordToBytes(password.characters()),
+                salt,
+                ITERATIONS);
+
+        final CBCBlockCipher blockCipher = new CBCBlockCipher(new AESEngine());
+
+        final PaddedBufferedBlockCipher paddedCipher = new PaddedBufferedBlockCipher(blockCipher, new PKCS7Padding());
+        paddedCipher.init(
+                false, // False = decrypting
+                parametersGenerator.generateDerivedParameters(256, 128));
+
+        final byte[] buffer = new byte[paddedCipher.getOutputSize(cipherText.length)];
+
+        int bytesCopied = paddedCipher.processBytes(cipherText, 0, cipherText.length, buffer, 0);
+        int plainTextLength = bytesCopied + paddedCipher.doFinal(buffer, bytesCopied);
+
+        return copyOf(buffer, plainTextLength);
     }
 }
