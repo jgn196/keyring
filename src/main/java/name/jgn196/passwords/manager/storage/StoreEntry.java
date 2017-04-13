@@ -4,7 +4,7 @@ import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
 
 // TODO - Should be closeable - wipe password on close
-public class StoreEntry {
+final public class StoreEntry {
 
     private final Login login;
     private final Password password;
@@ -37,15 +37,16 @@ public class StoreEntry {
         if (!(obj instanceof StoreEntry)) return false;
 
         final StoreEntry other = (StoreEntry) obj;
-        return login.equals(other.login) && password.equals(other.password);
+        return (login == null ? other.login == null : login.equals(other.login)) &&
+                (password == null ? other.password == null : password.equals(other.password));
     }
 
     @Override
     public int hashCode() {
 
         int result = 17;
-        result = 31 * result + login.hashCode();
-        result = 31 * result + password.hashCode();
+        result = 31 * result + (login == null ? 0 : login.hashCode());
+        result = 31 * result + (password == null ? 0 : password.hashCode());
 
         return result;
     }
