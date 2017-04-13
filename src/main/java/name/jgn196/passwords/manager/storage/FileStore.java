@@ -65,9 +65,3 @@ public class FileStore extends SecureStore {
     }
 }
 
-class StoreReadFailed extends RuntimeException {
-
-    StoreReadFailed(IOException e) {
-        super(e);
-    }
-}
