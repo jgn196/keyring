@@ -24,6 +24,8 @@ class StoreEncryption {
     private static final int SALT_SIZE = 8;
     private static final CRC32 CRC_32 = new CRC32();
     private static final int CHECKSUM_SIZE = 4;
+    private static final boolean ENCRYPTING = true;
+    private static final boolean DECRYPTING = false;
 
     private final Password password; // TODO - wipe this on close
 
@@ -78,9 +80,7 @@ class StoreEncryption {
         final CBCBlockCipher blockCipher = new CBCBlockCipher(new AESEngine());
 
         final PaddedBufferedBlockCipher paddedCipher = new PaddedBufferedBlockCipher(blockCipher, new PKCS7Padding());
-        paddedCipher.init(
-                true, // True = encrypting
-                parametersGenerator.generateDerivedParameters(256, 128));
+        paddedCipher.init(ENCRYPTING, parametersGenerator.generateDerivedParameters(256, 128));
 
         final byte[] result = new byte[paddedCipher.getOutputSize(plainText.length)];
 
@@ -136,9 +136,7 @@ class StoreEncryption {
         final CBCBlockCipher blockCipher = new CBCBlockCipher(new AESEngine());
 
         final PaddedBufferedBlockCipher paddedCipher = new PaddedBufferedBlockCipher(blockCipher, new PKCS7Padding());
-        paddedCipher.init(
-                false, // False = decrypting
-                parametersGenerator.generateDerivedParameters(256, 128));
+        paddedCipher.init(DECRYPTING, parametersGenerator.generateDerivedParameters(256, 128));
 
         final byte[] buffer = new byte[paddedCipher.getOutputSize(cipherText.length)];
 
