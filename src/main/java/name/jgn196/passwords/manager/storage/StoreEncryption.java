@@ -22,8 +22,8 @@ class StoreEncryption {
     private static final int ITERATIONS = 20;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final int SALT_SIZE = 8;
-    private static final int CHECKSUM_SIZE = 8;
     private static final CRC32 CRC_32 = new CRC32();
+    private static final int CHECKSUM_SIZE = 4;
 
     private final Password password; // TODO - wipe this on close
 
@@ -40,7 +40,7 @@ class StoreEncryption {
             final byte[] salt = generatedSalt();
 
             out.write(salt);
-            out.writeLong(checksumOf(plainText));
+            out.writeInt((int) checksumOf(plainText));
             out.write(encryptWithSalt(plainText, salt));
 
             return result.toByteArray();
@@ -94,7 +94,7 @@ class StoreEncryption {
         try (final DataInputStream in = new DataInputStream(new ByteArrayInputStream(encryptedData))) {
 
             final byte[] salt = readSaltFrom(in);
-            final long checksum = in.readLong();
+            final long checksum = in.readInt();
             final byte[] plainText = decryptWithSalt(salt, readCipherTextFrom(encryptedData));
 
             if (checksum != checksumOf(plainText))
