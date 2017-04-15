@@ -63,6 +63,16 @@ public class AStoreEncryption {
         encryption.decrypt(cipherText);
     }
 
+    @Test
+    public void closesItsPassword() {
+
+        final Password password = Password.from("password");
+
+        new StoreEncryption(password).close();
+
+        assertTrue(password.isClosed());
+    }
+
     private boolean contains(final byte[] searchIn, final byte[] searchTerm) {
 
         return rangeClosed(0, searchIn.length - searchTerm.length)

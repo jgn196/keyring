@@ -61,4 +61,9 @@ public final class Password implements AutoCloseable {
         fill(chars, ' ');
         closed = true;
     }
+
+    public boolean isClosed() {
+
+        return closed;
+    }
 }

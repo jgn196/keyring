@@ -17,7 +17,7 @@ import java.util.zip.CRC32;
 import static java.util.Arrays.copyOf;
 import static java.util.Arrays.copyOfRange;
 
-class StoreEncryption {
+class StoreEncryption implements AutoCloseable {
 
     private static final int ITERATIONS = 20;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
@@ -144,5 +144,11 @@ class StoreEncryption {
         int plainTextLength = bytesCopied + paddedCipher.doFinal(buffer, bytesCopied);
 
         return copyOf(buffer, plainTextLength);
+    }
+
+    @Override
+    public void close() {
+
+        password.close();
     }
 }
