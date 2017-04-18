@@ -26,8 +26,9 @@ class StoreEncryption implements AutoCloseable {
     private static final int CHECKSUM_SIZE = 4;
     private static final boolean ENCRYPTING = true;
     private static final boolean DECRYPTING = false;
+    private static final long WORD_32_BIT_MASK = 0xFFFFFFFFL;
 
-    private final Password password; // TODO - wipe this on close
+    private final Password password;
 
     StoreEncryption(final Password password) {
 
@@ -94,7 +95,7 @@ class StoreEncryption implements AutoCloseable {
         try (final DataInputStream in = new DataInputStream(new ByteArrayInputStream(encryptedData))) {
 
             final byte[] salt = readSaltFrom(in);
-            final long checksum = in.readInt();
+            final long checksum = readChecksumFrom(in);
             final byte[] plainText = decryptWithSalt(salt, readCipherTextFrom(encryptedData));
 
             if (checksum != checksumOf(plainText))
@@ -118,6 +119,11 @@ class StoreEncryption implements AutoCloseable {
             throw new IOException("Failed to read SALT from in memory stream.");
 
         return salt;
+    }
+
+    private long readChecksumFrom(final DataInputStream in) throws IOException {
+
+        return in.readInt() & WORD_32_BIT_MASK;
     }
 
     private byte[] readCipherTextFrom(final byte[] encryptedData) throws IOException {
