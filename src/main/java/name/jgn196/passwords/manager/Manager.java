@@ -8,6 +8,9 @@ public class Manager {
 
     private static Console console = new Console();
 
+    // This class is not for instantiation
+    private Manager() { }
+
     static void useConsole(final Console console) {
 
         Manager.console = console;
