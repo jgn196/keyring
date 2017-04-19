@@ -6,7 +6,7 @@ import static java.util.Arrays.fill;
 
 public final class Password implements AutoCloseable {
 
-    private final char[] chars;
+    private final char[] value;
     private boolean closed = false;
 
     public static Password from(final String secret) {
@@ -14,16 +14,16 @@ public final class Password implements AutoCloseable {
         return new Password(secret.toCharArray());
     }
 
-    public Password(final char[] chars) {
+    public Password(final char[] value) {
 
-        this.chars = chars;
+        this.value = value;
     }
 
     public char[] characters() {
 
         if (closed) throw new IllegalStateException("Password is closed.");
 
-        return chars;
+        return value;
     }
 
     @Override
@@ -32,13 +32,13 @@ public final class Password implements AutoCloseable {
         if (obj == this) return true;
         if (! (obj instanceof Password)) return false;
 
-        return Arrays.equals(chars, ((Password) obj).chars);
+        return Arrays.equals(value, ((Password) obj).value);
     }
 
     @Override
     public int hashCode() {
 
-        return Arrays.hashCode(chars);
+        return Arrays.hashCode(value);
     }
 
     @Override
@@ -49,7 +49,7 @@ public final class Password implements AutoCloseable {
 
     private String maskedPassword() {
 
-        final char[] maskedPassword = new char[chars.length];
+        final char[] maskedPassword = new char[value.length];
         fill(maskedPassword, '*');
 
         return new String(maskedPassword);
@@ -58,7 +58,7 @@ public final class Password implements AutoCloseable {
     @Override
     public void close() {
 
-        fill(chars, ' ');
+        fill(value, ' ');
         closed = true;
     }
 
