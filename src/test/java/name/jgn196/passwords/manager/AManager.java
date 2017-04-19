@@ -139,7 +139,7 @@ public class AManager {
         assertThat(storedLogins(), not(hasItem(new Login("www.site.com", "Bill"))));
     }
 
-    private void givenNoDataFile() throws IOException {
+    static void givenNoDataFile() throws IOException {
 
         if (Files.exists(Paths.get(STORE_FILE_NAME)))
             Files.delete(Paths.get(STORE_FILE_NAME));
