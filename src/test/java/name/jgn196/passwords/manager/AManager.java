@@ -172,7 +172,7 @@ public class AManager {
     private StoreBuilder givenStoreWithPassword(final String password) throws IOException {
 
         givenNoDataFile();
-        return new StoreBuilder(console, password);
+        return new StoreBuilder(password);
     }
 
     private Iterable<Login> storedLogins() {

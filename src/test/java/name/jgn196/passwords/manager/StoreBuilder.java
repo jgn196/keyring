@@ -1,23 +1,25 @@
 package name.jgn196.passwords.manager;
 
 import name.jgn196.passwords.manager.core.Login;
+import name.jgn196.passwords.manager.core.Password;
+import name.jgn196.passwords.manager.core.Safe;
+import name.jgn196.passwords.manager.storage.FileStore;
 
+import java.io.File;
 import java.io.IOException;
 
 class StoreBuilder {
 
-    private final TestConsole console;
     private final String storePassword;
 
-    StoreBuilder(final TestConsole console, final String storePassword) {
+    StoreBuilder(final String storePassword) {
 
-        this.console = console;
         this.storePassword = storePassword;
     }
 
     void containing(final Login login, final String password) throws IOException {
 
-        console.prepareInput(password, storePassword);
-        Manager.main(PutCommand.NAME, login.secureSystem(), login.userName());
+        new Safe(new FileStore(new File(Manager.STORE_FILE_NAME), Password.from(storePassword)))
+                .store(login, Password.from(password));
     }
 }
