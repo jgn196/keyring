@@ -134,7 +134,7 @@ public class AManager {
         givenStoreWithPassword("file_password").containing(new Login("www.site.com", "Bill"), "bill_password");
 
         givenInput("file_password");
-        Manager.main(DeleteCommand.NAME, "www.site.com", "Bill");
+        Manager.main(RemoveCommand.NAME, "www.site.com", "Bill");
 
         assertThat(storedLogins(), not(hasItem(new Login("www.site.com", "Bill"))));
     }
