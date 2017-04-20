@@ -47,7 +47,7 @@ class GetCommand extends Command {
             else
                 console.print("Password for " + displayText(login) + " not found.");
         } catch(DecryptionFailed e) {
-            console.print("Incorrect store password.");
+            console.print(INCORRECT_STORE_PASSWORD);
         }
     }
 
@@ -61,3 +61,4 @@ class GetCommand extends Command {
         return true;
     }
 }
+

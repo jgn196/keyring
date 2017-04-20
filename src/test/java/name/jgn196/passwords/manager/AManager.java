@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static name.jgn196.passwords.manager.Command.INCORRECT_STORE_PASSWORD;
 import static name.jgn196.passwords.manager.Manager.STORE_FILE_NAME;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -115,7 +116,7 @@ public class AManager {
         givenInput("wrong_password");
         Manager.main(GetCommand.NAME, "www.site.com", "Bill");
 
-        assertThat(capturedOutput(), endsWith("Incorrect store password."));
+        assertThat(capturedOutput(), endsWith(INCORRECT_STORE_PASSWORD));
     }
 
     @Test

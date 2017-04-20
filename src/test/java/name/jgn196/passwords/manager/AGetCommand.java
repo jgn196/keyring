@@ -1,11 +1,11 @@
 package name.jgn196.passwords.manager;
 
 import name.jgn196.passwords.manager.core.Login;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 
+import static name.jgn196.passwords.manager.Command.INCORRECT_STORE_PASSWORD;
 import static name.jgn196.passwords.manager.Command.NO_DATA_FILE_MESSAGE;
 import static name.jgn196.passwords.manager.Preconditions.givenNoDataFile;
 import static name.jgn196.passwords.manager.Preconditions.givenStoreWithPassword;
@@ -44,7 +44,7 @@ public class AGetCommand {
         console.prepareInput("wrong_password");
         new GetCommand("get", "www.site.net", "Ted").run(console);
 
-        assertThat(console.capturedOutput(), containsString("Incorrect store password."));
+        assertThat(console.capturedOutput(), containsString(INCORRECT_STORE_PASSWORD));
     }
 
     @Test
@@ -57,5 +57,17 @@ public class AGetCommand {
         new GetCommand("get", "www.site.net", "Ted").run(console);
 
         assertThat(console.capturedOutput(), containsString("Password for Ted @ www.site.net not found."));
+    }
+
+    @Test
+    public void getsAPassword() throws IOException {
+
+        givenStoreWithPassword("file_password")
+                .containing(new Login("www.site.com", "Bill"), "bill_password");
+
+        console.prepareInput("file_password");
+        new GetCommand("get", "www.site.com", "Bill").run(console);
+
+        assertThat(console.capturedOutput(), containsString("bill_password"));
     }
 }

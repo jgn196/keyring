@@ -6,6 +6,7 @@ import name.jgn196.passwords.manager.core.Password;
 abstract class Command {
 
     static final String NO_DATA_FILE_MESSAGE = "No data file.";
+    static final String INCORRECT_STORE_PASSWORD = "Incorrect store password.";
 
     static Command parseCommandFrom(final String[] args) {
 
