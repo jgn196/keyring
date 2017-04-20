@@ -41,7 +41,7 @@ public class AManager {
     @Test
     public void listsNoLoginsWhenThereIsNoDataFile() throws IOException {
 
-        givenNoDataFile();
+        Preconditions.givenNoDataFile();
 
         Manager.main(ListCommand.NAME);
 
@@ -51,7 +51,7 @@ public class AManager {
     @Test
     public void failsToGetPasswordWhenThereIsNoDataFile() throws IOException {
 
-        givenNoDataFile();
+        Preconditions.givenNoDataFile();
 
         Manager.main(GetCommand.NAME, "www.site.com", "Bill");
 
@@ -61,7 +61,7 @@ public class AManager {
     @Test
     public void createsPasswordStoreWhenPuttingFirstPassword() throws IOException {
 
-        givenNoDataFile();
+        Preconditions.givenNoDataFile();
         givenInput("bill_password", "file_password");
 
         Manager.main(PutCommand.NAME, "www.site.com", "Bill");
@@ -97,7 +97,7 @@ public class AManager {
     @Test
     public void getsStoredPassword() throws IOException {
 
-        givenStoreWithPassword("file_password").containing(new Login("www.site.com", "Bill"), "bill_password");
+        Preconditions.givenStoreWithPassword("file_password").containing(new Login("www.site.com", "Bill"), "bill_password");
 
         givenInput("file_password");
         Manager.main(GetCommand.NAME, "www.site.com", "Bill");
@@ -108,7 +108,7 @@ public class AManager {
     @Test
     public void failsToGetMissingPassword() throws IOException {
 
-        givenStoreWithPassword("file_password").containing(new Login("www.site.com", "Bill"), "bill_password");
+        Preconditions.givenStoreWithPassword("file_password").containing(new Login("www.site.com", "Bill"), "bill_password");
 
         givenInput("file_password");
         Manager.main(GetCommand.NAME, "www.site.com", "Ted");
@@ -119,7 +119,7 @@ public class AManager {
     @Test
     public void listsLogins() throws IOException {
 
-        givenStoreWithPassword("file_password").containing(new Login("www.site.com", "Bill"), "bill_password");
+        Preconditions.givenStoreWithPassword("file_password").containing(new Login("www.site.com", "Bill"), "bill_password");
 
         givenInput("file_password");
         Manager.main(ListCommand.NAME);
@@ -131,18 +131,12 @@ public class AManager {
     @Ignore("Login deletion not implemented yet.")
     public void deletesLogins() throws IOException {
 
-        givenStoreWithPassword("file_password").containing(new Login("www.site.com", "Bill"), "bill_password");
+        Preconditions.givenStoreWithPassword("file_password").containing(new Login("www.site.com", "Bill"), "bill_password");
 
         givenInput("file_password");
         Manager.main(RemoveCommand.NAME, "www.site.com", "Bill");
 
         assertThat(storedLogins(), not(hasItem(new Login("www.site.com", "Bill"))));
-    }
-
-    static void givenNoDataFile() throws IOException {
-
-        if (Files.exists(Paths.get(STORE_FILE_NAME)))
-            Files.delete(Paths.get(STORE_FILE_NAME));
     }
 
     private void givenInput(final String... strings) {
@@ -167,12 +161,6 @@ public class AManager {
     private boolean contains(byte[] data, byte[] pattern) {
 
         return KMPMatch.indexOf(data, pattern) != -1;
-    }
-
-    private StoreBuilder givenStoreWithPassword(final String password) throws IOException {
-
-        givenNoDataFile();
-        return new StoreBuilder(password);
     }
 
     private Iterable<Login> storedLogins() {

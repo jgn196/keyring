@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static name.jgn196.passwords.manager.AManager.givenNoDataFile;
+import static name.jgn196.passwords.manager.Preconditions.givenNoDataFile;
 import static name.jgn196.passwords.manager.Command.NO_DATA_FILE_MESSAGE;
 import static org.junit.Assert.assertEquals;
 
