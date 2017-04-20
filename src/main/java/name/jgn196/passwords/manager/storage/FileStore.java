@@ -2,8 +2,8 @@ package name.jgn196.passwords.manager.storage;
 
 import name.jgn196.passwords.manager.core.Password;
 
-import java.io.*;
-import java.nio.file.Files;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -32,6 +32,12 @@ public class FileStore extends SecureStore implements AutoCloseable {
         try {
 
             final Set<StoreEntry> entries = storeContents();
+
+            entries.stream()
+                    .filter(e -> e.isFor(entry.login()))
+                    .findFirst()
+                    .ifPresent(entries::remove);
+
             entries.add(entry);
             save(entries);
 

@@ -2,11 +2,9 @@ package name.jgn196.passwords.manager.storage;
 
 import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;

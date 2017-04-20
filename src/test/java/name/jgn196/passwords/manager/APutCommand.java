@@ -2,7 +2,6 @@ package name.jgn196.passwords.manager;
 
 import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -67,7 +66,6 @@ public class APutCommand {
     }
 
     @Test
-    @Ignore("Put can create duplicate password entries.")
     public void updatesPassword() throws IOException {
 
         givenStoreWithPassword("store_password")
