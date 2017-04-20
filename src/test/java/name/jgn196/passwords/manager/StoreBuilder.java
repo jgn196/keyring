@@ -8,6 +8,8 @@ import name.jgn196.passwords.manager.storage.FileStore;
 import java.io.File;
 import java.io.IOException;
 
+import static name.jgn196.passwords.manager.Manager.STORE_FILE_NAME;
+
 class StoreBuilder {
 
     private final String storePassword;
@@ -19,7 +21,7 @@ class StoreBuilder {
 
     void containing(final Login login, final String password) throws IOException {
 
-        new Safe(new FileStore(new File(Manager.STORE_FILE_NAME), Password.from(storePassword)))
+        new Safe(new FileStore(new File(STORE_FILE_NAME), Password.from(storePassword)))
                 .store(login, Password.from(password));
     }
 }

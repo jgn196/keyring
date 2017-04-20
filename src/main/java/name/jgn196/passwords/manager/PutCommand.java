@@ -3,6 +3,7 @@ package name.jgn196.passwords.manager;
 import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
 import name.jgn196.passwords.manager.core.Safe;
+import name.jgn196.passwords.manager.storage.DecryptionFailed;
 import name.jgn196.passwords.manager.storage.FileStore;
 
 import java.nio.file.Paths;
@@ -12,6 +13,7 @@ import static name.jgn196.passwords.manager.Manager.STORE_FILE_NAME;
 class PutCommand extends Command {
 
     static final String NAME = "put";
+    static final String USAGE = "put usage: system user";
 
     private final String[] args;
 
@@ -35,6 +37,8 @@ class PutCommand extends Command {
 
             new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword))
                     .store(login, password);
+        } catch (DecryptionFailed e) {
+            console.print(INCORRECT_STORE_PASSWORD);
         }
     }
 
@@ -42,7 +46,7 @@ class PutCommand extends Command {
 
         if (args.length < 3) {
 
-            console.print("put usage: system user");
+            console.print(USAGE);
             return false;
         }
 

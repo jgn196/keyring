@@ -1,19 +1,14 @@
 package name.jgn196.passwords.manager;
 
 import name.jgn196.passwords.manager.core.Login;
-import name.jgn196.passwords.manager.core.Password;
-import name.jgn196.passwords.manager.core.Safe;
-import name.jgn196.passwords.manager.storage.FileStore;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static name.jgn196.passwords.manager.Command.INCORRECT_STORE_PASSWORD;
@@ -92,7 +87,7 @@ public class AManager {
 
         assertFalse(
                 "Found password '" + password + "' in plain text in store file.",
-                fileContains(Manager.STORE_FILE_NAME, password));
+                fileContains(STORE_FILE_NAME, password));
     }
 
     @Test
@@ -151,7 +146,7 @@ public class AManager {
         givenInput("file_password");
         Manager.main(RemoveCommand.NAME, "www.site.com", "Bill");
 
-        assertThat(storedLogins(), not(hasItem(new Login("www.site.com", "Bill"))));
+        assertThat(PostConditions.storedLogins("file_password"), not(hasItem(new Login("www.site.com", "Bill"))));
     }
 
     private void givenInput(final String... strings) {
@@ -176,12 +171,5 @@ public class AManager {
     private boolean contains(byte[] data, byte[] pattern) {
 
         return KMPMatch.indexOf(data, pattern) != -1;
-    }
-
-    private Iterable<Login> storedLogins() {
-
-        return new Safe(new FileStore(new File(Manager.STORE_FILE_NAME), Password.from("file_password")))
-                .logins()
-                .collect(Collectors.toList());
     }
 }
