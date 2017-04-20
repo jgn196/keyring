@@ -97,7 +97,8 @@ public class AManager {
     @Test
     public void getsStoredPassword() throws IOException {
 
-        Preconditions.givenStoreWithPassword("file_password").containing(new Login("www.site.com", "Bill"), "bill_password");
+        Preconditions.givenStoreWithPassword("file_password")
+                .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         givenInput("file_password");
         Manager.main(GetCommand.NAME, "www.site.com", "Bill");
@@ -106,9 +107,22 @@ public class AManager {
     }
 
     @Test
+    public void failsToGetPasswordWithWrongStorePassword() throws IOException {
+
+        Preconditions.givenStoreWithPassword("file_password")
+                .containing(new Login("www.site.com", "Bill"), "bill_password");
+
+        givenInput("wrong_password");
+        Manager.main(GetCommand.NAME, "www.site.com", "Bill");
+
+        assertThat(capturedOutput(), endsWith("Incorrect store password."));
+    }
+
+    @Test
     public void failsToGetMissingPassword() throws IOException {
 
-        Preconditions.givenStoreWithPassword("file_password").containing(new Login("www.site.com", "Bill"), "bill_password");
+        Preconditions.givenStoreWithPassword("file_password")
+                .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         givenInput("file_password");
         Manager.main(GetCommand.NAME, "www.site.com", "Ted");

@@ -1,13 +1,13 @@
 package name.jgn196.passwords.manager;
 
 import name.jgn196.passwords.manager.core.Login;
-import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 
-import static name.jgn196.passwords.manager.Preconditions.givenNoDataFile;
 import static name.jgn196.passwords.manager.Command.NO_DATA_FILE_MESSAGE;
+import static name.jgn196.passwords.manager.Preconditions.givenNoDataFile;
 import static name.jgn196.passwords.manager.Preconditions.givenStoreWithPassword;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
@@ -15,10 +15,10 @@ import static org.junit.Assert.assertThat;
 
 public class AGetCommand {
 
+    private TestConsole console = new TestConsole();
+
     @Test
     public void printsUsage() {
-
-        final TestConsole console = new TestConsole();
 
         new GetCommand("get").run(console);
 
@@ -28,7 +28,6 @@ public class AGetCommand {
     @Test
     public void failsToGetPasswordWhenThereIsNoDataFile() throws IOException {
 
-        final TestConsole console = new TestConsole();
         givenNoDataFile();
 
         new GetCommand("get", "www.site.com", "Bill").run(console);
@@ -37,13 +36,24 @@ public class AGetCommand {
     }
 
     @Test
-    public void failsToGetMissingPassword() throws IOException {
+    public void failsToGetPasswordWhenStorePasswordWrong() throws IOException {
 
-        final TestConsole console = new TestConsole();
-        console.prepareInput("file_password");
         givenStoreWithPassword("file_password")
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
+        console.prepareInput("wrong_password");
+        new GetCommand("get", "www.site.net", "Ted").run(console);
+
+        assertThat(console.capturedOutput(), containsString("Incorrect store password."));
+    }
+
+    @Test
+    public void failsToGetMissingPassword() throws IOException {
+
+        givenStoreWithPassword("file_password")
+                .containing(new Login("www.site.com", "Bill"), "bill_password");
+
+        console.prepareInput("file_password");
         new GetCommand("get", "www.site.net", "Ted").run(console);
 
         assertThat(console.capturedOutput(), containsString("Password for Ted @ www.site.net not found."));
