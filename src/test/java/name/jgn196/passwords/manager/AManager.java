@@ -2,7 +2,6 @@ package name.jgn196.passwords.manager;
 
 import name.jgn196.passwords.manager.core.Login;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -136,7 +135,6 @@ public class AManager {
     }
 
     @Test
-    @Ignore("Login deletion not implemented yet.")
     public void deletesLogins() throws IOException {
 
         Preconditions.givenStoreWithPassword("file_password").containing(new Login("www.site.com", "Bill"), "bill_password");

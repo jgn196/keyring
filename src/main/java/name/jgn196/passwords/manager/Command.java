@@ -19,6 +19,8 @@ abstract class Command {
                 return new GetCommand(args);
             case PutCommand.NAME:
                 return new PutCommand(args);
+            case RemoveCommand.NAME:
+                return new RemoveCommand(args);
             default:
                 return new HelpCommand();
         }

@@ -33,7 +33,7 @@ public class Safe implements AutoCloseable {
         return store.stream().map(StoreEntry::login);
     }
 
-    boolean remove(final Login login) {
+    public boolean remove(final Login login) {
 
         final Optional<StoreEntry> entry = store.stream()
                 .filter(e -> e.isFor(login))

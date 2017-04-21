@@ -73,6 +73,15 @@ public class FileStore extends SecureStore implements AutoCloseable {
     @Override
     public void remove(final StoreEntry entry) {
 
+        try {
+
+            final Set<StoreEntry> entries = storeContents();
+            entries.remove(entry);
+            save(entries);
+        } catch (IOException e) {
+
+            throw new EntryNotStored(e); // TODO - Not the right exception
+        }
     }
 
     @Override

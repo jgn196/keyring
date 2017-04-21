@@ -7,7 +7,7 @@ import name.jgn196.passwords.manager.storage.DecryptionFailed;
 
 class RemoveCommand extends Command {
 
-    static final String NAME = "";
+    static final String NAME = "remove";
     static final String USAGE = "remove usage: system user";
 
     private final String[] args;
@@ -31,7 +31,7 @@ class RemoveCommand extends Command {
         try (final Password storePassword = readStorePassword(console)) {
 
             final Safe safe = new Safe(StoreFile.openWithPassword(storePassword));
-            safe.logins(); // TODO - Replace with removal (this just forces decryption)
+            safe.remove(login);
 
         } catch(DecryptionFailed e) {
             console.print(INCORRECT_STORE_PASSWORD);
