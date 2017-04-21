@@ -19,7 +19,7 @@ public class FileStore extends SecureStore implements AutoCloseable {
     public FileStore(final File file, final Password filePassword) {
 
         this.file = file;
-        encryption = new StoreEncryption(filePassword);
+        encryption = new SaltedAesEncryption(filePassword);
     }
 
     void inject(final FileIO io) {
@@ -78,7 +78,11 @@ public class FileStore extends SecureStore implements AutoCloseable {
     @Override
     public void close() {
 
-        encryption.close();
+        try {
+            encryption.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
 
