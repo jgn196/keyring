@@ -4,12 +4,8 @@ import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
 import name.jgn196.passwords.manager.core.Safe;
 import name.jgn196.passwords.manager.storage.DecryptionFailed;
-import name.jgn196.passwords.manager.storage.FileStore;
 
-import java.nio.file.Paths;
 import java.util.Optional;
-
-import static name.jgn196.passwords.manager.Manager.STORE_FILE_NAME;
 
 class GetCommand extends Command {
 
@@ -32,14 +28,14 @@ class GetCommand extends Command {
 
         if (!parseArguments()) return;
 
-        if (!Paths.get(STORE_FILE_NAME).toFile().exists()) {
+        if (!StoreFile.exists()) {
             console.print(NO_DATA_FILE_MESSAGE);
             return;
         }
 
         try (final Password storePassword = readStorePassword(console)) {
 
-            final Safe safe = new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword));
+            final Safe safe = new Safe(StoreFile.openWithPassword(storePassword));
             final Optional<Password> password = safe.passwordFor(login);
 
             if (password.isPresent())

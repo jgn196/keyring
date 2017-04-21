@@ -4,8 +4,6 @@ import java.io.IOException;
 
 public class Manager {
 
-    static final String STORE_FILE_NAME = "passwords.dat";
-
     private static Console console = new Console();
 
     // This class is not for instantiation

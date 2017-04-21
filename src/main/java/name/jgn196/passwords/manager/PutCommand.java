@@ -4,11 +4,6 @@ import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
 import name.jgn196.passwords.manager.core.Safe;
 import name.jgn196.passwords.manager.storage.DecryptionFailed;
-import name.jgn196.passwords.manager.storage.FileStore;
-
-import java.nio.file.Paths;
-
-import static name.jgn196.passwords.manager.Manager.STORE_FILE_NAME;
 
 class PutCommand extends Command {
 
@@ -35,7 +30,7 @@ class PutCommand extends Command {
         try (final Password password = readPassword(console);
              final Password storePassword = readStorePassword(console)) {
 
-            new Safe(new FileStore(Paths.get(STORE_FILE_NAME).toFile(), storePassword))
+            new Safe(StoreFile.openWithPassword(storePassword))
                     .store(login, password);
         } catch (DecryptionFailed e) {
             console.print(INCORRECT_STORE_PASSWORD);

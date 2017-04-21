@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 
 import static java.util.Arrays.asList;
 import static name.jgn196.passwords.manager.Command.INCORRECT_STORE_PASSWORD;
-import static name.jgn196.passwords.manager.Manager.STORE_FILE_NAME;
+import static name.jgn196.passwords.manager.StoreFile.STORE_FILE_NAME;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -62,7 +62,7 @@ public class AManager {
 
         Manager.main(PutCommand.NAME, "www.site.com", "Bill");
 
-        assertTrue(Files.exists(Paths.get(STORE_FILE_NAME)));
+        assertTrue(StoreFile.exists());
     }
 
     @Test
