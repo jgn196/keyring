@@ -71,6 +71,11 @@ public class FileStore extends SecureStore implements AutoCloseable {
     }
 
     @Override
+    public void remove(final StoreEntry entry) {
+
+    }
+
+    @Override
     public void close() {
 
         encryption.close();

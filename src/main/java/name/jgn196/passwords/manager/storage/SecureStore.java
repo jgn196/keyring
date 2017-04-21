@@ -7,4 +7,6 @@ public abstract class SecureStore implements AutoCloseable {
     public abstract void store(final StoreEntry entry) throws EntryNotStored;
 
     public abstract Stream<StoreEntry> stream();
+
+    public abstract void remove(StoreEntry entry);
 }
