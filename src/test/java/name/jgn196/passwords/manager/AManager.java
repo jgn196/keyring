@@ -8,11 +8,9 @@ import org.junit.Test;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import static java.util.Arrays.asList;
 import static name.jgn196.passwords.manager.Command.INCORRECT_STORE_PASSWORD;
-import static name.jgn196.passwords.manager.StoreFile.STORE_FILE_NAME;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -87,7 +85,7 @@ public class AManager {
 
         assertFalse(
                 "Found password '" + password + "' in plain text in store file.",
-                fileContains(STORE_FILE_NAME, password));
+                fileContains(password));
     }
 
     @Test
@@ -159,9 +157,9 @@ public class AManager {
         return console.capturedOutput();
     }
 
-    private boolean fileContains(final String fileName, final String pattern) throws IOException {
+    private boolean fileContains(final String pattern) throws IOException {
 
-        final byte[] fileData = Files.readAllBytes(Paths.get(fileName));
+        final byte[] fileData = Files.readAllBytes(StoreFile.toPath());
 
         return contains(fileData, pattern.getBytes(StandardCharsets.UTF_8)) ||
                 contains(fileData, pattern.getBytes(StandardCharsets.UTF_16LE)) ||
