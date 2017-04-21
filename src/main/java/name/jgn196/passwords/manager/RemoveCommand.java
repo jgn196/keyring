@@ -31,7 +31,8 @@ class RemoveCommand extends Command {
         try (final Password storePassword = readStorePassword(console)) {
 
             final Safe safe = new Safe(StoreFile.openWithPassword(storePassword));
-            safe.remove(login);
+
+            if (!safe.remove(login)) console.print("Password for " + displayText(login) + " not found.");
 
         } catch(DecryptionFailed e) {
             console.print(INCORRECT_STORE_PASSWORD);
