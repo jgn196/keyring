@@ -27,11 +27,7 @@ class GetCommand extends Command {
         this.console = console;
 
         if (!parseArguments()) return;
-
-        if (!StoreFile.exists()) {
-            console.print(NO_DATA_FILE_MESSAGE);
-            return;
-        }
+        if (!checkStoreExists(console)) return;
 
         try (final Password storePassword = readStorePassword(console)) {
 

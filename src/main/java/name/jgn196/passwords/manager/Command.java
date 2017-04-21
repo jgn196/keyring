@@ -36,5 +36,11 @@ abstract class Command {
     }
 
     abstract void run(Console console);
+
+    boolean checkStoreExists(final Console console) {
+
+        if (!StoreFile.exists()) console.print(NO_DATA_FILE_MESSAGE);
+        return StoreFile.exists();
+    }
 }
 

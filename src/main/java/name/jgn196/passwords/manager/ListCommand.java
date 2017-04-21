@@ -11,10 +11,7 @@ class ListCommand extends Command {
     @Override
     public void run(final Console console) {
 
-        if (!StoreFile.exists()) {
-            console.print(NO_DATA_FILE_MESSAGE);
-            return;
-        }
+        if (!checkStoreExists(console)) return;
 
         try (final Password storePassword = readStorePassword(console)) {
 
