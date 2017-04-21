@@ -10,6 +10,7 @@ import java.util.Optional;
 class GetCommand extends Command {
 
     static final String NAME = "get";
+    static final String USAGE = "get usage: system user";
 
     private final String[] args;
 
@@ -46,7 +47,7 @@ class GetCommand extends Command {
     private boolean parseArguments() {
 
         if (args.length < 3) {
-            console.print("get usage: system user");
+            console.print(USAGE);
             return false;
         }
         login = new Login(args[1], args[2]);

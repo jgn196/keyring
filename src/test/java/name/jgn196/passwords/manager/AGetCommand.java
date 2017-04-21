@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import static name.jgn196.passwords.manager.Command.INCORRECT_STORE_PASSWORD;
 import static name.jgn196.passwords.manager.Command.NO_DATA_FILE_MESSAGE;
+import static name.jgn196.passwords.manager.GetCommand.USAGE;
 import static name.jgn196.passwords.manager.Preconditions.givenNoDataFile;
 import static name.jgn196.passwords.manager.Preconditions.givenStoreWithPassword;
 import static org.hamcrest.Matchers.containsString;
@@ -22,7 +23,7 @@ public class AGetCommand {
 
         new GetCommand("get").run(console);
 
-        assertEquals("get usage: system user", console.capturedOutput());
+        assertEquals(USAGE, console.capturedOutput());
     }
 
     @Test
