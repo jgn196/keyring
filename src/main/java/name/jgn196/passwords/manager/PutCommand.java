@@ -27,13 +27,17 @@ class PutCommand extends Command {
 
         if (!parseArguments()) return;
 
-        try (final Password password = readPassword(console);
-             final Password storePassword = readStorePassword(console)) {
+        putPassword();
+    }
 
-            new Safe(StoreFile.openWithPassword(storePassword))
-                    .store(login, password);
-        } catch (DecryptionFailed e) {
-            console.print(INCORRECT_STORE_PASSWORD);
+    private void putPassword() {
+        try (final Password password = readPassword();
+             final Safe safe = new Safe(StoreFile.openWithPassword(readStorePassword(console)))) {
+
+            putPassword(password, safe);
+
+        } catch (Exception e) {
+            // Failed to close store - ignored
         }
     }
 
@@ -49,9 +53,19 @@ class PutCommand extends Command {
         return true;
     }
 
-    private Password readPassword(final Console console) {
+    private Password readPassword() {
 
         console.print("Password for " + displayText(login) + ":");
         return new Password(console.readPassword());
+    }
+
+    private void putPassword(final Password password, final Safe safe) {
+        try {
+
+            safe.store(login, password);
+
+        } catch (DecryptionFailed e) {
+            console.print(INCORRECT_STORE_PASSWORD);
+        }
     }
 }

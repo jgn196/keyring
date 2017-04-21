@@ -16,8 +16,12 @@ class StoreBuilder {
     }
 
     void containing(final Login login, final String password) throws IOException {
+        try (final Safe safe = new Safe(StoreFile.openWithPassword(Password.from(storePassword)))) {
 
-        new Safe(StoreFile.openWithPassword(Password.from(storePassword)))
-                .store(login, Password.from(password));
+            safe.store(login, Password.from(password));
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

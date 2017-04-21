@@ -30,9 +30,23 @@ class GetCommand extends Command {
         if (!parseArguments()) return;
         if (!checkStoreExists(console)) return;
 
-        try (final Password storePassword = readStorePassword(console)) {
+        printPassword();
+    }
 
-            final Safe safe = new Safe(StoreFile.openWithPassword(storePassword));
+    private void printPassword() {
+        try (final Password storePassword = readStorePassword(console);
+             final Safe safe = new Safe(StoreFile.openWithPassword(storePassword))) {
+
+            printPasswordFrom(safe);
+
+        } catch(Exception e) {
+            // Failed to close store - ignored
+        }
+    }
+
+    private void printPasswordFrom(final Safe safe) {
+        try {
+
             final Optional<Password> password = safe.passwordFor(login);
 
             if (password.isPresent())
@@ -40,6 +54,7 @@ class GetCommand extends Command {
             else
                 console.print("Password for " + displayText(login) + " not found.");
         } catch(DecryptionFailed e) {
+
             console.print(INCORRECT_STORE_PASSWORD);
         }
     }

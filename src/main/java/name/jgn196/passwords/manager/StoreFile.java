@@ -10,6 +10,9 @@ class StoreFile {
 
     private static final String STORE_FILE_NAME = "passwords.dat";
 
+    // This class is not for instantiation
+    private StoreFile() { }
+
     static boolean exists() {
 
         return toPath().toFile().exists();
@@ -24,6 +27,4 @@ class StoreFile {
 
         return new FileStore(toPath().toFile(), password);
     }
-
-
 }

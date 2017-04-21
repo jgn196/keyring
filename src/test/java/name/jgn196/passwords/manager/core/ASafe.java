@@ -2,6 +2,7 @@ package name.jgn196.passwords.manager.core;
 
 import name.jgn196.passwords.manager.storage.SecureStore;
 import name.jgn196.passwords.manager.storage.StoreEntry;
+import org.junit.After;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -93,5 +94,19 @@ public class ASafe {
 
         assertTrue(safe.remove(new Login("www.site.com", "Bill")));
         verify(store).remove(new StoreEntry(new Login("www.site.com", "Bill"), Password.from("password")));
+    }
+
+    @Test
+    public void closesItsStoreWhenItCloses() throws Exception {
+
+        safe.close();
+
+        verify(store).close();
+    }
+
+    @After
+    public void closeSafe() throws Exception {
+
+        safe.close();
     }
 }

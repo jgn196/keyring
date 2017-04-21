@@ -10,15 +10,23 @@ import java.util.stream.Collectors;
 class PostConditions {
 
     static Iterable<Login> storedLogins(final String storePassword) {
+        try (final Safe safe = new Safe(StoreFile.openWithPassword(Password.from(storePassword)))) {
 
-        return new Safe(StoreFile.openWithPassword(Password.from(storePassword)))
-                .logins()
-                .collect(Collectors.toList());
+            return safe.logins()
+                    .collect(Collectors.toList());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     static Optional<Password> storedPassword(final Login login, final String storePassword) {
+        try (final Safe safe = new Safe(StoreFile.openWithPassword(Password.from(storePassword)))) {
 
-        return new Safe(StoreFile.openWithPassword(Password.from(storePassword)))
-                .passwordFor(login);
+            return safe.passwordFor(login);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

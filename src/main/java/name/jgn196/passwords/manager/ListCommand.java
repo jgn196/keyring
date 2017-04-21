@@ -8,18 +8,36 @@ class ListCommand extends Command {
 
     static final String NAME = "list";
 
+    private Console console;
+
     @Override
     public void run(final Console console) {
 
+        this.console = console;
+
         if (!checkStoreExists(console)) return;
 
-        try (final Password storePassword = readStorePassword(console)) {
+        printLogins();
+    }
+
+    private void printLogins() {
+        try (final Password storePassword = readStorePassword(console);
+             final Safe safe = new Safe(StoreFile.openWithPassword(storePassword))) {
+
+            printLoginsFrom(safe);
+
+        } catch (Exception e) {
+            // Failed to close store - ignored
+        }
+    }
+
+    private void printLoginsFrom(final Safe safe) {
+        try {
 
             console.print("Passwords stored for:\n");
-            new Safe(StoreFile.openWithPassword(storePassword))
-                    .logins()
+            safe.logins()
                     .forEach(login -> console.print("\t" + displayText(login) + "\n"));
-        } catch(DecryptionFailed e) {
+        } catch (DecryptionFailed e) {
 
             console.print(INCORRECT_STORE_PASSWORD);
         }

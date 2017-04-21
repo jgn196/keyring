@@ -28,15 +28,7 @@ class RemoveCommand extends Command {
         if (!parseArguments()) return;
         if (!checkStoreExists(console)) return;
 
-        try (final Password storePassword = readStorePassword(console)) {
-
-            final Safe safe = new Safe(StoreFile.openWithPassword(storePassword));
-
-            if (!safe.remove(login)) console.print("Password for " + displayText(login) + " not found.");
-
-        } catch(DecryptionFailed e) {
-            console.print(INCORRECT_STORE_PASSWORD);
-        }
+        removePassword();
     }
 
     private boolean parseArguments() {
@@ -47,5 +39,26 @@ class RemoveCommand extends Command {
         }
         login = new Login(args[1], args[2]);
         return true;
+    }
+
+    private void removePassword() {
+        try (final Password storePassword = readStorePassword(console);
+             final Safe safe = new Safe(StoreFile.openWithPassword(storePassword))) {
+
+            removePasswordFrom(safe);
+
+        } catch (Exception e) {
+            // Failed to close store - ignored
+        }
+    }
+
+    private void removePasswordFrom(Safe safe) {
+        try {
+
+            if (!safe.remove(login)) console.print("Password for " + displayText(login) + " not found.");
+
+        } catch (DecryptionFailed e) {
+            console.print(INCORRECT_STORE_PASSWORD);
+        }
     }
 }
