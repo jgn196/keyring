@@ -10,6 +10,7 @@ import java.nio.file.Files;
 
 import static java.util.Arrays.asList;
 import static name.jgn196.passwords.manager.Command.INCORRECT_STORE_PASSWORD;
+import static name.jgn196.passwords.manager.Manager.STORE_FILE;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -59,7 +60,7 @@ public class AManager {
 
         Manager.main(PutCommand.NAME, "www.site.com", "Bill");
 
-        assertTrue(StoreFile.exists());
+        assertTrue(STORE_FILE.exists());
     }
 
     @Test
@@ -157,7 +158,7 @@ public class AManager {
 
     private boolean fileContains(final String pattern) throws IOException {
 
-        final byte[] fileData = Files.readAllBytes(StoreFile.toPath());
+        final byte[] fileData = Files.readAllBytes(STORE_FILE.toPath());
 
         return contains(fileData, pattern.getBytes(StandardCharsets.UTF_8)) ||
                 contains(fileData, pattern.getBytes(StandardCharsets.UTF_16LE)) ||

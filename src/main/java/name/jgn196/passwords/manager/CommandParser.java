@@ -3,10 +3,12 @@ package name.jgn196.passwords.manager;
 class CommandParser {
 
     private final Console console;
+    private final StoreFile storeFile;
 
-    CommandParser(final Console console) {
+    CommandParser(final Console console, final StoreFile storeFile) {
 
         this.console = console;
+        this.storeFile = storeFile;
     }
 
     Command parse(final String... args) {
@@ -15,15 +17,15 @@ class CommandParser {
 
         switch (commandWord) {
             case ListCommand.NAME:
-                return new ListCommand(console);
+                return new ListCommand(console, storeFile);
             case GetCommand.NAME:
-                return new GetCommand(console, args);
+                return new GetCommand(console, storeFile, args);
             case PutCommand.NAME:
-                return new PutCommand(console, args);
+                return new PutCommand(console, storeFile, args);
             case RemoveCommand.NAME:
-                return new RemoveCommand(console, args);
+                return new RemoveCommand(console, storeFile, args);
             default:
-                return new HelpCommand(console);
+                return new HelpCommand(console, storeFile);
         }
     }
 }

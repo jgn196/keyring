@@ -7,10 +7,12 @@ import name.jgn196.passwords.manager.core.Safe;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static name.jgn196.passwords.manager.Manager.STORE_FILE;
+
 class PostConditions {
 
     static Iterable<Login> storedLogins(final String storePassword) {
-        try (final Safe safe = new Safe(StoreFile.openWithPassword(Password.from(storePassword)))) {
+        try (final Safe safe = new Safe(STORE_FILE.openWithPassword(Password.from(storePassword)))) {
 
             return safe.logins()
                     .collect(Collectors.toList());
@@ -21,7 +23,7 @@ class PostConditions {
     }
 
     static Optional<Password> storedPassword(final Login login, final String storePassword) {
-        try (final Safe safe = new Safe(StoreFile.openWithPassword(Password.from(storePassword)))) {
+        try (final Safe safe = new Safe(STORE_FILE.openWithPassword(Password.from(storePassword)))) {
 
             return safe.passwordFor(login);
 

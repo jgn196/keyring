@@ -4,10 +4,15 @@ import java.io.IOException;
 
 public class Manager {
 
+    private static final String STORE_FILE_NAME = "passwords.dat";
+
     private static Console console = new Console();
 
+    static final StoreFile STORE_FILE = new StoreFile(STORE_FILE_NAME);
+
     // This class is not for instantiation
-    private Manager() { }
+    private Manager() {
+    }
 
     static void useConsole(final Console console) {
 
@@ -16,7 +21,7 @@ public class Manager {
 
     public static void main(final String... args) throws IOException {
 
-        new CommandParser(console)
+        new CommandParser(console, STORE_FILE)
                 .parse(args)
                 .run();
     }

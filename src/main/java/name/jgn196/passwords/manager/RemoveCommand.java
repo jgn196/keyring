@@ -14,9 +14,9 @@ class RemoveCommand extends Command {
 
     private Login login;
 
-    RemoveCommand(final Console console, final String... args) {
+    RemoveCommand(final Console console, final StoreFile storeFile, final String... args) {
 
-        super(console);
+        super(console, storeFile);
         this.args = args;
     }
 
@@ -41,7 +41,7 @@ class RemoveCommand extends Command {
 
     private void removePassword() {
         try (final Password storePassword = readStorePassword();
-             final Safe safe = new Safe(StoreFile.openWithPassword(storePassword))) {
+             final Safe safe = new Safe(openWithPassword(storePassword))) {
 
             removePasswordFrom(safe);
 

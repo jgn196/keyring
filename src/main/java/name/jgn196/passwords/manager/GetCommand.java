@@ -16,9 +16,9 @@ class GetCommand extends Command {
 
     private Login login;
 
-    GetCommand(final Console console, final String... args) {
+    GetCommand(final Console console, final StoreFile storeFile, final String... args) {
 
-        super(console);
+        super(console, storeFile);
         this.args = args;
     }
 
@@ -33,7 +33,7 @@ class GetCommand extends Command {
 
     private void printPassword() {
         try (final Password storePassword = readStorePassword();
-             final Safe safe = new Safe(StoreFile.openWithPassword(storePassword))) {
+             final Safe safe = new Safe(openWithPassword(storePassword))) {
 
             printPasswordFrom(safe);
 

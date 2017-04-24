@@ -3,28 +3,30 @@ package name.jgn196.passwords.manager;
 import name.jgn196.passwords.manager.core.Password;
 import name.jgn196.passwords.manager.storage.FileStore;
 
+import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 class StoreFile {
 
-    private static final String STORE_FILE_NAME = "passwords.dat";
+    private final File file;
 
-    // This class is not for instantiation
-    private StoreFile() { }
+    StoreFile(final String fileName) {
 
-    static boolean exists() {
-
-        return toPath().toFile().exists();
+        this.file = new File(fileName);
     }
 
-    static Path toPath() {
+    boolean exists() {
 
-        return Paths.get(STORE_FILE_NAME);
+        return file.exists();
     }
 
-    static FileStore openWithPassword(final Password password) {
+    Path toPath() {
 
-        return new FileStore(toPath().toFile(), password);
+        return file.toPath();
+    }
+
+    FileStore openWithPassword(final Password password) {
+
+        return new FileStore(file, password);
     }
 }

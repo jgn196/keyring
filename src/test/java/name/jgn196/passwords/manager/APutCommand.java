@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static name.jgn196.passwords.manager.Command.INCORRECT_STORE_PASSWORD;
+import static name.jgn196.passwords.manager.Manager.STORE_FILE;
 import static name.jgn196.passwords.manager.PostConditions.storedLogins;
 import static name.jgn196.passwords.manager.PostConditions.storedPassword;
 import static name.jgn196.passwords.manager.Preconditions.givenNoDataFile;
@@ -24,7 +25,7 @@ public class APutCommand {
     @Test
     public void printsUsage() {
 
-        new PutCommand(console, "put").run();
+        new PutCommand(console, STORE_FILE, "put").run();
 
         assertEquals(PutCommand.USAGE, console.capturedOutput());
     }
@@ -36,7 +37,7 @@ public class APutCommand {
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         console.prepareInput("bill_password", "wrong_store_password");
-        new PutCommand(console, "put", "www.site.com", "Bill").run();
+        new PutCommand(console, STORE_FILE, "put", "www.site.com", "Bill").run();
 
         assertThat(console.capturedOutput(), containsString(INCORRECT_STORE_PASSWORD));
     }
@@ -47,7 +48,7 @@ public class APutCommand {
         givenNoDataFile();
 
         console.prepareInput("bill_password", "store_password");
-        new PutCommand(console, "put", "www.site.com", "Bill").run();
+        new PutCommand(console, STORE_FILE, "put", "www.site.com", "Bill").run();
 
         assertThat(storedLogins("store_password"), hasItem(new Login("www.site.com", "Bill")));
     }
@@ -58,7 +59,7 @@ public class APutCommand {
         givenNoDataFile();
 
         console.prepareInput("bill_password", "store_password");
-        new PutCommand(console, "put", "www.site.com", "Bill").run();
+        new PutCommand(console, STORE_FILE, "put", "www.site.com", "Bill").run();
 
         assertEquals(
                 Optional.of(Password.from("bill_password")),
@@ -72,7 +73,7 @@ public class APutCommand {
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         console.prepareInput("bill_password2", "store_password");
-        new PutCommand(console, "put", "www.site.com", "Bill").run();
+        new PutCommand(console, STORE_FILE, "put", "www.site.com", "Bill").run();
 
         assertEquals(
                 Optional.of(Password.from("bill_password2")),

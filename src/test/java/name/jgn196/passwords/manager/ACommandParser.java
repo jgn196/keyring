@@ -2,12 +2,13 @@ package name.jgn196.passwords.manager;
 
 import org.junit.Test;
 
+import static name.jgn196.passwords.manager.Manager.STORE_FILE;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 public class ACommandParser {
 
-    private static final CommandParser COMMAND_PARSER = new CommandParser(new TestConsole());
+    private static final CommandParser COMMAND_PARSER = new CommandParser(new TestConsole(), STORE_FILE);
 
     @Test
     public void buildsGetCommand() {

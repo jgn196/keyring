@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import static name.jgn196.passwords.manager.Command.INCORRECT_STORE_PASSWORD;
 import static name.jgn196.passwords.manager.Command.NO_DATA_FILE_MESSAGE;
+import static name.jgn196.passwords.manager.Manager.STORE_FILE;
 import static name.jgn196.passwords.manager.Preconditions.givenNoDataFile;
 import static name.jgn196.passwords.manager.Preconditions.givenStoreWithPassword;
 import static org.hamcrest.Matchers.containsString;
@@ -23,7 +24,7 @@ public class AListCommand {
 
         givenNoDataFile();
 
-        new ListCommand(console).run();
+        new ListCommand(console, STORE_FILE).run();
 
         assertEquals(NO_DATA_FILE_MESSAGE, console.capturedOutput());
     }
@@ -35,7 +36,7 @@ public class AListCommand {
         givenStoreWithPassword("store_password")
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
-        new ListCommand(console).run();
+        new ListCommand(console, STORE_FILE).run();
 
         assertThat(console.capturedOutput(), endsWith(INCORRECT_STORE_PASSWORD));
     }
@@ -47,7 +48,7 @@ public class AListCommand {
         givenStoreWithPassword("store_password")
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
-        new ListCommand(console).run();
+        new ListCommand(console, STORE_FILE).run();
 
         assertThat(console.capturedOutput(), containsString("Bill @ www.site.com"));
     }

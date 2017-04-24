@@ -8,6 +8,7 @@ import java.io.IOException;
 import static name.jgn196.passwords.manager.Command.INCORRECT_STORE_PASSWORD;
 import static name.jgn196.passwords.manager.Command.NO_DATA_FILE_MESSAGE;
 import static name.jgn196.passwords.manager.GetCommand.USAGE;
+import static name.jgn196.passwords.manager.Manager.STORE_FILE;
 import static name.jgn196.passwords.manager.Preconditions.givenNoDataFile;
 import static name.jgn196.passwords.manager.Preconditions.givenStoreWithPassword;
 import static org.hamcrest.Matchers.containsString;
@@ -21,7 +22,7 @@ public class AGetCommand {
     @Test
     public void printsUsage() {
 
-        new GetCommand(console, "get").run();
+        new GetCommand(console, STORE_FILE, "get").run();
 
         assertEquals(USAGE, console.capturedOutput());
     }
@@ -31,7 +32,7 @@ public class AGetCommand {
 
         givenNoDataFile();
 
-        new GetCommand(console, "get", "www.site.com", "Bill").run();
+        new GetCommand(console, STORE_FILE, "get", "www.site.com", "Bill").run();
 
         assertEquals(NO_DATA_FILE_MESSAGE, console.capturedOutput());
     }
@@ -43,7 +44,7 @@ public class AGetCommand {
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         console.prepareInput("wrong_password");
-        new GetCommand(console, "get", "www.site.net", "Ted").run();
+        new GetCommand(console, STORE_FILE, "get", "www.site.net", "Ted").run();
 
         assertThat(console.capturedOutput(), containsString(INCORRECT_STORE_PASSWORD));
     }
@@ -55,7 +56,7 @@ public class AGetCommand {
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         console.prepareInput("file_password");
-        new GetCommand(console, "get", "www.site.net", "Ted").run();
+        new GetCommand(console, STORE_FILE, "get", "www.site.net", "Ted").run();
 
         assertThat(console.capturedOutput(), containsString("Password for Ted @ www.site.net not found."));
     }
@@ -67,7 +68,7 @@ public class AGetCommand {
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         console.prepareInput("file_password");
-        new GetCommand(console, "get", "www.site.com", "Bill").run();
+        new GetCommand(console, STORE_FILE, "get", "www.site.com", "Bill").run();
 
         assertThat(console.capturedOutput(), containsString("bill_password"));
     }

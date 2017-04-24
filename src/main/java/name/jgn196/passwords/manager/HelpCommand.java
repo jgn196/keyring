@@ -8,8 +8,9 @@ class HelpCommand extends Command {
             "\tput\tPut a password for a login into the store.\n" +
             "\tremove\tRemove a password for a login.";
 
-    HelpCommand(final Console console) {
-        super(console);
+    HelpCommand(final Console console, final StoreFile storeFile) {
+
+        super(console, storeFile);
     }
 
     @Override

@@ -8,8 +8,9 @@ class ListCommand extends Command {
 
     static final String NAME = "list";
 
-    ListCommand(final Console console) {
-        super(console);
+    ListCommand(final Console console, final StoreFile storeFile) {
+
+        super(console, storeFile);
     }
 
     @Override
@@ -22,7 +23,7 @@ class ListCommand extends Command {
 
     private void printLogins() {
         try (final Password storePassword = readStorePassword();
-             final Safe safe = new Safe(StoreFile.openWithPassword(storePassword))) {
+             final Safe safe = new Safe(openWithPassword(storePassword))) {
 
             printLoginsFrom(safe);
 

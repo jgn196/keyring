@@ -14,9 +14,9 @@ class PutCommand extends Command {
 
     private Login login;
 
-    PutCommand(final Console console, final String... args) {
+    PutCommand(final Console console, final StoreFile storeFile, final String... args) {
 
-        super(console);
+        super(console, storeFile);
         this.args = args;
     }
 
@@ -30,7 +30,7 @@ class PutCommand extends Command {
 
     private void putPassword() {
         try (final Password password = readPassword();
-             final Safe safe = new Safe(StoreFile.openWithPassword(readStorePassword()))) {
+             final Safe safe = new Safe(openWithPassword(readStorePassword()))) {
 
             putPassword(password, safe);
 

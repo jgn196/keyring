@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import static name.jgn196.passwords.manager.Command.INCORRECT_STORE_PASSWORD;
 import static name.jgn196.passwords.manager.Command.NO_DATA_FILE_MESSAGE;
+import static name.jgn196.passwords.manager.Manager.STORE_FILE;
 import static name.jgn196.passwords.manager.PostConditions.storedLogins;
 import static name.jgn196.passwords.manager.Preconditions.givenNoDataFile;
 import static name.jgn196.passwords.manager.Preconditions.givenStoreWithPassword;
@@ -22,7 +23,7 @@ public class ARemoveCommand {
     @Test
     public void printsUsage() {
 
-        new RemoveCommand(console, "remove").run();
+        new RemoveCommand(console, STORE_FILE, "remove").run();
 
         assertEquals(USAGE, console.capturedOutput());
     }
@@ -32,7 +33,7 @@ public class ARemoveCommand {
 
         givenNoDataFile();
 
-        new RemoveCommand(console, "remove", "www.site.com", "Bill").run();
+        new RemoveCommand(console, STORE_FILE, "remove", "www.site.com", "Bill").run();
 
         assertEquals(NO_DATA_FILE_MESSAGE, console.capturedOutput());
     }
@@ -44,7 +45,7 @@ public class ARemoveCommand {
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         console.prepareInput("wrong_password");
-        new RemoveCommand(console, "remove", "www.site.com", "Bill").run();
+        new RemoveCommand(console, STORE_FILE, "remove", "www.site.com", "Bill").run();
 
         assertThat(console.capturedOutput(), containsString(INCORRECT_STORE_PASSWORD));
     }
@@ -56,7 +57,7 @@ public class ARemoveCommand {
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         console.prepareInput("file_password");
-        new RemoveCommand(console, "remove", "www.site.net", "Ted").run();
+        new RemoveCommand(console, STORE_FILE, "remove", "www.site.net", "Ted").run();
 
         assertThat(console.capturedOutput(), containsString("Password for Ted @ www.site.net not found."));
     }
@@ -68,7 +69,7 @@ public class ARemoveCommand {
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         console.prepareInput("file_password");
-        new RemoveCommand(console, "remove", "www.site.com", "Bill").run();
+        new RemoveCommand(console, STORE_FILE, "remove", "www.site.com", "Bill").run();
 
         assertThat(storedLogins("file_password"), not(hasItem(new Login("www.site.com", "Bill"))));
     }
