@@ -80,7 +80,7 @@ public class FileStore extends SecureStore implements AutoCloseable {
             save(entries);
         } catch (IOException e) {
 
-            throw new EntryNotStored(e); // TODO - Not the right exception
+            throw new EntryNotRemoved(e);
         }
     }
 
