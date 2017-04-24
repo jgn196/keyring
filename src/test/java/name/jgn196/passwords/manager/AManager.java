@@ -1,7 +1,6 @@
 package name.jgn196.passwords.manager;
 
 import name.jgn196.passwords.manager.core.Login;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -17,17 +16,12 @@ import static org.junit.Assert.*;
 public class AManager {
 
     private final TestConsole console = new TestConsole();
-
-    @Before
-    public void setUpTestConsole() {
-
-        Manager.useConsole(console);
-    }
+    private final Manager manager = new Manager(console);
 
     @Test
     public void printsUsage() throws IOException {
 
-        Manager.main();
+        manager.run();
 
         assertEquals(HelpCommand.USAGE, capturedOutput());
     }
@@ -37,7 +31,7 @@ public class AManager {
 
         Preconditions.givenNoDataFile();
 
-        Manager.main(ListCommand.NAME);
+        manager.run(ListCommand.NAME);
 
         assertEquals(Command.NO_DATA_FILE_MESSAGE, capturedOutput());
     }
@@ -47,7 +41,7 @@ public class AManager {
 
         Preconditions.givenNoDataFile();
 
-        Manager.main(GetCommand.NAME, "www.site.com", "Bill");
+        manager.run(GetCommand.NAME, "www.site.com", "Bill");
 
         assertEquals(Command.NO_DATA_FILE_MESSAGE, capturedOutput());
     }
@@ -58,7 +52,7 @@ public class AManager {
         Preconditions.givenNoDataFile();
         givenInput("bill_password", "file_password");
 
-        Manager.main(PutCommand.NAME, "www.site.com", "Bill");
+        manager.run(PutCommand.NAME, "www.site.com", "Bill");
 
         assertTrue(STORE_FILE.exists());
     }
@@ -68,7 +62,7 @@ public class AManager {
 
         givenInput("bill_password", "file_password");
 
-        Manager.main(PutCommand.NAME, "www.site.com", "Bill");
+        manager.run(PutCommand.NAME, "www.site.com", "Bill");
 
         assertThat(
                 capturedOutput(),
@@ -81,7 +75,7 @@ public class AManager {
         final String password = "bill_password";
         givenInput(password, "file_password");
 
-        Manager.main(PutCommand.NAME, "www.site.com", "Bill");
+        manager.run(PutCommand.NAME, "www.site.com", "Bill");
 
         assertFalse(
                 "Found password '" + password + "' in plain text in store file.",
@@ -95,7 +89,7 @@ public class AManager {
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         givenInput("file_password");
-        Manager.main(GetCommand.NAME, "www.site.com", "Bill");
+        manager.run(GetCommand.NAME, "www.site.com", "Bill");
 
         assertThat(capturedOutput(), endsWith("bill_password"));
     }
@@ -107,7 +101,7 @@ public class AManager {
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         givenInput("wrong_password");
-        Manager.main(GetCommand.NAME, "www.site.com", "Bill");
+        manager.run(GetCommand.NAME, "www.site.com", "Bill");
 
         assertThat(capturedOutput(), endsWith(INCORRECT_STORE_PASSWORD));
     }
@@ -119,7 +113,7 @@ public class AManager {
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         givenInput("file_password");
-        Manager.main(GetCommand.NAME, "www.site.com", "Ted");
+        manager.run(GetCommand.NAME, "www.site.com", "Ted");
 
         assertThat(capturedOutput(), endsWith("Password for Ted @ www.site.com not found."));
     }
@@ -130,7 +124,7 @@ public class AManager {
         Preconditions.givenStoreWithPassword("file_password").containing(new Login("www.site.com", "Bill"), "bill_password");
 
         givenInput("file_password");
-        Manager.main(ListCommand.NAME);
+        manager.run(ListCommand.NAME);
 
         assertThat(capturedOutput(), endsWith("Passwords stored for:\n\tBill @ www.site.com\n"));
     }
@@ -141,7 +135,7 @@ public class AManager {
         Preconditions.givenStoreWithPassword("file_password").containing(new Login("www.site.com", "Bill"), "bill_password");
 
         givenInput("file_password");
-        Manager.main(RemoveCommand.NAME, "www.site.com", "Bill");
+        manager.run(RemoveCommand.NAME, "www.site.com", "Bill");
 
         assertThat(PostConditions.storedLogins("file_password"), not(hasItem(new Login("www.site.com", "Bill"))));
     }
