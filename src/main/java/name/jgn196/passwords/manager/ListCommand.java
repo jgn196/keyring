@@ -8,20 +8,20 @@ class ListCommand extends Command {
 
     static final String NAME = "list";
 
-    private Console console;
+    ListCommand(final Console console) {
+        super(console);
+    }
 
     @Override
-    public void run(final Console console) {
+    public void run() {
 
-        this.console = console;
-
-        if (!checkStoreExists(console)) return;
+        if (!checkStoreExists()) return;
 
         printLogins();
     }
 
     private void printLogins() {
-        try (final Password storePassword = readStorePassword(console);
+        try (final Password storePassword = readStorePassword();
              final Safe safe = new Safe(StoreFile.openWithPassword(storePassword))) {
 
             printLoginsFrom(safe);
@@ -34,12 +34,12 @@ class ListCommand extends Command {
     private void printLoginsFrom(final Safe safe) {
         try {
 
-            console.print("Passwords stored for:\n");
+            consolePrint("Passwords stored for:\n");
             safe.logins()
-                    .forEach(login -> console.print("\t" + displayText(login) + "\n"));
+                    .forEach(login -> consolePrint("\t" + displayText(login) + "\n"));
         } catch (DecryptionFailed e) {
 
-            console.print(INCORRECT_STORE_PASSWORD);
+            consolePrint(INCORRECT_STORE_PASSWORD);
         }
     }
 }

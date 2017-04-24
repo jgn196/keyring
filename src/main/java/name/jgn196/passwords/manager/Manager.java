@@ -16,6 +16,8 @@ public class Manager {
 
     public static void main(final String... args) throws IOException {
 
-        Command.parseCommandFrom(args).run(console);
+        new CommandParser(console)
+                .parse(args)
+                .run();
     }
 }

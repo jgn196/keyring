@@ -16,13 +16,14 @@ import static org.junit.Assert.assertThat;
 
 public class AListCommand {
 
+    private TestConsole console = new TestConsole();
+
     @Test
     public void failsWithMissingStore() throws IOException {
 
-        final TestConsole console = new TestConsole();
         givenNoDataFile();
 
-        new ListCommand().run(console);
+        new ListCommand(console).run();
 
         assertEquals(NO_DATA_FILE_MESSAGE, console.capturedOutput());
     }
@@ -30,12 +31,11 @@ public class AListCommand {
     @Test
     public void failsWithWrongStorePassword() throws IOException {
 
-        final TestConsole console = new TestConsole();
         console.prepareInput("wrong_store_password");
         givenStoreWithPassword("store_password")
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
-        new ListCommand().run(console);
+        new ListCommand(console).run();
 
         assertThat(console.capturedOutput(), endsWith(INCORRECT_STORE_PASSWORD));
     }
@@ -43,12 +43,11 @@ public class AListCommand {
     @Test
     public void listsLogins() throws IOException {
 
-        final TestConsole console = new TestConsole();
         console.prepareInput("store_password");
         givenStoreWithPassword("store_password")
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
-        new ListCommand().run(console);
+        new ListCommand(console).run();
 
         assertThat(console.capturedOutput(), containsString("Bill @ www.site.com"));
     }

@@ -12,21 +12,19 @@ class RemoveCommand extends Command {
 
     private final String[] args;
 
-    private Console console;
     private Login login;
 
-    RemoveCommand(final String... args) {
+    RemoveCommand(final Console console, final String... args) {
 
+        super(console);
         this.args = args;
     }
 
     @Override
-    void run(final Console console) {
-
-        this.console = console;
+    void run() {
 
         if (!parseArguments()) return;
-        if (!checkStoreExists(console)) return;
+        if (!checkStoreExists()) return;
 
         removePassword();
     }
@@ -34,7 +32,7 @@ class RemoveCommand extends Command {
     private boolean parseArguments() {
 
         if (args.length < 3) {
-            console.print(USAGE);
+            consolePrint(USAGE);
             return false;
         }
         login = new Login(args[1], args[2]);
@@ -42,7 +40,7 @@ class RemoveCommand extends Command {
     }
 
     private void removePassword() {
-        try (final Password storePassword = readStorePassword(console);
+        try (final Password storePassword = readStorePassword();
              final Safe safe = new Safe(StoreFile.openWithPassword(storePassword))) {
 
             removePasswordFrom(safe);
@@ -55,10 +53,10 @@ class RemoveCommand extends Command {
     private void removePasswordFrom(Safe safe) {
         try {
 
-            if (!safe.remove(login)) console.print("Password for " + displayText(login) + " not found.");
+            if (!safe.remove(login)) consolePrint("Password for " + displayText(login) + " not found.");
 
         } catch (DecryptionFailed e) {
-            console.print(INCORRECT_STORE_PASSWORD);
+            consolePrint(INCORRECT_STORE_PASSWORD);
         }
     }
 }

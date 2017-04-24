@@ -21,7 +21,7 @@ public class AGetCommand {
     @Test
     public void printsUsage() {
 
-        new GetCommand("get").run(console);
+        new GetCommand(console, "get").run();
 
         assertEquals(USAGE, console.capturedOutput());
     }
@@ -31,7 +31,7 @@ public class AGetCommand {
 
         givenNoDataFile();
 
-        new GetCommand("get", "www.site.com", "Bill").run(console);
+        new GetCommand(console, "get", "www.site.com", "Bill").run();
 
         assertEquals(NO_DATA_FILE_MESSAGE, console.capturedOutput());
     }
@@ -43,7 +43,7 @@ public class AGetCommand {
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         console.prepareInput("wrong_password");
-        new GetCommand("get", "www.site.net", "Ted").run(console);
+        new GetCommand(console, "get", "www.site.net", "Ted").run();
 
         assertThat(console.capturedOutput(), containsString(INCORRECT_STORE_PASSWORD));
     }
@@ -55,7 +55,7 @@ public class AGetCommand {
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         console.prepareInput("file_password");
-        new GetCommand("get", "www.site.net", "Ted").run(console);
+        new GetCommand(console, "get", "www.site.net", "Ted").run();
 
         assertThat(console.capturedOutput(), containsString("Password for Ted @ www.site.net not found."));
     }
@@ -67,7 +67,7 @@ public class AGetCommand {
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         console.prepareInput("file_password");
-        new GetCommand("get", "www.site.com", "Bill").run(console);
+        new GetCommand(console, "get", "www.site.com", "Bill").run();
 
         assertThat(console.capturedOutput(), containsString("bill_password"));
     }

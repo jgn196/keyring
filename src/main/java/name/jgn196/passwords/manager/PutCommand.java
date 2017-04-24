@@ -12,18 +12,16 @@ class PutCommand extends Command {
 
     private final String[] args;
 
-    private Console console;
     private Login login;
 
-    PutCommand(final String... args) {
+    PutCommand(final Console console, final String... args) {
 
+        super(console);
         this.args = args;
     }
 
     @Override
-    public void run(final Console console) {
-
-        this.console = console;
+    public void run() {
 
         if (!parseArguments()) return;
 
@@ -32,7 +30,7 @@ class PutCommand extends Command {
 
     private void putPassword() {
         try (final Password password = readPassword();
-             final Safe safe = new Safe(StoreFile.openWithPassword(readStorePassword(console)))) {
+             final Safe safe = new Safe(StoreFile.openWithPassword(readStorePassword()))) {
 
             putPassword(password, safe);
 
@@ -45,7 +43,7 @@ class PutCommand extends Command {
 
         if (args.length < 3) {
 
-            console.print(USAGE);
+            consolePrint(USAGE);
             return false;
         }
 
@@ -55,8 +53,8 @@ class PutCommand extends Command {
 
     private Password readPassword() {
 
-        console.print("Password for " + displayText(login) + ":");
-        return new Password(console.readPassword());
+        consolePrint("Password for " + displayText(login) + ":");
+        return new Password(consoleReadPassword());
     }
 
     private void putPassword(final Password password, final Safe safe) {
@@ -65,7 +63,7 @@ class PutCommand extends Command {
             safe.store(login, password);
 
         } catch (DecryptionFailed e) {
-            console.print(INCORRECT_STORE_PASSWORD);
+            consolePrint(INCORRECT_STORE_PASSWORD);
         }
     }
 }

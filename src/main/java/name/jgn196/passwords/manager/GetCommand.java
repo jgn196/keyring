@@ -14,27 +14,25 @@ class GetCommand extends Command {
 
     private final String[] args;
 
-    private Console console;
     private Login login;
 
-    GetCommand(final String... args) {
+    GetCommand(final Console console, final String... args) {
 
+        super(console);
         this.args = args;
     }
 
     @Override
-    void run(final Console console) {
-
-        this.console = console;
+    void run() {
 
         if (!parseArguments()) return;
-        if (!checkStoreExists(console)) return;
+        if (!checkStoreExists()) return;
 
         printPassword();
     }
 
     private void printPassword() {
-        try (final Password storePassword = readStorePassword(console);
+        try (final Password storePassword = readStorePassword();
              final Safe safe = new Safe(StoreFile.openWithPassword(storePassword))) {
 
             printPasswordFrom(safe);
@@ -50,19 +48,19 @@ class GetCommand extends Command {
             final Optional<Password> password = safe.passwordFor(login);
 
             if (password.isPresent())
-                console.print(new String(password.get().characters()));
+                consolePrint(new String(password.get().characters()));
             else
-                console.print("Password for " + displayText(login) + " not found.");
+                consolePrint("Password for " + displayText(login) + " not found.");
         } catch(DecryptionFailed e) {
 
-            console.print(INCORRECT_STORE_PASSWORD);
+            consolePrint(INCORRECT_STORE_PASSWORD);
         }
     }
 
     private boolean parseArguments() {
 
         if (args.length < 3) {
-            console.print(USAGE);
+            consolePrint(USAGE);
             return false;
         }
         login = new Login(args[1], args[2]);

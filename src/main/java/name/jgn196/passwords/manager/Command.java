@@ -8,28 +8,27 @@ abstract class Command {
     static final String NO_DATA_FILE_MESSAGE = "No data file.";
     static final String INCORRECT_STORE_PASSWORD = "Incorrect store password.";
 
-    static Command parseCommandFrom(final String[] args) {
+    private Console console;
 
-        final String commandWord = args.length == 0 ? "" : args[0];
+    protected Command(final Console console) {
 
-        switch (commandWord) {
-            case ListCommand.NAME:
-                return new ListCommand();
-            case GetCommand.NAME:
-                return new GetCommand(args);
-            case PutCommand.NAME:
-                return new PutCommand(args);
-            case RemoveCommand.NAME:
-                return new RemoveCommand(args);
-            default:
-                return new HelpCommand();
-        }
+        this.console = console;
     }
 
-    static Password readStorePassword(final Console console) {
+    Password readStorePassword() {
 
-        console.print("Password for store:");
-        return new Password(console.readPassword());
+        consolePrint("Password for store:");
+        return new Password(consoleReadPassword());
+    }
+
+    void consolePrint(final String message) {
+
+        console.print(message);
+    }
+
+    char[] consoleReadPassword() {
+
+        return console.readPassword();
     }
 
     static String displayText(final Login login) {
@@ -37,11 +36,11 @@ abstract class Command {
         return login.userName() + " @ " + login.secureSystem();
     }
 
-    abstract void run(Console console);
+    abstract void run();
 
-    boolean checkStoreExists(final Console console) {
+    boolean checkStoreExists() {
 
-        if (!StoreFile.exists()) console.print(NO_DATA_FILE_MESSAGE);
+        if (!StoreFile.exists()) consolePrint(NO_DATA_FILE_MESSAGE);
         return StoreFile.exists();
     }
 }

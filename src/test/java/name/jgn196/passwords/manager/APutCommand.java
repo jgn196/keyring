@@ -24,7 +24,7 @@ public class APutCommand {
     @Test
     public void printsUsage() {
 
-        new PutCommand("put").run(console);
+        new PutCommand(console, "put").run();
 
         assertEquals(PutCommand.USAGE, console.capturedOutput());
     }
@@ -36,7 +36,7 @@ public class APutCommand {
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         console.prepareInput("bill_password", "wrong_store_password");
-        new PutCommand("put", "www.site.com", "Bill").run(console);
+        new PutCommand(console, "put", "www.site.com", "Bill").run();
 
         assertThat(console.capturedOutput(), containsString(INCORRECT_STORE_PASSWORD));
     }
@@ -47,7 +47,7 @@ public class APutCommand {
         givenNoDataFile();
 
         console.prepareInput("bill_password", "store_password");
-        new PutCommand("put", "www.site.com", "Bill").run(console);
+        new PutCommand(console, "put", "www.site.com", "Bill").run();
 
         assertThat(storedLogins("store_password"), hasItem(new Login("www.site.com", "Bill")));
     }
@@ -58,7 +58,7 @@ public class APutCommand {
         givenNoDataFile();
 
         console.prepareInput("bill_password", "store_password");
-        new PutCommand("put", "www.site.com", "Bill").run(console);
+        new PutCommand(console, "put", "www.site.com", "Bill").run();
 
         assertEquals(
                 Optional.of(Password.from("bill_password")),
@@ -72,7 +72,7 @@ public class APutCommand {
                 .containing(new Login("www.site.com", "Bill"), "bill_password");
 
         console.prepareInput("bill_password2", "store_password");
-        new PutCommand("put", "www.site.com", "Bill").run(console);
+        new PutCommand(console, "put", "www.site.com", "Bill").run();
 
         assertEquals(
                 Optional.of(Password.from("bill_password2")),

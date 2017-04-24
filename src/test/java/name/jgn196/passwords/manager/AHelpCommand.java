@@ -11,7 +11,7 @@ public class AHelpCommand {
 
         final TestConsole console = new TestConsole();
 
-        new HelpCommand().run(console);
+        new HelpCommand(console).run();
 
         assertEquals(HelpCommand.USAGE, console.capturedOutput());
     }
