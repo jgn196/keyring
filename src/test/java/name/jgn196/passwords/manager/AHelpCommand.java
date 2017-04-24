@@ -12,7 +12,7 @@ public class AHelpCommand {
 
         final TestConsole console = new TestConsole();
 
-        new HelpCommand(console, STORE_FILE).run();
+        new HelpCommand(console).run();
 
         assertEquals(HelpCommand.USAGE, console.capturedOutput());
     }

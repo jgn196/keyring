@@ -25,7 +25,7 @@ class CommandParser {
             case RemoveCommand.NAME:
                 return new RemoveCommand(console, storeFile, args);
             default:
-                return new HelpCommand(console, storeFile);
+                return new HelpCommand(console);
         }
     }
 }
