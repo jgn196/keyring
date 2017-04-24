@@ -48,19 +48,19 @@ class GetCommand extends Command {
             final Optional<Password> password = safe.passwordFor(login);
 
             if (password.isPresent())
-                consolePrint(new String(password.get().characters()));
+                printToConsole(new String(password.get().characters()));
             else
-                consolePrint("Password for " + displayText(login) + " not found.");
+                printToConsole("Password for " + displayText(login) + " not found.");
         } catch(DecryptionFailed e) {
 
-            consolePrint(INCORRECT_STORE_PASSWORD);
+            printToConsole(INCORRECT_STORE_PASSWORD);
         }
     }
 
     private boolean parseArguments() {
 
         if (args.length < 3) {
-            consolePrint(USAGE);
+            printToConsole(USAGE);
             return false;
         }
         login = new Login(args[1], args[2]);

@@ -43,7 +43,7 @@ class PutCommand extends Command {
 
         if (args.length < 3) {
 
-            consolePrint(USAGE);
+            printToConsole(USAGE);
             return false;
         }
 
@@ -53,8 +53,7 @@ class PutCommand extends Command {
 
     private Password readPassword() {
 
-        consolePrint("Password for " + displayText(login) + ":");
-        return new Password(consoleReadPassword());
+        return readPasswordFromConsole("Password for " + displayText(login) + ":");
     }
 
     private void putPassword(final Password password, final Safe safe) {
@@ -63,7 +62,7 @@ class PutCommand extends Command {
             safe.store(login, password);
 
         } catch (DecryptionFailed e) {
-            consolePrint(INCORRECT_STORE_PASSWORD);
+            printToConsole(INCORRECT_STORE_PASSWORD);
         }
     }
 }

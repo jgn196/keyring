@@ -16,6 +16,6 @@ class HelpCommand extends Command {
     @Override
     public void run() {
 
-        consolePrint(USAGE);
+        printToConsole(USAGE);
     }
 }

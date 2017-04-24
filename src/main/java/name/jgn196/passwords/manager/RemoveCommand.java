@@ -32,7 +32,7 @@ class RemoveCommand extends Command {
     private boolean parseArguments() {
 
         if (args.length < 3) {
-            consolePrint(USAGE);
+            printToConsole(USAGE);
             return false;
         }
         login = new Login(args[1], args[2]);
@@ -53,10 +53,10 @@ class RemoveCommand extends Command {
     private void removePasswordFrom(Safe safe) {
         try {
 
-            if (!safe.remove(login)) consolePrint("Password for " + displayText(login) + " not found.");
+            if (!safe.remove(login)) printToConsole("Password for " + displayText(login) + " not found.");
 
         } catch (DecryptionFailed e) {
-            consolePrint(INCORRECT_STORE_PASSWORD);
+            printToConsole(INCORRECT_STORE_PASSWORD);
         }
     }
 }

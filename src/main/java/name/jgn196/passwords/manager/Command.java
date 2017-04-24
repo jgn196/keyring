@@ -18,20 +18,23 @@ abstract class Command {
         this.storeFile = storeFile;
     }
 
+    abstract void run();
+
     Password readStorePassword() {
 
-        consolePrint("Password for store:");
-        return new Password(consoleReadPassword());
+        return readPasswordFromConsole("Password for store:");
     }
 
-    void consolePrint(final String message) {
+    Password readPasswordFromConsole(final String prompt) {
+
+        printToConsole(prompt);
+
+        return new Password(console.readPassword());
+    }
+
+    void printToConsole(final String message) {
 
         console.print(message);
-    }
-
-    char[] consoleReadPassword() {
-
-        return console.readPassword();
     }
 
     static String displayText(final Login login) {
@@ -39,12 +42,12 @@ abstract class Command {
         return login.userName() + " @ " + login.secureSystem();
     }
 
-    abstract void run();
-
     boolean checkStoreExists() {
 
-        if (!storeFile.exists()) consolePrint(NO_DATA_FILE_MESSAGE);
-        return storeFile.exists();
+        final boolean storeExists = storeFile.exists();
+        if (!storeExists) printToConsole(NO_DATA_FILE_MESSAGE);
+
+        return storeExists;
     }
 
     FileStore openWithPassword(final Password password) {
