@@ -7,7 +7,6 @@ import name.jgn196.passwords.manager.core.Safe;
 import java.io.IOException;
 
 import static name.jgn196.passwords.manager.Manager.STORE_FILE;
-import static name.jgn196.passwords.manager.Manager.STORE_FILE_NAME;
 
 class StoreBuilder {
 
