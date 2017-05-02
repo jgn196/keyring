@@ -1,6 +1,7 @@
 package name.jgn196.passwords.manager;
 
 import name.jgn196.passwords.manager.core.Login;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.nio.file.Files;
 import static java.util.Arrays.asList;
 import static name.jgn196.passwords.manager.Command.INCORRECT_STORE_PASSWORD;
 import static name.jgn196.passwords.manager.Manager.STORE_FILE;
+import static name.jgn196.passwords.manager.PostConditions.storedLogins;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -50,7 +52,7 @@ public class AManager {
     public void createsPasswordStoreWhenPuttingFirstPassword() throws IOException {
 
         Preconditions.givenNoDataFile();
-        givenInput("bill_password", "file_password");
+        givenInput("bill_password", "file_password"); // TODO - Should confirm password when setting a new one
 
         manager.run(PutCommand.NAME, "www.site.com", "Bill");
 
@@ -60,7 +62,7 @@ public class AManager {
     @Test
     public void promptsForPasswordsWhenStoring() throws IOException {
 
-        givenInput("bill_password", "file_password");
+        givenInput("bill_password", "file_password"); // TODO - Should confirm password when setting a new one
 
         manager.run(PutCommand.NAME, "www.site.com", "Bill");
 
@@ -137,7 +139,19 @@ public class AManager {
         givenInput("file_password");
         manager.run(RemoveCommand.NAME, "www.site.com", "Bill");
 
-        assertThat(PostConditions.storedLogins("file_password"), not(hasItem(new Login("www.site.com", "Bill"))));
+        assertThat(storedLogins("file_password"), not(hasItem(new Login("www.site.com", "Bill"))));
+    }
+
+    @Test
+    @Ignore("Not implemented")
+    public void changesStorePassword() throws IOException {
+
+        Preconditions.givenStoreWithPassword("file_password").containing(new Login("www.site.com", "Bill"), "bill_password");
+
+        givenInput("file_password", "new_file_password"); // TODO - Should confirm password when setting a new one
+        manager.run("password_change");
+
+        assertThat(storedLogins("new_file_password"), not(hasItem(new Login("www.site.com", "Bill"))));
     }
 
     private void givenInput(final String... strings) {
