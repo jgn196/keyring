@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class FileStore extends SecureStore implements AutoCloseable {
+public class FileStore implements SecureStore {
 
     private final File file;
     private final StoreFormat format = new StoreFormat();

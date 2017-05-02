@@ -2,11 +2,11 @@ package name.jgn196.passwords.manager.storage;
 
 import java.util.stream.Stream;
 
-public abstract class SecureStore implements AutoCloseable {
+public interface SecureStore extends AutoCloseable {
 
-    public abstract void store(final StoreEntry entry) throws EntryNotStored;
+    void store(final StoreEntry entry) throws EntryNotStored;
 
-    public abstract Stream<StoreEntry> stream();
+    Stream<StoreEntry> stream();
 
-    public abstract void remove(StoreEntry entry);
+    void remove(StoreEntry entry);
 }
