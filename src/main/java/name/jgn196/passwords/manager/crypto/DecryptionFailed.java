@@ -1,4 +1,4 @@
-package name.jgn196.passwords.manager.storage;
+package name.jgn196.passwords.manager.crypto;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
 

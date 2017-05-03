@@ -1,6 +1,8 @@
 package name.jgn196.passwords.manager.storage;
 
 import name.jgn196.passwords.manager.core.Password;
+import name.jgn196.passwords.manager.crypto.SaltedAesEncryption;
+import name.jgn196.passwords.manager.crypto.StoreEncryption;
 
 import java.io.File;
 import java.io.IOException;

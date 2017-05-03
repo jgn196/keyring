@@ -1,4 +1,4 @@
-package name.jgn196.passwords.manager.storage;
+package name.jgn196.passwords.manager.crypto;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,8 +9,9 @@ import static java.util.Arrays.copyOf;
 
 class Salt {
 
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     static final int SALT_SIZE = 8;
+
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final byte[] data;
 

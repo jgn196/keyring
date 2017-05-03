@@ -1,4 +1,4 @@
-package name.jgn196.passwords.manager.storage;
+package name.jgn196.passwords.manager.crypto;
 
 import name.jgn196.passwords.manager.core.Password;
 import org.junit.Test;

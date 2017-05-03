@@ -1,4 +1,4 @@
-package name.jgn196.passwords.manager.storage;
+package name.jgn196.passwords.manager.crypto;
 
 import name.jgn196.passwords.manager.core.Password;
 import org.bouncycastle.crypto.InvalidCipherTextException;
@@ -15,9 +15,10 @@ import java.util.zip.CRC32;
 
 import static java.util.Arrays.copyOf;
 import static java.util.Arrays.copyOfRange;
-import static name.jgn196.passwords.manager.storage.Salt.readSaltFrom;
+import static name.jgn196.passwords.manager.crypto.Salt.SALT_SIZE;
+import static name.jgn196.passwords.manager.crypto.Salt.readSaltFrom;
 
-class SaltedAesEncryption implements StoreEncryption {
+public class SaltedAesEncryption implements StoreEncryption {
 
     private static final int ITERATIONS = 20;
     private static final CRC32 CRC_32 = new CRC32();
@@ -28,7 +29,7 @@ class SaltedAesEncryption implements StoreEncryption {
 
     private final Password password;
 
-    SaltedAesEncryption(final Password password) {
+    public SaltedAesEncryption(final Password password) {
 
         this.password = password;
     }
@@ -111,7 +112,7 @@ class SaltedAesEncryption implements StoreEncryption {
 
     private byte[] readCipherTextFrom(final byte[] encryptedData) throws IOException {
 
-        return copyOfRange(encryptedData, Salt.SALT_SIZE + CHECKSUM_SIZE, encryptedData.length);
+        return copyOfRange(encryptedData, SALT_SIZE + CHECKSUM_SIZE, encryptedData.length);
     }
 
     private byte[] decryptWithSalt(final Salt salt, final byte[] cipherText) throws InvalidCipherTextException {

@@ -1,4 +1,4 @@
-package name.jgn196.passwords.manager.storage;
+package name.jgn196.passwords.manager.crypto;
 
 import org.junit.Test;
 
@@ -6,7 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static name.jgn196.passwords.manager.storage.Salt.SALT_SIZE;
+import static name.jgn196.passwords.manager.crypto.Salt.SALT_SIZE;
 import static org.junit.Assert.assertTrue;
 
 public class ASalt {
