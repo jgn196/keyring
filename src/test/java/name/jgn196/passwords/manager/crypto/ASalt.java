@@ -21,7 +21,6 @@ public class ASalt {
 
     @Test
     public void writesToStream() throws IOException {
-
         try (final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
             new Salt().writeTo(out);

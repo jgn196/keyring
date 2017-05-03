@@ -11,7 +11,6 @@ import org.bouncycastle.crypto.paddings.PKCS7Padding;
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 
 import java.io.*;
-import java.util.zip.CRC32;
 
 import static java.util.Arrays.copyOf;
 import static java.util.Arrays.copyOfRange;
@@ -21,11 +20,9 @@ import static name.jgn196.passwords.manager.crypto.Salt.readSaltFrom;
 public class SaltedAesEncryption implements StoreEncryption {
 
     private static final int ITERATIONS = 20;
-    private static final CRC32 CRC_32 = new CRC32();
     private static final int CHECKSUM_SIZE = 4;
     private static final boolean ENCRYPTING = true;
     private static final boolean DECRYPTING = false;
-    private static final long WORD_32_BIT_MASK = 0xFFFFFFFFL;
 
     private final Password password;
 
@@ -41,9 +38,10 @@ public class SaltedAesEncryption implements StoreEncryption {
              final DataOutputStream out = new DataOutputStream(result)) {
 
             final Salt salt = new Salt();
+            final Crc32 crc = Crc32.of(plainText);
 
             salt.writeTo(out);
-            out.writeInt((int) checksumOf(plainText));
+            crc.writeTo(out);
             out.write(encryptWithSalt(plainText, salt));
 
             return result.toByteArray();
@@ -53,13 +51,6 @@ public class SaltedAesEncryption implements StoreEncryption {
 
             throw new RuntimeException(e);
         }
-    }
-
-    private long checksumOf(final byte[] plainText) {
-
-        CRC_32.reset();
-        CRC_32.update(plainText, 0, plainText.length);
-        return CRC_32.getValue();
     }
 
     private byte[] encryptWithSalt(final byte[] plainText, final Salt salt) throws InvalidCipherTextException {
@@ -88,10 +79,10 @@ public class SaltedAesEncryption implements StoreEncryption {
         try (final DataInputStream in = new DataInputStream(new ByteArrayInputStream(encryptedData))) {
 
             final Salt salt = readSaltFrom(in);
-            final long checksum = readChecksumFrom(in);
+            final Crc32 crc = Crc32.readFrom(in);
             final byte[] plainText = decryptWithSalt(salt, readCipherTextFrom(encryptedData));
 
-            if (checksum != checksumOf(plainText))
+            if (!crc.equals(Crc32.of(plainText)))
                 throw new DecryptionFailed("Decrypted data failed hash test.");
 
             return plainText;
@@ -103,11 +94,6 @@ public class SaltedAesEncryption implements StoreEncryption {
 
             throw new DecryptionFailed(e);
         }
-    }
-
-    private long readChecksumFrom(final DataInputStream in) throws IOException {
-
-        return in.readInt() & WORD_32_BIT_MASK;
     }
 
     private byte[] readCipherTextFrom(final byte[] encryptedData) throws IOException {
