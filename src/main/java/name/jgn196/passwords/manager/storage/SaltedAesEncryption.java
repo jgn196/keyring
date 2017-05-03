@@ -11,17 +11,15 @@ import org.bouncycastle.crypto.paddings.PKCS7Padding;
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 
 import java.io.*;
-import java.security.SecureRandom;
 import java.util.zip.CRC32;
 
 import static java.util.Arrays.copyOf;
 import static java.util.Arrays.copyOfRange;
+import static name.jgn196.passwords.manager.storage.Salt.readSaltFrom;
 
 class SaltedAesEncryption implements StoreEncryption {
 
     private static final int ITERATIONS = 20;
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
-    private static final int SALT_SIZE = 8;
     private static final CRC32 CRC_32 = new CRC32();
     private static final int CHECKSUM_SIZE = 4;
     private static final boolean ENCRYPTING = true;
@@ -41,9 +39,9 @@ class SaltedAesEncryption implements StoreEncryption {
         try (final ByteArrayOutputStream result = new ByteArrayOutputStream();
              final DataOutputStream out = new DataOutputStream(result)) {
 
-            final byte[] salt = generatedSalt();
+            final Salt salt = new Salt();
 
-            out.write(salt);
+            salt.writeTo(out);
             out.writeInt((int) checksumOf(plainText));
             out.write(encryptWithSalt(plainText, salt));
 
@@ -56,14 +54,6 @@ class SaltedAesEncryption implements StoreEncryption {
         }
     }
 
-    private byte[] generatedSalt() {
-
-        final byte[] result = new byte[SALT_SIZE];
-        SECURE_RANDOM.nextBytes(result);
-
-        return result;
-    }
-
     private long checksumOf(final byte[] plainText) {
 
         CRC_32.reset();
@@ -71,12 +61,12 @@ class SaltedAesEncryption implements StoreEncryption {
         return CRC_32.getValue();
     }
 
-    private byte[] encryptWithSalt(final byte[] plainText, final byte[] salt) throws InvalidCipherTextException {
+    private byte[] encryptWithSalt(final byte[] plainText, final Salt salt) throws InvalidCipherTextException {
 
         final PKCS12ParametersGenerator parametersGenerator = new PKCS12ParametersGenerator(new SHA256Digest());
         parametersGenerator.init(
                 PBEParametersGenerator.PKCS12PasswordToBytes(password.characters()),
-                salt,
+                salt.toBytes(),
                 ITERATIONS);
 
         final CBCBlockCipher blockCipher = new CBCBlockCipher(new AESEngine());
@@ -96,7 +86,7 @@ class SaltedAesEncryption implements StoreEncryption {
     public byte[] decrypt(final byte[] encryptedData) {
         try (final DataInputStream in = new DataInputStream(new ByteArrayInputStream(encryptedData))) {
 
-            final byte[] salt = readSaltFrom(in);
+            final Salt salt = readSaltFrom(in);
             final long checksum = readChecksumFrom(in);
             final byte[] plainText = decryptWithSalt(salt, readCipherTextFrom(encryptedData));
 
@@ -114,15 +104,6 @@ class SaltedAesEncryption implements StoreEncryption {
         }
     }
 
-    private byte[] readSaltFrom(final DataInputStream in) throws IOException {
-
-        final byte[] salt = new byte[SALT_SIZE];
-        if (in.read(salt) != SALT_SIZE)
-            throw new IOException("Failed to read SALT from in memory stream.");
-
-        return salt;
-    }
-
     private long readChecksumFrom(final DataInputStream in) throws IOException {
 
         return in.readInt() & WORD_32_BIT_MASK;
@@ -130,15 +111,15 @@ class SaltedAesEncryption implements StoreEncryption {
 
     private byte[] readCipherTextFrom(final byte[] encryptedData) throws IOException {
 
-        return copyOfRange(encryptedData, SALT_SIZE + CHECKSUM_SIZE, encryptedData.length);
+        return copyOfRange(encryptedData, Salt.SALT_SIZE + CHECKSUM_SIZE, encryptedData.length);
     }
 
-    private byte[] decryptWithSalt(final byte[] salt, final byte[] cipherText) throws InvalidCipherTextException {
+    private byte[] decryptWithSalt(final Salt salt, final byte[] cipherText) throws InvalidCipherTextException {
 
         final PKCS12ParametersGenerator parametersGenerator = new PKCS12ParametersGenerator(new SHA256Digest());
         parametersGenerator.init(
                 PBEParametersGenerator.PKCS12PasswordToBytes(password.characters()),
-                salt,
+                salt.toBytes(),
                 ITERATIONS);
 
         final CBCBlockCipher blockCipher = new CBCBlockCipher(new AESEngine());
