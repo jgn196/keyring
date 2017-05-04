@@ -6,24 +6,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import static name.jgn196.passwords.manager.crypto.ASalt.isSalt;
 import static name.jgn196.passwords.manager.crypto.Salt.SALT_SIZE;
 import static org.junit.Assert.assertTrue;
 
 public class ASalt {
 
-    @Test
-    public void canBeGenerated() {
-
-        final Salt salt = new Salt();
-
-        assertTrue(isSalt(salt.toBytes()));
-    }
+    static final Salt SALT = new SaltGenerator().get();
 
     @Test
     public void writesToStream() throws IOException {
         try (final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-            new Salt().writeTo(out);
+            SALT.writeTo(out);
 
             assertTrue(isSalt(out.toByteArray()));
         }
@@ -31,7 +26,7 @@ public class ASalt {
 
     @Test
     public void readsFromStream() throws IOException {
-        try (final ByteArrayInputStream in = new ByteArrayInputStream(new Salt().toBytes())) {
+        try (final ByteArrayInputStream in = new ByteArrayInputStream(SALT.toBytes())) {
 
             assertTrue(isSalt(Salt.readSaltFrom(in).toBytes()));
         }
@@ -45,7 +40,7 @@ public class ASalt {
         }
     }
 
-    private static boolean isSalt(final byte[] data) {
+    static boolean isSalt(final byte[] data) {
 
         return data.length == SALT_SIZE && !isAllZero(data);
     }
@@ -60,3 +55,4 @@ public class ASalt {
         return true;
     }
 }
+

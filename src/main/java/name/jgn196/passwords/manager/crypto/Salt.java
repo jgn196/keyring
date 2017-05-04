@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.SecureRandom;
+import java.util.function.Supplier;
 
 import static java.util.Arrays.copyOf;
+import static name.jgn196.passwords.manager.crypto.Salt.SALT_SIZE;
 
 class Salt {
 
     static final int SALT_SIZE = 8;
-
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final byte[] data;
 
@@ -24,24 +24,11 @@ class Salt {
         return new Salt(data);
     }
 
-    private Salt(final byte[] data) {
+    Salt(final byte[] data) {
 
         assert data.length == SALT_SIZE;
 
         this.data = data;
-    }
-
-    Salt() {
-
-        data = generatedSalt();
-    }
-
-    private static byte[] generatedSalt() {
-
-        final byte[] result = new byte[SALT_SIZE];
-        SECURE_RANDOM.nextBytes(result);
-
-        return result;
     }
 
     void writeTo(final OutputStream out) throws IOException {
@@ -54,3 +41,4 @@ class Salt {
         return copyOf(data, data.length);
     }
 }
+

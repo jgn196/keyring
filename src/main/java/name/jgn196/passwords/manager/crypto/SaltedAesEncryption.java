@@ -11,6 +11,7 @@ import org.bouncycastle.crypto.paddings.PKCS7Padding;
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 
 import java.io.*;
+import java.util.function.Supplier;
 
 import static java.util.Arrays.copyOf;
 import static java.util.Arrays.copyOfRange;
@@ -25,10 +26,12 @@ public class SaltedAesEncryption implements StoreEncryption {
     private static final boolean DECRYPTING = false;
 
     private final Password password;
+    private final Supplier<Salt> saltSupplier;
 
     public SaltedAesEncryption(final Password password) {
 
         this.password = password;
+        saltSupplier = new SaltGenerator();
     }
 
     @Override
@@ -37,7 +40,7 @@ public class SaltedAesEncryption implements StoreEncryption {
         try (final ByteArrayOutputStream result = new ByteArrayOutputStream();
              final DataOutputStream out = new DataOutputStream(result)) {
 
-            final Salt salt = new Salt();
+            final Salt salt = saltSupplier.get();
             final Crc32 crc = Crc32.of(plainText);
 
             salt.writeTo(out);
