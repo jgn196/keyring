@@ -53,7 +53,7 @@ public class FileStore implements SecureStore {
 
         if (!io.fileExists(file)) return new HashSet<>();
 
-        return new HashSet<>(format.deserialise(encryption.decrypt(io.readAllFrom(file))));
+        return new HashSet<>(format.deserialiseEntries(encryption.decrypt(io.readAllFrom(file))));
     }
 
     private void save(final Set<StoreEntry> entries) throws IOException {

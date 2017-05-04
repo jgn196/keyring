@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 
 import static name.jgn196.passwords.manager.crypto.Salt.SALT_SIZE;
 
-class SaltGenerator implements Supplier<Salt> {
+public class SaltGenerator implements Supplier<Salt> {
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 

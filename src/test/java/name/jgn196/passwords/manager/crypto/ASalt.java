@@ -1,18 +1,18 @@
 package name.jgn196.passwords.manager.crypto;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static name.jgn196.passwords.manager.crypto.ASalt.isSalt;
 import static name.jgn196.passwords.manager.crypto.Salt.SALT_SIZE;
 import static org.junit.Assert.assertTrue;
 
 public class ASalt {
 
-    static final Salt SALT = new SaltGenerator().get();
+    private static final Salt SALT = new SaltGenerator().get();
 
     @Test
     public void writesToStream() throws IOException {
@@ -38,6 +38,13 @@ public class ASalt {
 
             Salt.readSaltFrom(in);
         }
+    }
+
+    @Test
+    public void honorsTheEqualsContract() {
+
+        EqualsVerifier.forClass(Salt.class)
+                .verify();
     }
 
     static boolean isSalt(final byte[] data) {

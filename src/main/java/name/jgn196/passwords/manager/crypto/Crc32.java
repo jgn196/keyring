@@ -3,13 +3,13 @@ package name.jgn196.passwords.manager.crypto;
 import java.io.*;
 import java.util.zip.CRC32;
 
-final class Crc32 {
+public final class Crc32 {
 
     private static final CRC32 CRC_32 = new CRC32();
 
     private final long value;
 
-    static Crc32 of(final byte[] data) {
+    public static Crc32 of(final byte[] data) {
 
         CRC_32.reset();
         CRC_32.update(data, 0, data.length);
@@ -27,14 +27,14 @@ final class Crc32 {
         return value;
     }
 
-    void writeTo(final OutputStream out) throws IOException {
+    public void writeTo(final OutputStream out) throws IOException {
         try (final DataOutputStream dataStream = new DataOutputStream(out)) {
 
             dataStream.writeInt((int) value);
         }
     }
 
-    static Crc32 readFrom(final InputStream in) throws IOException {
+    public static Crc32 readFrom(final InputStream in) throws IOException {
         try (DataInputStream dataStream = new DataInputStream(in)) {
 
             return new Crc32(Integer.toUnsignedLong(dataStream.readInt()));
