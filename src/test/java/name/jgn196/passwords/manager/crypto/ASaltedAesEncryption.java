@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import static java.util.Arrays.copyOf;
 import static java.util.Arrays.copyOfRange;
 import static java.util.stream.IntStream.rangeClosed;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -12,11 +13,13 @@ import static org.junit.Assert.*;
 
 public class ASaltedAesEncryption {
 
+    private static final Salt SALT = new SaltGenerator().get();
+
     @Test
     public void encryptsDataFromPassword() {
 
         final byte[] plainText = "plain text".getBytes();
-        final byte[] result = new SaltedAesEncryption(Password.from("password")).encrypt(plainText);
+        final byte[] result = new SaltedAesEncryption(Password.from("password")).encryptWithSalt(plainText, SALT);
 
         assertThat(result.length, greaterThanOrEqualTo(plainText.length));
         assertFalse("Result contains plain text.", contains(result, plainText));
@@ -27,18 +30,18 @@ public class ASaltedAesEncryption {
 
         final StoreEncryption encryption = new SaltedAesEncryption(Password.from("password"));
         final byte[] plainText = "plain text".getBytes();
-        final byte[] cipherText = encryption.encrypt(plainText);
+        final byte[] cipherText = encryption.encryptWithSalt(plainText, SALT);
 
-        assertArrayEquals(plainText, encryption.decrypt(cipherText));
+        assertArrayEquals(plainText, encryption.decryptWithSalt(cipherText, SALT));
     }
 
     @Test(expected = DecryptionFailed.class)
     public void decryptsUsingWrongPassword() {
 
         final byte[] plainText = "plain text".getBytes();
-        final byte[] cipherText = new SaltedAesEncryption(Password.from("password")).encrypt(plainText);
+        final byte[] cipherText = new SaltedAesEncryption(Password.from("password")).encryptWithSalt(plainText, SALT);
 
-        new SaltedAesEncryption(Password.from("p@ssword")).decrypt(cipherText);
+        new SaltedAesEncryption(Password.from("p@ssword")).decryptWithSalt(cipherText, SALT);
     }
 
     @Test(expected = DecryptionFailed.class)
@@ -46,10 +49,10 @@ public class ASaltedAesEncryption {
 
         final byte[] plainText = "plain text".getBytes();
         final StoreEncryption encryption = new SaltedAesEncryption(Password.from("password"));
-        final byte[] cipherText = encryption.encrypt(plainText);
-        cipherText[0] ^= 0xFF;
+        final byte[] cipherText = encryption.encryptWithSalt(plainText, SALT);
+        final Salt corruptSalt = corrupted();
 
-        encryption.decrypt(cipherText);
+        encryption.decryptWithSalt(cipherText, corruptSalt);
     }
 
     @Test(expected = DecryptionFailed.class)
@@ -57,10 +60,10 @@ public class ASaltedAesEncryption {
 
         final byte[] plainText = "plain text".getBytes();
         final StoreEncryption encryption = new SaltedAesEncryption(Password.from("password"));
-        final byte[] cipherText = encryption.encrypt(plainText);
+        final byte[] cipherText = encryption.encryptWithSalt(plainText, SALT);
         cipherText[8] ^= 0xFF;
 
-        encryption.decrypt(cipherText);
+        encryption.decryptWithSalt(cipherText, SALT);
     }
 
     @Test
@@ -78,5 +81,13 @@ public class ASaltedAesEncryption {
         return rangeClosed(0, searchIn.length - searchTerm.length)
                 .mapToObj(i -> copyOfRange(searchIn, i, i + searchTerm.length))
                 .anyMatch(subset -> Arrays.equals(subset, searchTerm));
+    }
+
+    private Salt corrupted() {
+
+        final byte[] buffer = copyOf(SALT.toBytes(), Salt.SALT_SIZE);
+        buffer[0] ^= 0xFF;
+
+        return new Salt(buffer);
     }
 }

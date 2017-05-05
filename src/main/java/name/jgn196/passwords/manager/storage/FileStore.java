@@ -53,7 +53,7 @@ public class FileStore implements SecureStore {
         if (!io.fileExists(file)) return new HashSet<>();
 
         final StoreFormat.DeserialiseResult result = format.deserialiseOuterLayer(io.readAllFrom(file));
-        final byte[] pl = encryption.decryptWithSalt(result.salt(), result.ct());
+        final byte[] pl = encryption.decryptWithSalt(result.ct(), result.salt());
         if (!result.crc().equals(Crc32.of(pl)))
             throw new DecryptionFailed("Decrypted data failed hash test.");
 
