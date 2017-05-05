@@ -9,7 +9,7 @@ public class DecryptionFailed extends RuntimeException {
         super(e);
     }
 
-    DecryptionFailed(final String message) {
+    public DecryptionFailed(final String message) {
 
         super(message);
     }

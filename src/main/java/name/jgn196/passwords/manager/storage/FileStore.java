@@ -1,8 +1,7 @@
 package name.jgn196.passwords.manager.storage;
 
 import name.jgn196.passwords.manager.core.Password;
-import name.jgn196.passwords.manager.crypto.SaltedAesEncryption;
-import name.jgn196.passwords.manager.crypto.StoreEncryption;
+import name.jgn196.passwords.manager.crypto.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,12 +52,21 @@ public class FileStore implements SecureStore {
 
         if (!io.fileExists(file)) return new HashSet<>();
 
-        return new HashSet<>(format.deserialiseEntries(encryption.decrypt(io.readAllFrom(file))));
+        final StoreFormat.DeserialiseResult result = format.deserialiseOuterLayer(io.readAllFrom(file));
+        final byte[] pl = encryption.decryptWithSalt(result.salt(), result.ct());
+        if (!result.crc().equals(Crc32.of(pl)))
+            throw new DecryptionFailed("Decrypted data failed hash test.");
+
+        return new HashSet<>(format.deserialiseEntries(pl));
     }
 
     private void save(final Set<StoreEntry> entries) throws IOException {
 
-        io.writeAllTo(file, encryption.encrypt(format.serialise(entries)));
+        final byte[] pl = format.serialise(entries);
+        final Crc32 crc = Crc32.of(pl);
+        final Salt salt = new SaltGenerator().get();
+        final byte[] ct = encryption.encryptWithSalt(pl, salt);
+        io.writeAllTo(file, format.serialise(salt, crc, ct));
     }
 
     @Override

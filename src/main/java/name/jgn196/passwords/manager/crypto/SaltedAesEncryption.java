@@ -49,32 +49,37 @@ public class SaltedAesEncryption implements StoreEncryption {
 
             return result.toByteArray();
 
-        } catch (IOException |
-                InvalidCipherTextException e) {
+        } catch (IOException e) {
 
             throw new RuntimeException(e);
         }
     }
 
-    private byte[] encryptWithSalt(final byte[] plainText, final Salt salt) throws InvalidCipherTextException {
+    @Override
+    public byte[] encryptWithSalt(final byte[] plainText, final Salt salt) {
+        try {
 
-        final PKCS12ParametersGenerator parametersGenerator = new PKCS12ParametersGenerator(new SHA256Digest());
-        parametersGenerator.init(
-                PBEParametersGenerator.PKCS12PasswordToBytes(password.characters()),
-                salt.toBytes(),
-                ITERATIONS);
+            final PKCS12ParametersGenerator parametersGenerator = new PKCS12ParametersGenerator(new SHA256Digest());
+            parametersGenerator.init(
+                    PBEParametersGenerator.PKCS12PasswordToBytes(password.characters()),
+                    salt.toBytes(),
+                    ITERATIONS);
 
-        final CBCBlockCipher blockCipher = new CBCBlockCipher(new AESEngine());
+            final CBCBlockCipher blockCipher = new CBCBlockCipher(new AESEngine());
 
-        final PaddedBufferedBlockCipher paddedCipher = new PaddedBufferedBlockCipher(blockCipher, new PKCS7Padding());
-        paddedCipher.init(ENCRYPTING, parametersGenerator.generateDerivedParameters(256, 128));
+            final PaddedBufferedBlockCipher paddedCipher = new PaddedBufferedBlockCipher(blockCipher, new PKCS7Padding());
+            paddedCipher.init(ENCRYPTING, parametersGenerator.generateDerivedParameters(256, 128));
 
-        final byte[] result = new byte[paddedCipher.getOutputSize(plainText.length)];
+            final byte[] result = new byte[paddedCipher.getOutputSize(plainText.length)];
 
-        int bytesCopied = paddedCipher.processBytes(plainText, 0, plainText.length, result, 0);
-        paddedCipher.doFinal(result, bytesCopied);
+            int bytesCopied = paddedCipher.processBytes(plainText, 0, plainText.length, result, 0);
+            paddedCipher.doFinal(result, bytesCopied);
 
-        return result;
+            return result;
+        } catch(InvalidCipherTextException e) {
+
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -93,9 +98,6 @@ public class SaltedAesEncryption implements StoreEncryption {
         } catch (IOException e) {
 
             throw new RuntimeException(e);
-        } catch (InvalidCipherTextException e) {
-
-            throw new DecryptionFailed(e);
         }
     }
 
@@ -104,25 +106,31 @@ public class SaltedAesEncryption implements StoreEncryption {
         return copyOfRange(encryptedData, SALT_SIZE + CHECKSUM_SIZE, encryptedData.length);
     }
 
-    private byte[] decryptWithSalt(final Salt salt, final byte[] cipherText) throws InvalidCipherTextException {
+    @Override
+    public byte[] decryptWithSalt(final Salt salt, final byte[] cipherText) {
+        try {
 
-        final PKCS12ParametersGenerator parametersGenerator = new PKCS12ParametersGenerator(new SHA256Digest());
-        parametersGenerator.init(
-                PBEParametersGenerator.PKCS12PasswordToBytes(password.characters()),
-                salt.toBytes(),
-                ITERATIONS);
+            final PKCS12ParametersGenerator parametersGenerator = new PKCS12ParametersGenerator(new SHA256Digest());
+            parametersGenerator.init(
+                    PBEParametersGenerator.PKCS12PasswordToBytes(password.characters()),
+                    salt.toBytes(),
+                    ITERATIONS);
 
-        final CBCBlockCipher blockCipher = new CBCBlockCipher(new AESEngine());
+            final CBCBlockCipher blockCipher = new CBCBlockCipher(new AESEngine());
 
-        final PaddedBufferedBlockCipher paddedCipher = new PaddedBufferedBlockCipher(blockCipher, new PKCS7Padding());
-        paddedCipher.init(DECRYPTING, parametersGenerator.generateDerivedParameters(256, 128));
+            final PaddedBufferedBlockCipher paddedCipher = new PaddedBufferedBlockCipher(blockCipher, new PKCS7Padding());
+            paddedCipher.init(DECRYPTING, parametersGenerator.generateDerivedParameters(256, 128));
 
-        final byte[] buffer = new byte[paddedCipher.getOutputSize(cipherText.length)];
+            final byte[] buffer = new byte[paddedCipher.getOutputSize(cipherText.length)];
 
-        int bytesCopied = paddedCipher.processBytes(cipherText, 0, cipherText.length, buffer, 0);
-        int plainTextLength = bytesCopied + paddedCipher.doFinal(buffer, bytesCopied);
+            int bytesCopied = paddedCipher.processBytes(cipherText, 0, cipherText.length, buffer, 0);
+            int plainTextLength = bytesCopied + paddedCipher.doFinal(buffer, bytesCopied);
 
-        return copyOf(buffer, plainTextLength);
+            return copyOf(buffer, plainTextLength);
+        } catch(InvalidCipherTextException e) {
+
+            throw new DecryptionFailed(e);
+        }
     }
 
     @Override
