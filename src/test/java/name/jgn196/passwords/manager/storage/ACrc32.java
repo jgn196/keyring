@@ -1,7 +1,6 @@
-package name.jgn196.passwords.manager.crypto;
+package name.jgn196.passwords.manager.storage;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;

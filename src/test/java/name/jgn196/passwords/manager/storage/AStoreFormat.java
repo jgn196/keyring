@@ -2,7 +2,6 @@ package name.jgn196.passwords.manager.storage;
 
 import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
-import name.jgn196.passwords.manager.crypto.Crc32;
 import name.jgn196.passwords.manager.crypto.Salt;
 import name.jgn196.passwords.manager.crypto.SaltGenerator;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package name.jgn196.passwords.manager.crypto;
+package name.jgn196.passwords.manager.storage;
 
 import java.io.*;
 import java.util.zip.CRC32;
@@ -9,7 +9,7 @@ public final class Crc32 {
 
     private final long value;
 
-    public static Crc32 of(final byte[] data) {
+    static Crc32 of(final byte[] data) {
 
         CRC_32.reset();
         CRC_32.update(data, 0, data.length);
@@ -27,14 +27,14 @@ public final class Crc32 {
         return value;
     }
 
-    public void writeTo(final OutputStream out) throws IOException {
+    void writeTo(final OutputStream out) throws IOException {
         try (final DataOutputStream dataStream = new DataOutputStream(out)) {
 
             dataStream.writeInt((int) value);
         }
     }
 
-    public static Crc32 readFrom(final InputStream in) throws IOException {
+    static Crc32 readFrom(final InputStream in) throws IOException {
         try (DataInputStream dataStream = new DataInputStream(in)) {
 
             return new Crc32(Integer.toUnsignedLong(dataStream.readInt()));
