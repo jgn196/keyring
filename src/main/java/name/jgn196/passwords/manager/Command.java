@@ -2,6 +2,7 @@ package name.jgn196.passwords.manager;
 
 import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
+import name.jgn196.passwords.manager.core.StoreFile;
 import name.jgn196.passwords.manager.storage.FileStore;
 
 abstract class Command {
@@ -49,6 +50,8 @@ abstract class Command {
 
         return storeExists;
     }
+
+    StoreFile storeFile() { return storeFile; }
 
     FileStore openWithPassword(final Password password) {
 

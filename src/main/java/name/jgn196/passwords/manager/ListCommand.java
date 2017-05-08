@@ -2,6 +2,7 @@ package name.jgn196.passwords.manager;
 
 import name.jgn196.passwords.manager.core.Password;
 import name.jgn196.passwords.manager.core.Safe;
+import name.jgn196.passwords.manager.core.StoreFile;
 import name.jgn196.passwords.manager.crypto.DecryptionFailed;
 
 class ListCommand extends Command {
@@ -23,7 +24,7 @@ class ListCommand extends Command {
 
     private void printLogins() {
         try (final Password storePassword = readStorePassword();
-             final Safe safe = new Safe(openWithPassword(storePassword))) {
+             final Safe safe = new Safe(storeFile(), storePassword)) {
 
             printLoginsFrom(safe);
 

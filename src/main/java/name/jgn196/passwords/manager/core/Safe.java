@@ -10,7 +10,12 @@ public class Safe implements AutoCloseable {
 
     private final SecureStore store;
 
-    public Safe(final SecureStore store) {
+    public Safe(final StoreFile file, final Password filePassword) {
+
+        this(file.openWithPassword(filePassword));
+    }
+
+    Safe(final SecureStore store) {
 
         this.store = store;
     }

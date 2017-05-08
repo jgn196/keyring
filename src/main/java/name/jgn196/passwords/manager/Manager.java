@@ -1,5 +1,7 @@
 package name.jgn196.passwords.manager;
 
+import name.jgn196.passwords.manager.core.StoreFile;
+
 import java.io.IOException;
 
 public class Manager {

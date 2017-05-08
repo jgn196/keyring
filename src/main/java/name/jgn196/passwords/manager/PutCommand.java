@@ -3,6 +3,7 @@ package name.jgn196.passwords.manager;
 import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
 import name.jgn196.passwords.manager.core.Safe;
+import name.jgn196.passwords.manager.core.StoreFile;
 import name.jgn196.passwords.manager.crypto.DecryptionFailed;
 
 class PutCommand extends Command {
@@ -30,7 +31,7 @@ class PutCommand extends Command {
 
     private void putPassword() {
         try (final Password password = readPassword();
-             final Safe safe = new Safe(openWithPassword(readStorePassword()))) {
+             final Safe safe = new Safe(storeFile(), readStorePassword())) {
 
             putPassword(password, safe);
 

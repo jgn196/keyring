@@ -3,6 +3,7 @@ package name.jgn196.passwords.manager;
 import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
 import name.jgn196.passwords.manager.core.Safe;
+import name.jgn196.passwords.manager.core.StoreFile;
 import name.jgn196.passwords.manager.crypto.DecryptionFailed;
 
 class RemoveCommand extends Command {
@@ -41,7 +42,7 @@ class RemoveCommand extends Command {
 
     private void removePassword() {
         try (final Password storePassword = readStorePassword();
-             final Safe safe = new Safe(openWithPassword(storePassword))) {
+             final Safe safe = new Safe(storeFile(), storePassword)) {
 
             removePasswordFrom(safe);
 
