@@ -1,5 +1,6 @@
 package name.jgn196.passwords.manager.core;
 
+import name.jgn196.passwords.manager.storage.FileStore;
 import name.jgn196.passwords.manager.storage.SecureStore;
 import name.jgn196.passwords.manager.storage.StoreEntry;
 
@@ -8,7 +9,7 @@ import java.util.stream.Stream;
 
 public class Safe implements AutoCloseable {
 
-    private final SecureStore store;
+    private SecureStore store;
 
     public Safe(final StoreFile file, final Password filePassword) {
 
@@ -47,6 +48,16 @@ public class Safe implements AutoCloseable {
         entry.ifPresent(store::remove);
 
         return entry.isPresent();
+    }
+
+    public void changePasswordTo(final Password newPassword) throws Exception {
+
+        final FileStore tempStore = new StoreFile("temp.dat").openWithPassword(newPassword);
+
+        store.copyTo(tempStore);
+        store.replaceWith(tempStore);
+        store.close();
+        store = tempStore;
     }
 
     @Override

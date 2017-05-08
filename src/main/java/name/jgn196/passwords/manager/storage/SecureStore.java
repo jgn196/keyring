@@ -9,4 +9,8 @@ public interface SecureStore extends AutoCloseable {
     Stream<StoreEntry> stream();
 
     void remove(StoreEntry entry);
+
+    void copyTo(SecureStore destination);
+
+    void replaceWith(SecureStore store);
 }

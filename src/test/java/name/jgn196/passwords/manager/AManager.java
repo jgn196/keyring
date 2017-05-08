@@ -151,7 +151,7 @@ public class AManager {
         givenInput("file_password", "new_file_password"); // TODO - Should confirm password when setting a new one
         manager.run("password_change");
 
-        assertThat(storedLogins("new_file_password"), not(hasItem(new Login("www.site.com", "Bill"))));
+        assertThat(storedLogins("new_file_password"), hasItem(new Login("www.site.com", "Bill")));
     }
 
     private void givenInput(final String... strings) {

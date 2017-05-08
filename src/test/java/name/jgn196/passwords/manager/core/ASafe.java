@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 public class ASafe {
@@ -94,6 +95,16 @@ public class ASafe {
 
         assertTrue(safe.remove(new Login("www.site.com", "Bill")));
         verify(store).remove(new StoreEntry(new Login("www.site.com", "Bill"), Password.from("password")));
+    }
+
+    @Test
+    public void canChangeStorePassword() throws Exception {
+
+        safe.changePasswordTo(Password.from("new_password"));
+
+        verify(store).copyTo(any(SecureStore.class));
+        verify(store).replaceWith(any(SecureStore.class));
+        verify(store).close();
     }
 
     @Test
