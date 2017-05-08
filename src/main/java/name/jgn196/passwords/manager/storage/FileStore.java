@@ -95,15 +95,7 @@ public class FileStore implements SecureStore {
     }
 
     @Override
-    public void copyTo(final SecureStore destination) {
-
-        stream().forEach(destination::store);
-    }
-
-    @Override
-    public void replaceWith(final SecureStore store) {
-
-    }
+    public void changePasswordTo(final Password password) { }
 
     @Override
     public void close() {

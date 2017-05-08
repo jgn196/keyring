@@ -72,18 +72,6 @@ public class AFileStore {
         fileStore.store(new StoreEntry(new Login("www.site.com", "Bill"), Password.from("another secret")));
     }
 
-    @Test
-    public void copiesEntriesToOtherStore() throws IOException {
-
-        final SecureStore otherStore = mock(SecureStore.class);
-        final StoreEntry entry = new StoreEntry(new Login("www.site.com", "Bill"), Password.from("another secret"));
-        storeContains(entry);
-
-        fileStore.copyTo(otherStore);
-
-        verify(otherStore).store(entry);
-    }
-
     private void givenNoStoreFile() {
 
         when(fileIO.fileExists(TEST_FILE)).thenReturn(false);

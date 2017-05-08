@@ -52,12 +52,7 @@ public class Safe implements AutoCloseable {
 
     public void changePasswordTo(final Password newPassword) throws Exception {
 
-        final FileStore tempStore = new StoreFile("temp.dat").openWithPassword(newPassword);
-
-        store.copyTo(tempStore);
-        store.replaceWith(tempStore);
-        store.close();
-        store = tempStore;
+        store.changePasswordTo(newPassword);
     }
 
     @Override

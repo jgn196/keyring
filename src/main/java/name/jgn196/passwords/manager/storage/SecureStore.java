@@ -1,5 +1,7 @@
 package name.jgn196.passwords.manager.storage;
 
+import name.jgn196.passwords.manager.core.Password;
+
 import java.util.stream.Stream;
 
 public interface SecureStore extends AutoCloseable {
@@ -10,7 +12,5 @@ public interface SecureStore extends AutoCloseable {
 
     void remove(StoreEntry entry);
 
-    void copyTo(SecureStore destination);
-
-    void replaceWith(SecureStore store);
+    void changePasswordTo(Password password);
 }

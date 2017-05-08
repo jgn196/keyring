@@ -100,11 +100,10 @@ public class ASafe {
     @Test
     public void canChangeStorePassword() throws Exception {
 
-        safe.changePasswordTo(Password.from("new_password"));
+        final Password newPassword = Password.from("new_password");
+        safe.changePasswordTo(newPassword);
 
-        verify(store).copyTo(any(SecureStore.class));
-        verify(store).replaceWith(any(SecureStore.class));
-        verify(store).close();
+        verify(store).changePasswordTo(newPassword);
     }
 
     @Test
