@@ -1,8 +1,6 @@
 package name.jgn196.passwords.manager.core;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
-import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.containsString;

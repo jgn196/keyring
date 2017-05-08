@@ -4,8 +4,6 @@ import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
 import name.jgn196.passwords.manager.core.Safe;
 
-import java.io.IOException;
-
 import static name.jgn196.passwords.manager.Manager.STORE_FILE;
 
 class StoreBuilder {
@@ -17,7 +15,7 @@ class StoreBuilder {
         this.storePassword = storePassword;
     }
 
-    void containing(final Login login, final String password) throws IOException {
+    void containing(final Login login, final String password) {
         try (final Safe safe = new Safe(STORE_FILE, Password.from(storePassword))) {
 
             safe.store(login, Password.from(password));

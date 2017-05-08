@@ -3,7 +3,7 @@ package name.jgn196.passwords.manager.storage;
 import java.io.*;
 import java.util.zip.CRC32;
 
-public final class Crc32 {
+final class Crc32 {
 
     private static final CRC32 CRC_32 = new CRC32();
 

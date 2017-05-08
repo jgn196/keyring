@@ -4,14 +4,14 @@ import name.jgn196.passwords.manager.core.StoreFile;
 
 import java.io.IOException;
 
-public class Manager {
+class Manager {
 
     private static final String STORE_FILE_NAME = "passwords.dat";
     private static final Console DEFAULT_CONSOLE = new Console();
 
     static final StoreFile STORE_FILE = new StoreFile(STORE_FILE_NAME);
 
-    private Console console;
+    private final Console console;
 
     public static void main(final String... args) throws IOException {
 

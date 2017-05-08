@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 public class AFileStore {
@@ -23,7 +22,7 @@ public class AFileStore {
 
 
     private final FileIO fileIO = mock(FileIO.class);
-    private FileStore fileStore = new FileStore(TEST_FILE, STORE_PASSWORD);
+    private final FileStore fileStore = new FileStore(TEST_FILE, STORE_PASSWORD);
 
     @Before
     public void injectFileMockIO() {

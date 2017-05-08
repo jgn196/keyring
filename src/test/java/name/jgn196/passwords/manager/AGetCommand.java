@@ -17,7 +17,7 @@ import static org.junit.Assert.assertThat;
 
 public class AGetCommand {
 
-    private TestConsole console = new TestConsole();
+    private final TestConsole console = new TestConsole();
 
     @Test
     public void printsUsage() {
