@@ -12,20 +12,24 @@ import java.util.stream.Stream;
 public class FileStore implements SecureStore {
 
     private final File file;
-    private final StoreFormat format = new StoreFormat();
+    private final StoreFormat format;
     private final StoreEncryption encryption;
+    private final FileIO io;
 
-    private FileIO io = new FileIO.Implementation();
+    public interface Importer {
 
-    public FileStore(final File file, final Password filePassword) {
-
-        this.file = file;
-        encryption = new SaltedAesEncryption(filePassword);
+        File file();
+        StoreFormat storeFormat();
+        StoreEncryption encryption();
+        FileIO fileIO();
     }
 
-    void inject(final FileIO io) {
+    FileStore(final Importer importer) {
 
-        this.io = io;
+        file = importer.file();
+        format = importer.storeFormat();
+        encryption = importer.encryption();
+        io = importer.fileIO();
     }
 
     @Override
@@ -107,4 +111,3 @@ public class FileStore implements SecureStore {
         }
     }
 }
-

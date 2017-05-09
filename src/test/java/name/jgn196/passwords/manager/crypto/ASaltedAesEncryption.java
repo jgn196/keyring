@@ -44,7 +44,7 @@ public class ASaltedAesEncryption {
     }
 
     @Test(expected = DecryptionFailed.class)
-    public void decryptsCorruptSalt() {
+    public void failsToDecryptCorruptSalt() {
 
         final StoreEncryption encryption = new SaltedAesEncryption(Password.from("password"));
         final byte[] cipherText = encryption.encryptWithSalt(PLAIN_TEXT, SALT);
@@ -54,7 +54,7 @@ public class ASaltedAesEncryption {
     }
 
     @Test(expected = DecryptionFailed.class)
-    public void decryptsCorruptCipherText() {
+    public void failsToDecryptCorruptCipherText() {
 
         final StoreEncryption encryption = new SaltedAesEncryption(Password.from("password"));
         final byte[] cipherText = encryption.encryptWithSalt(PLAIN_TEXT, SALT);

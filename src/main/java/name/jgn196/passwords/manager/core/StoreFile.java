@@ -1,6 +1,9 @@
 package name.jgn196.passwords.manager.core;
 
+import name.jgn196.passwords.manager.crypto.SaltedAesEncryption;
 import name.jgn196.passwords.manager.storage.FileStore;
+import name.jgn196.passwords.manager.storage.FileStoreBuilder;
+import name.jgn196.passwords.manager.storage.StoreFormat;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -24,8 +27,12 @@ public class StoreFile {
         return file.toPath();
     }
 
-    public FileStore openWithPassword(final Password password) {
+    FileStore openWithPassword(final Password password) {
 
-        return new FileStore(file, password);
+        return new FileStoreBuilder()
+                .with(file)
+                .with(new StoreFormat())
+                .with(new SaltedAesEncryption(password))
+                .build();
     }
 }

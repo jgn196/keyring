@@ -8,7 +8,7 @@ import java.io.*;
 import java.util.Collection;
 import java.util.HashSet;
 
-class StoreFormat {
+public class StoreFormat {
 
     static final int VERSION = 1;
 

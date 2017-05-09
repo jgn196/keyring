@@ -2,7 +2,8 @@ package name.jgn196.passwords.manager.storage;
 
 import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
-import org.junit.Before;
+import name.jgn196.passwords.manager.crypto.SaltedAesEncryption;
+import name.jgn196.passwords.manager.crypto.StoreEncryption;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -20,15 +21,13 @@ public class AFileStore {
     private static final File TEST_FILE = new File("path");
     private static final Password STORE_PASSWORD = Password.from("secret");
 
-
     private final FileIO fileIO = mock(FileIO.class);
-    private final FileStore fileStore = new FileStore(TEST_FILE, STORE_PASSWORD);
-
-    @Before
-    public void injectFileMockIO() {
-
-        fileStore.inject(fileIO);
-    }
+    private final FileStore fileStore = new FileStoreBuilder()
+            .with(TEST_FILE)
+            .with(new StoreFormat())
+            .with(new SaltedAesEncryption(STORE_PASSWORD))
+            .with(fileIO)
+            .build();
 
     @Test
     public void streamsNothingIfStoreFileMissing() {

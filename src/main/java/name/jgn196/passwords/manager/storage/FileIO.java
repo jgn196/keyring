@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-interface FileIO {
+public interface FileIO {
 
     boolean fileExists(File file);
     byte[] readAllFrom(File file) throws IOException;
