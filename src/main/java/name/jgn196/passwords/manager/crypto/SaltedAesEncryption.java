@@ -18,7 +18,7 @@ public class SaltedAesEncryption implements StoreEncryption {
     private static final boolean ENCRYPTING = true;
     private static final boolean DECRYPTING = false;
 
-    private final Password password;
+    private Password password;
 
     public SaltedAesEncryption(final Password password) {
 
@@ -77,6 +77,13 @@ public class SaltedAesEncryption implements StoreEncryption {
 
             throw new DecryptionFailed(e);
         }
+    }
+
+    @Override
+    public void changePassword(final Password password) {
+
+        this.password.close();
+        this.password = password;
     }
 
     @Override

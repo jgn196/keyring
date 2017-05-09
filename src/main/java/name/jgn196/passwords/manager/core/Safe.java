@@ -1,6 +1,5 @@
 package name.jgn196.passwords.manager.core;
 
-import name.jgn196.passwords.manager.storage.FileStore;
 import name.jgn196.passwords.manager.storage.SecureStore;
 import name.jgn196.passwords.manager.storage.StoreEntry;
 

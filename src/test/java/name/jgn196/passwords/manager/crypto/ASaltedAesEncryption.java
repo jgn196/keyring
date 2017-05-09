@@ -1,6 +1,7 @@
 package name.jgn196.passwords.manager.crypto;
 
 import name.jgn196.passwords.manager.core.Password;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -14,32 +15,30 @@ import static org.junit.Assert.*;
 public class ASaltedAesEncryption {
 
     private static final Salt SALT = new SaltGenerator().get();
+    static final byte[] PLAIN_TEXT = "plain text".getBytes();
 
     @Test
     public void encryptsDataFromPassword() {
 
-        final byte[] plainText = "plain text".getBytes();
-        final byte[] result = new SaltedAesEncryption(Password.from("password")).encryptWithSalt(plainText, SALT);
+        final byte[] result = new SaltedAesEncryption(Password.from("password")).encryptWithSalt(PLAIN_TEXT, SALT);
 
-        assertThat(result.length, greaterThanOrEqualTo(plainText.length));
-        assertFalse("Result contains plain text.", contains(result, plainText));
+        assertThat(result.length, greaterThanOrEqualTo(PLAIN_TEXT.length));
+        assertFalse("Result contains plain text.", contains(result, PLAIN_TEXT));
     }
 
     @Test
     public void decryptsUsingPassword() {
 
         final StoreEncryption encryption = new SaltedAesEncryption(Password.from("password"));
-        final byte[] plainText = "plain text".getBytes();
-        final byte[] cipherText = encryption.encryptWithSalt(plainText, SALT);
+        final byte[] cipherText = encryption.encryptWithSalt(PLAIN_TEXT, SALT);
 
-        assertArrayEquals(plainText, encryption.decryptWithSalt(cipherText, SALT));
+        assertArrayEquals(PLAIN_TEXT, encryption.decryptWithSalt(cipherText, SALT));
     }
 
     @Test(expected = DecryptionFailed.class)
     public void decryptsUsingWrongPassword() {
 
-        final byte[] plainText = "plain text".getBytes();
-        final byte[] cipherText = new SaltedAesEncryption(Password.from("password")).encryptWithSalt(plainText, SALT);
+        final byte[] cipherText = new SaltedAesEncryption(Password.from("password")).encryptWithSalt(PLAIN_TEXT, SALT);
 
         new SaltedAesEncryption(Password.from("p@ssword")).decryptWithSalt(cipherText, SALT);
     }
@@ -47,9 +46,8 @@ public class ASaltedAesEncryption {
     @Test(expected = DecryptionFailed.class)
     public void decryptsCorruptSalt() {
 
-        final byte[] plainText = "plain text".getBytes();
         final StoreEncryption encryption = new SaltedAesEncryption(Password.from("password"));
-        final byte[] cipherText = encryption.encryptWithSalt(plainText, SALT);
+        final byte[] cipherText = encryption.encryptWithSalt(PLAIN_TEXT, SALT);
         final Salt corruptSalt = corrupted();
 
         encryption.decryptWithSalt(cipherText, corruptSalt);
@@ -58,12 +56,32 @@ public class ASaltedAesEncryption {
     @Test(expected = DecryptionFailed.class)
     public void decryptsCorruptCipherText() {
 
-        final byte[] plainText = "plain text".getBytes();
         final StoreEncryption encryption = new SaltedAesEncryption(Password.from("password"));
-        final byte[] cipherText = encryption.encryptWithSalt(plainText, SALT);
+        final byte[] cipherText = encryption.encryptWithSalt(PLAIN_TEXT, SALT);
         cipherText[8] ^= 0xFF;
 
         encryption.decryptWithSalt(cipherText, SALT);
+    }
+
+    @Test
+    public void canChangeItsPassword() {
+
+        final Password firstPassword = Password.from("password");
+        final Password secondPassword = Password.from("password 2");
+        final byte[] cipherText = new SaltedAesEncryption(secondPassword).encryptWithSalt(PLAIN_TEXT, SALT);
+
+        final StoreEncryption encryption = new SaltedAesEncryption(firstPassword);
+
+        try {
+            encryption.decryptWithSalt(cipherText, SALT);
+            fail("Decrypted with wrong password");
+        } catch(DecryptionFailed e) {
+            // Expected
+        }
+
+        encryption.changePassword(secondPassword);
+        assertArrayEquals(PLAIN_TEXT, encryption.decryptWithSalt(cipherText, SALT));
+        assertTrue(firstPassword.isClosed());
     }
 
     @Test
