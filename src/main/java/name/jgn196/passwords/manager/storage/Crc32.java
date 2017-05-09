@@ -17,7 +17,7 @@ final class Crc32 {
         return new Crc32(CRC_32.getValue());
     }
 
-    private Crc32(final long value) {
+    Crc32(final long value) {
 
         this.value = value;
     }
