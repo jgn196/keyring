@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
@@ -47,8 +48,11 @@ public class AFileStore {
         when(fileIO.readAllFrom(TEST_FILE)).thenReturn(FILE_DATA);
         when(format.deserialiseOuterLayer(FILE_DATA))
                 .thenReturn(new StoreFormat.DeserialiseResult(SALT, CRC, CIPHER_TEXT));
-        when(encryption.decryptWithSalt(CIPHER_TEXT, SALT)).thenReturn(PLAIN_TEXT);
         when(format.deserialiseEntries(PLAIN_TEXT)).thenReturn(singletonList(STORE_ENTRY));
+        when(format.serialise(any(Collection.class))).thenReturn(PLAIN_TEXT);
+        when(format.serialise(any(Salt.class), eq(CRC), eq(CIPHER_TEXT))).thenReturn(FILE_DATA);
+        when(encryption.decryptWithSalt(CIPHER_TEXT, SALT)).thenReturn(PLAIN_TEXT);
+        when(encryption.encryptWithSalt(eq(PLAIN_TEXT), any(Salt.class))).thenReturn(CIPHER_TEXT);
     }
 
     @Test
@@ -110,6 +114,57 @@ public class AFileStore {
         fileStore.stream();
     }
 
+    @Test
+    public void serialisesEntries() throws IOException {
+
+        givenNoStoreFile();
+
+        fileStore.store(STORE_ENTRY);
+
+        //noinspection unchecked
+        verify(format).serialise((Collection) argThat(contains(STORE_ENTRY)));
+    }
+
+    @Test
+    public void encryptsPlainText() throws IOException {
+
+        fileStore.store(STORE_ENTRY);
+
+        verify(encryption).encryptWithSalt(eq(PLAIN_TEXT), any(Salt.class));
+    }
+
+    @Test
+    public void serialisesOuterFormatLayer() throws IOException {
+
+        fileStore.store(STORE_ENTRY);
+
+        verify(format).serialise(any(Salt.class), eq(CRC), eq(CIPHER_TEXT));
+    }
+
+    @Test
+    public void writesToFile() throws IOException {
+
+        fileStore.store(STORE_ENTRY);
+
+        verify(fileIO).writeAllTo(TEST_FILE, FILE_DATA);
+    }
+
+    @Test(expected = EntryNotStored.class)
+    public void translatesIoErrorToEntryNotStoredFailure() throws IOException {
+
+        givenFileWriteThrows();
+
+        fileStore.store(STORE_ENTRY);
+    }
+
+    @Test
+    public void closesItsEncryption() throws Exception {
+
+        fileStore.close();
+
+        verify(encryption).close();
+    }
+
     private void givenNoStoreFile() {
 
         when(fileIO.fileExists(TEST_FILE)).thenReturn(false);
@@ -124,5 +179,10 @@ public class AFileStore {
     private void givenFileReadThrows() throws IOException {
 
         when(fileIO.readAllFrom(TEST_FILE)).thenThrow(new IOException());
+    }
+
+    private void givenFileWriteThrows() throws IOException {
+
+        doThrow(new IOException()).when(fileIO).writeAllTo(TEST_FILE, FILE_DATA);
     }
 }
