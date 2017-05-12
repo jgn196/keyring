@@ -32,7 +32,8 @@ public class StoreFile {
         return new FileStoreBuilder()
                 .with(file)
                 .with(new StoreFormat())
-                .with(new SaltedAesEncryption(password))
+                .with(new SaltedAesEncryption())
+                .with(password)
                 .build();
     }
 }

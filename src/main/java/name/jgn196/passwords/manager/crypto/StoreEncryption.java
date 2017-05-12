@@ -2,9 +2,8 @@ package name.jgn196.passwords.manager.crypto;
 
 import name.jgn196.passwords.manager.core.Password;
 
-public interface StoreEncryption extends AutoCloseable {
+public interface StoreEncryption {
 
-    byte[] encryptWithSalt(byte[] plainText, Salt salt);
-    byte[] decryptWithSalt(byte[] cipherText, Salt salt);
-    void changePassword(Password password);
+    byte[] encryptWithSalt(byte[] plainText, Salt salt, Password password);
+    byte[] decryptWithSalt(byte[] cipherText, Salt salt, Password password);
 }

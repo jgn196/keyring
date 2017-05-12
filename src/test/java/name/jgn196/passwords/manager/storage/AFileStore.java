@@ -29,7 +29,8 @@ public class AFileStore {
     private static final Salt SALT = new SaltGenerator().get();
     private static final byte[] PLAIN_TEXT = "plain text".getBytes();
     private static final Crc32 CRC = Crc32.of(PLAIN_TEXT);
-    private static final StoreEntry STORE_ENTRY = new StoreEntry(new Login("www.site.com", "Bill"), Password.from("secret"));
+    private static final Password PASSWORD = Password.from("secret");
+    private static final StoreEntry STORE_ENTRY = new StoreEntry(new Login("www.site.com", "Bill"), PASSWORD);
 
     private final StoreFormat format = mock(StoreFormat.class);
     private final FileIO fileIO = mock(FileIO.class);
@@ -39,6 +40,7 @@ public class AFileStore {
             .with(format)
             .with(encryption)
             .with(fileIO)
+            .with(PASSWORD)
             .build();
 
     @Before
@@ -51,8 +53,8 @@ public class AFileStore {
         when(format.deserialiseEntries(PLAIN_TEXT)).thenReturn(singletonList(STORE_ENTRY));
         when(format.serialise(any(Collection.class))).thenReturn(PLAIN_TEXT);
         when(format.serialise(any(Salt.class), eq(CRC), eq(CIPHER_TEXT))).thenReturn(FILE_DATA);
-        when(encryption.decryptWithSalt(CIPHER_TEXT, SALT)).thenReturn(PLAIN_TEXT);
-        when(encryption.encryptWithSalt(eq(PLAIN_TEXT), any(Salt.class))).thenReturn(CIPHER_TEXT);
+        when(encryption.decryptWithSalt(CIPHER_TEXT, SALT, PASSWORD)).thenReturn(PLAIN_TEXT);
+        when(encryption.encryptWithSalt(eq(PLAIN_TEXT), any(Salt.class), eq(PASSWORD))).thenReturn(CIPHER_TEXT);
     }
 
     @Test
@@ -86,7 +88,7 @@ public class AFileStore {
 
         fileStore.stream();
 
-        verify(encryption).decryptWithSalt(CIPHER_TEXT, SALT);
+        verify(encryption).decryptWithSalt(CIPHER_TEXT, SALT, PASSWORD);
     }
 
     @Test(expected = DecryptionFailed.class)
@@ -130,7 +132,7 @@ public class AFileStore {
 
         fileStore.store(STORE_ENTRY);
 
-        verify(encryption).encryptWithSalt(eq(PLAIN_TEXT), any(Salt.class));
+        verify(encryption).encryptWithSalt(eq(PLAIN_TEXT), any(Salt.class), eq(PASSWORD));
     }
 
     @Test
@@ -161,8 +163,6 @@ public class AFileStore {
     public void closesItsEncryption() throws Exception {
 
         fileStore.close();
-
-        verify(encryption).close();
     }
 
     private void givenNoStoreFile() {

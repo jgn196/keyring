@@ -15,6 +15,7 @@ public class FileStore implements SecureStore {
     private final StoreFormat format;
     private final StoreEncryption encryption;
     private final FileIO io;
+    private final Password password;
 
     public interface Importer {
 
@@ -22,6 +23,7 @@ public class FileStore implements SecureStore {
         StoreFormat storeFormat();
         StoreEncryption encryption();
         FileIO fileIO();
+        Password password();
     }
 
     FileStore(final Importer importer) {
@@ -30,6 +32,7 @@ public class FileStore implements SecureStore {
         format = importer.storeFormat();
         encryption = importer.encryption();
         io = importer.fileIO();
+        password = importer.password();
     }
 
     @Override
@@ -57,7 +60,7 @@ public class FileStore implements SecureStore {
         if (!io.fileExists(file)) return new HashSet<>();
 
         final StoreFormat.DeserialiseResult result = format.deserialiseOuterLayer(io.readAllFrom(file));
-        final byte[] pl = encryption.decryptWithSalt(result.ct(), result.salt());
+        final byte[] pl = encryption.decryptWithSalt(result.ct(), result.salt(), password);
         if (!result.crc().equals(Crc32.of(pl)))
             throw new DecryptionFailed("Decrypted data failed hash test.");
 
@@ -69,7 +72,7 @@ public class FileStore implements SecureStore {
         final byte[] pl = format.serialise(entries);
         final Crc32 crc = Crc32.of(pl);
         final Salt salt = new SaltGenerator().get();
-        final byte[] ct = encryption.encryptWithSalt(pl, salt);
+        final byte[] ct = encryption.encryptWithSalt(pl, salt, password);
         io.writeAllTo(file, format.serialise(salt, crc, ct));
     }
 
@@ -104,10 +107,6 @@ public class FileStore implements SecureStore {
     @Override
     public void close() {
 
-        try {
-            encryption.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        password.close();
     }
 }
