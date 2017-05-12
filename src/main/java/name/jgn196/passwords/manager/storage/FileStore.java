@@ -1,12 +1,14 @@
 package name.jgn196.passwords.manager.storage;
 
 import name.jgn196.passwords.manager.core.Password;
-import name.jgn196.passwords.manager.crypto.*;
+import name.jgn196.passwords.manager.crypto.DecryptionFailed;
+import name.jgn196.passwords.manager.crypto.Salt;
+import name.jgn196.passwords.manager.crypto.SaltGenerator;
+import name.jgn196.passwords.manager.crypto.StoreEncryption;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 import java.util.stream.Stream;
 
 public class FileStore implements SecureStore {
@@ -15,7 +17,6 @@ public class FileStore implements SecureStore {
     private final StoreFormat format;
     private final StoreEncryption encryption;
     private final FileIO io;
-    private final Password password;
 
     public interface Importer {
 
@@ -23,7 +24,6 @@ public class FileStore implements SecureStore {
         StoreFormat storeFormat();
         StoreEncryption encryption();
         FileIO fileIO();
-        Password password();
     }
 
     FileStore(final Importer importer) {
@@ -32,81 +32,28 @@ public class FileStore implements SecureStore {
         format = importer.storeFormat();
         encryption = importer.encryption();
         io = importer.fileIO();
-        password = importer.password();
     }
 
     @Override
-    public void store(final StoreEntry entry) throws EntryNotStored {
-        try {
+    public Stream<StoreEntry> readEntriesUsing(final Password password) throws IOException {
 
-            final Set<StoreEntry> entries = storeContents();
-
-            entries.stream()
-                    .filter(e -> e.isFor(entry.login()))
-                    .findFirst()
-                    .ifPresent(entries::remove);
-
-            entries.add(entry);
-            save(entries);
-
-        } catch (IOException e) {
-
-            throw new EntryNotStored(e);
-        }
-    }
-
-    private Set<StoreEntry> storeContents() throws IOException {
-
-        if (!io.fileExists(file)) return new HashSet<>();
+        if (!io.fileExists(file)) return Stream.empty();
 
         final StoreFormat.DeserialiseResult result = format.deserialiseOuterLayer(io.readAllFrom(file));
         final byte[] pl = encryption.decryptWithSalt(result.ct(), result.salt(), password);
         if (!result.crc().equals(Crc32.of(pl)))
             throw new DecryptionFailed("Decrypted data failed hash test.");
 
-        return new HashSet<>(format.deserialiseEntries(pl));
+        return format.deserialiseEntries(pl).stream();
     }
 
-    private void save(final Set<StoreEntry> entries) throws IOException {
+    @Override
+    public void writeEntries(final Collection<StoreEntry> entries, final Password password) throws IOException {
 
         final byte[] pl = format.serialise(entries);
         final Crc32 crc = Crc32.of(pl);
         final Salt salt = new SaltGenerator().get();
         final byte[] ct = encryption.encryptWithSalt(pl, salt, password);
         io.writeAllTo(file, format.serialise(salt, crc, ct));
-    }
-
-    @Override
-    public Stream<StoreEntry> stream() throws StoreReadFailed {
-        try {
-
-            return storeContents().stream();
-        } catch (IOException e) {
-
-            throw new StoreReadFailed(e);
-        }
-    }
-
-    @Override
-    public void remove(final StoreEntry entry) {
-
-        try {
-
-            final Set<StoreEntry> entries = storeContents();
-            entries.remove(entry);
-            save(entries);
-        } catch (IOException e) {
-
-            throw new EntryNotRemoved(e);
-        }
-    }
-
-    @Override
-    public void changePasswordTo(final Password password) { }
-
-    @Override
-    public void close() {
-
-        password.close();
     }
 }

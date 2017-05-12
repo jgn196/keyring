@@ -1,6 +1,5 @@
 package name.jgn196.passwords.manager.storage;
 
-import name.jgn196.passwords.manager.core.Password;
 import name.jgn196.passwords.manager.crypto.StoreEncryption;
 
 import java.io.File;
@@ -11,7 +10,6 @@ public class FileStoreBuilder {
     private StoreFormat format;
     private StoreEncryption encryption;
     private FileIO io = new FileIO.Implementation();
-    private Password password;
 
     public FileStoreBuilder with(final File file) {
 
@@ -37,12 +35,6 @@ public class FileStoreBuilder {
         return this;
     }
 
-    public FileStoreBuilder with(final Password password) {
-
-        this.password = password;
-        return this;
-    }
-
     public FileStore build() {
 
         return new FileStore(new FileStore.Importer() {
@@ -57,9 +49,6 @@ public class FileStoreBuilder {
 
             @Override
             public FileIO fileIO() { return io; }
-
-            @Override
-            public Password password() { return password; }
         });
     }
 }

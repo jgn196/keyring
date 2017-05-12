@@ -12,8 +12,10 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Stream;
 
+import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.contains;
@@ -40,7 +42,6 @@ public class AFileStore {
             .with(format)
             .with(encryption)
             .with(fileIO)
-            .with(PASSWORD)
             .build();
 
     @Before
@@ -58,11 +59,11 @@ public class AFileStore {
     }
 
     @Test
-    public void streamsNothingIfStoreFileMissing() {
+    public void streamsNothingIfStoreFileMissing() throws IOException {
 
         givenNoStoreFile();
 
-        final Stream<StoreEntry> results = fileStore.stream();
+        final Stream<StoreEntry> results = fileStore.readEntriesUsing(PASSWORD);
 
         assertEquals(0L, results.count());
     }
@@ -70,7 +71,7 @@ public class AFileStore {
     @Test
     public void readsFile() throws IOException {
 
-        fileStore.stream();
+        fileStore.readEntriesUsing(PASSWORD);
 
         verify(fileIO).readAllFrom(TEST_FILE);
     }
@@ -78,7 +79,7 @@ public class AFileStore {
     @Test
     public void deserialisesOuterFormatLayer() throws IOException {
 
-        fileStore.stream();
+        fileStore.readEntriesUsing(PASSWORD);
 
         verify(format).deserialiseOuterLayer(FILE_DATA);
     }
@@ -86,7 +87,7 @@ public class AFileStore {
     @Test
     public void decryptsCipherText() throws IOException {
 
-        fileStore.stream();
+        fileStore.readEntriesUsing(PASSWORD);
 
         verify(encryption).decryptWithSalt(CIPHER_TEXT, SALT, PASSWORD);
     }
@@ -96,24 +97,16 @@ public class AFileStore {
 
         givenWrongCrc();
 
-        fileStore.stream();
+        fileStore.readEntriesUsing(PASSWORD);
     }
 
     @Test
     public void deserialisesEntries() throws IOException {
 
-        final Stream<StoreEntry> results = fileStore.stream();
+        final Stream<StoreEntry> results = fileStore.readEntriesUsing(PASSWORD);
 
         assertThat(results.collect(toList()), contains(STORE_ENTRY));
         verify(format).deserialiseEntries(PLAIN_TEXT);
-    }
-
-    @Test(expected = StoreReadFailed.class)
-    public void translatesIoErrorToStoreReadFailure() throws IOException {
-
-        givenFileReadThrows();
-
-        fileStore.stream();
     }
 
     @Test
@@ -121,7 +114,7 @@ public class AFileStore {
 
         givenNoStoreFile();
 
-        fileStore.store(STORE_ENTRY);
+        fileStore.writeEntries(singleton(STORE_ENTRY), PASSWORD);
 
         //noinspection unchecked
         verify(format).serialise((Collection) argThat(contains(STORE_ENTRY)));
@@ -130,7 +123,7 @@ public class AFileStore {
     @Test
     public void encryptsPlainText() throws IOException {
 
-        fileStore.store(STORE_ENTRY);
+        fileStore.writeEntries(singleton(STORE_ENTRY), PASSWORD);
 
         verify(encryption).encryptWithSalt(eq(PLAIN_TEXT), any(Salt.class), eq(PASSWORD));
     }
@@ -138,7 +131,7 @@ public class AFileStore {
     @Test
     public void serialisesOuterFormatLayer() throws IOException {
 
-        fileStore.store(STORE_ENTRY);
+        fileStore.writeEntries(singleton(STORE_ENTRY), PASSWORD);
 
         verify(format).serialise(any(Salt.class), eq(CRC), eq(CIPHER_TEXT));
     }
@@ -146,23 +139,9 @@ public class AFileStore {
     @Test
     public void writesToFile() throws IOException {
 
-        fileStore.store(STORE_ENTRY);
+        fileStore.writeEntries(singleton(STORE_ENTRY), PASSWORD);
 
         verify(fileIO).writeAllTo(TEST_FILE, FILE_DATA);
-    }
-
-    @Test(expected = EntryNotStored.class)
-    public void translatesIoErrorToEntryNotStoredFailure() throws IOException {
-
-        givenFileWriteThrows();
-
-        fileStore.store(STORE_ENTRY);
-    }
-
-    @Test
-    public void closesItsEncryption() throws Exception {
-
-        fileStore.close();
     }
 
     private void givenNoStoreFile() {
@@ -174,15 +153,5 @@ public class AFileStore {
 
         when(format.deserialiseOuterLayer(FILE_DATA))
                 .thenReturn(new StoreFormat.DeserialiseResult(SALT, new Crc32(CRC.toLong() + 1), CIPHER_TEXT));
-    }
-
-    private void givenFileReadThrows() throws IOException {
-
-        when(fileIO.readAllFrom(TEST_FILE)).thenThrow(new IOException());
-    }
-
-    private void givenFileWriteThrows() throws IOException {
-
-        doThrow(new IOException()).when(fileIO).writeAllTo(TEST_FILE, FILE_DATA);
     }
 }

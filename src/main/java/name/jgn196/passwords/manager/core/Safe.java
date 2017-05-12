@@ -3,60 +3,99 @@ package name.jgn196.passwords.manager.core;
 import name.jgn196.passwords.manager.storage.SecureStore;
 import name.jgn196.passwords.manager.storage.StoreEntry;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 public class Safe implements AutoCloseable {
 
     private SecureStore store;
+    private Password filePassword;
 
     public Safe(final StoreFile file, final Password filePassword) {
 
-        this(file.openWithPassword(filePassword));
+        this(file.open(), filePassword);
     }
 
-    Safe(final SecureStore store) {
+    Safe(final SecureStore store, final Password filePassword) {
 
         this.store = store;
+        this.filePassword = filePassword;
     }
 
     public void store(final Login login, final Password password) {
+        try {
 
-        store.store(new StoreEntry(login, password));
+            final Map<Login, StoreEntry> entries = store
+                    .readEntriesUsing(filePassword)
+                    .collect(Collectors.toMap(StoreEntry::login, e -> e));
+            final StoreEntry entry = new StoreEntry(login, password);
+
+            entries.put(login, entry);
+
+            store.writeEntries(entries.values(), filePassword);
+
+        } catch (IOException e) {
+            throw new EntryNotStored(e);
+        }
     }
 
     public Optional<Password> passwordFor(final Login login) {
+        try {
 
-        return store.stream()
-                .filter(entry -> entry.isFor(login))
-                .map(StoreEntry::password)
-                .findFirst();
+            return store.readEntriesUsing(filePassword)
+                    .filter(entry -> entry.isFor(login))
+                    .map(StoreEntry::password)
+                    .findFirst();
+
+        } catch (IOException e) {
+            throw new EntriesNotRead(e);
+        }
     }
 
     public Stream<Login> logins() {
+        try {
 
-        return store.stream().map(StoreEntry::login);
+            return store.readEntriesUsing(filePassword).map(StoreEntry::login);
+
+        } catch (IOException e) {
+            throw new EntriesNotRead(e);
+        }
     }
 
     public boolean remove(final Login login) {
+        try {
 
-        final Optional<StoreEntry> entry = store.stream()
-                .filter(e -> e.isFor(login))
-                .findFirst();
+            final Collection<StoreEntry> entries = store.readEntriesUsing(filePassword).collect(toList());
+            final boolean entriesRemoved = entries.removeIf(e -> e.isFor(login));
 
-        entry.ifPresent(store::remove);
+            store.writeEntries(entries, filePassword);
+            return entriesRemoved;
 
-        return entry.isPresent();
+        } catch (IOException e) {
+            throw new EntryNotRemoved(e);
+        }
     }
 
-    public void changePasswordTo(final Password newPassword) throws Exception {
+    public void changePasswordTo(final Password newPassword)  {
 
-        store.changePasswordTo(newPassword);
+        try {
+            store.writeEntries(store.readEntriesUsing(filePassword).collect(toList()), newPassword);
+            filePassword.close();
+            filePassword = newPassword;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void close() throws Exception {
 
-        store.close();
+        //store.close();
     }
 }

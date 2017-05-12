@@ -27,13 +27,12 @@ public class StoreFile {
         return file.toPath();
     }
 
-    FileStore openWithPassword(final Password password) {
+    FileStore open() {
 
         return new FileStoreBuilder()
                 .with(file)
                 .with(new StoreFormat())
                 .with(new SaltedAesEncryption())
-                .with(password)
                 .build();
     }
 }
