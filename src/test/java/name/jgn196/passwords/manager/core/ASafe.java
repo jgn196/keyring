@@ -170,6 +170,22 @@ public class ASafe {
         assertTrue(password.isClosed());
     }
 
+    @Test(expected = PasswordNotChanged.class)
+    public void throwsPasswordChangeIOFailure() throws IOException {
+
+        givenReadWillFail();
+
+        safe.changePasswordTo(Password.from("ignore me"));
+    }
+
+    @Test
+    public void closesPassword() {
+
+        safe.close();
+
+        assertTrue(password.isClosed());
+    }
+
     private void givenStoreIsEmpty() throws IOException {
 
         givenStoreContains();
@@ -187,7 +203,7 @@ public class ASafe {
     }
 
     @After
-    public void closeSafe() throws Exception {
+    public void closeSafe() {
 
         safe.close();
     }
