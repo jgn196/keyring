@@ -4,6 +4,7 @@ import name.jgn196.passwords.manager.storage.SecureStore;
 import name.jgn196.passwords.manager.storage.StoreEntry;
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -168,6 +169,16 @@ public class ASafe {
         verify(store).readEntriesUsing(password);
         verify(store).writeEntries(any(Collection.class), eq(newPassword));
         assertTrue(password.isClosed());
+    }
+
+    @Test
+    public void ignoresChangingPasswordToItself() throws IOException {
+
+        safe.changePasswordTo(password);
+
+        verify(store, never()).readEntriesUsing(any(Password.class));
+        verify(store, never()).writeEntries(any(Collection.class), any(Password.class));
+        assertFalse(password.isClosed());
     }
 
     @Test(expected = PasswordNotChanged.class)

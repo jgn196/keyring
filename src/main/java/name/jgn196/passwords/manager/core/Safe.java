@@ -85,6 +85,8 @@ public class Safe implements AutoCloseable {
     public void changePasswordTo(final Password newPassword)  {
         try {
 
+            if (newPassword.equals(filePassword)) return;
+
             store.writeEntries(store.readEntriesUsing(filePassword).collect(toList()), newPassword);
             filePassword.close();
             filePassword = newPassword;
