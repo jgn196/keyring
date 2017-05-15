@@ -1,5 +1,6 @@
 package name.jgn196.passwords.manager.core;
 
+import name.jgn196.passwords.manager.crypto.DecryptionFailed;
 import name.jgn196.passwords.manager.storage.SecureStore;
 import name.jgn196.passwords.manager.storage.StoreEntry;
 
@@ -91,7 +92,7 @@ public class Safe implements AutoCloseable {
             filePassword.close();
             filePassword = newPassword;
 
-        } catch (IOException e) {
+        } catch (IOException | DecryptionFailed e) {
             throw new PasswordNotChanged(e);
         }
     }

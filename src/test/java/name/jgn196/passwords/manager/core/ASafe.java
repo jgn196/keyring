@@ -1,5 +1,6 @@
 package name.jgn196.passwords.manager.core;
 
+import name.jgn196.passwords.manager.crypto.DecryptionFailed;
 import name.jgn196.passwords.manager.storage.SecureStore;
 import name.jgn196.passwords.manager.storage.StoreEntry;
 import org.junit.After;
@@ -56,10 +57,6 @@ public class ASafe {
         givenReadWillFail();
 
         safe.store(new Login("www.site.net", "Bill"), Password.from("super_secret"));
-    }
-
-    private void givenReadWillFail() throws IOException {
-        when(store.readEntriesUsing(any(Password.class))).thenThrow(new IOException());
     }
 
     @Test
@@ -189,6 +186,14 @@ public class ASafe {
         safe.changePasswordTo(Password.from("ignore me"));
     }
 
+    @Test(expected = PasswordNotChanged.class)
+    public void throwsPasswordChangeWrongPassword() throws IOException {
+
+        when(store.readEntriesUsing(any(Password.class))).thenThrow(new DecryptionFailed("test"));
+
+        safe.changePasswordTo(Password.from("ignore me"));
+    }
+
     @Test
     public void closesPassword() {
 
@@ -211,6 +216,11 @@ public class ASafe {
 
         //noinspection unchecked
         return (Collection<StoreEntry>) argThat(hasItems(entries));
+    }
+
+    private void givenReadWillFail() throws IOException {
+
+        when(store.readEntriesUsing(any(Password.class))).thenThrow(new IOException());
     }
 
     @After

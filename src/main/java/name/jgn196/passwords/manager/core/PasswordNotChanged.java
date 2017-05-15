@@ -1,10 +1,8 @@
 package name.jgn196.passwords.manager.core;
 
-import java.io.IOException;
+public class PasswordNotChanged extends RuntimeException {
 
-class PasswordNotChanged extends RuntimeException {
-
-    PasswordNotChanged(final IOException cause) {
+    PasswordNotChanged(final Exception cause) {
 
         super("Store password not changed.", cause);
     }
