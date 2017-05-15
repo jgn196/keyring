@@ -33,6 +33,7 @@
             <outputDirectory/>
             <includes>
                 <include>KeyRing.bat</include>
+                <include>KeyRing</include>
             </includes>
         </fileSet>
     </fileSets>
