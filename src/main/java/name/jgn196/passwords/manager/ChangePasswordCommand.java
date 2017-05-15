@@ -8,6 +8,8 @@ import name.jgn196.passwords.manager.crypto.DecryptionFailed;
 
 class ChangePasswordCommand extends Command {
 
+    static final String NAME = "change_password";
+
     ChangePasswordCommand(final Console console, final StoreFile storeFile) {
 
         super(console, storeFile);
@@ -18,6 +20,10 @@ class ChangePasswordCommand extends Command {
 
         if (!checkStoreExists()) return;
 
+        changePassword();
+    }
+
+    private void changePassword() {
         try (final Password storePassword = readStorePassword();
              final Password newPassword = readPasswordFromConsole("New store password:");
              final Safe safe = new Safe(storeFile(), storePassword)) {

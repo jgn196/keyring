@@ -35,6 +35,12 @@ public class ACommandParser {
     }
 
     @Test
+    public void buildsChangePasswordCommand() {
+
+        assertThat(COMMAND_PARSER.parse("change_password"), instanceOf(ChangePasswordCommand.class));
+    }
+
+    @Test
     public void defaultsToBuildingHelpCommand() {
 
         assertThat(COMMAND_PARSER.parse(), instanceOf(HelpCommand.class));

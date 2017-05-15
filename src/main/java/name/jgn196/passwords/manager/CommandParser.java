@@ -26,6 +26,8 @@ class CommandParser {
                 return new PutCommand(console, storeFile, args);
             case RemoveCommand.NAME:
                 return new RemoveCommand(console, storeFile, args);
+            case ChangePasswordCommand.NAME:
+                return new ChangePasswordCommand(console, storeFile);
             default:
                 return new HelpCommand(console);
         }

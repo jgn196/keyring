@@ -1,7 +1,6 @@
 package name.jgn196.passwords.manager;
 
 import name.jgn196.passwords.manager.core.Login;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -143,13 +142,12 @@ public class AManager {
     }
 
     @Test
-    @Ignore("Not implemented")
     public void changesStorePassword() throws IOException {
 
         Preconditions.givenStoreWithPassword("file_password").containing(new Login("www.site.com", "Bill"), "bill_password");
 
         givenInput("file_password", "new_file_password"); // TODO - Should confirm password when setting a new one
-        manager.run("password_change");
+        manager.run(ChangePasswordCommand.NAME);
 
         assertThat(storedLogins("new_file_password"), hasItem(new Login("www.site.com", "Bill")));
     }
