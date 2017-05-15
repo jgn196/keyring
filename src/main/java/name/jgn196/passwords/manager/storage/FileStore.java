@@ -47,6 +47,7 @@ public class FileStore implements SecureStore {
         return format.deserialiseEntries(pl).stream();
     }
 
+    // TODO - Changes should be written to a new file and then copied over the old one once writing is successful
     @Override
     public void writeEntries(final Collection<StoreEntry> entries, final Password password) throws IOException {
 
