@@ -34,7 +34,7 @@ public class AChangePasswordCommand {
     public void failsIfFirstPasswordWrong() throws IOException {
 
         givenStoreWithPassword("first password").containing(new Login("ignored", "ignored"), "ignored");
-        console.prepareInput("wrong password", "new password");
+        console.prepareInput("wrong password", "new password", "new password");
 
         new ChangePasswordCommand(console, STORE_FILE).run();
 
@@ -42,10 +42,21 @@ public class AChangePasswordCommand {
     }
 
     @Test
+    public void failsIfNewPasswordsDontMatch() throws IOException {
+
+        givenStoreWithPassword("first password").containing(new Login("ignored", "ignored"), "ignored");
+        console.prepareInput("first password", "new password", "not matching password");
+
+        new ChangePasswordCommand(console, STORE_FILE).run();
+
+        assertThat(console.capturedOutput(), containsString("New store passwords do not match."));
+    }
+
+    @Test
     public void changesFileStorePassword() throws IOException {
 
         givenStoreWithPassword("first password").containing(new Login("www.site.com", "Bill"), "ignored");
-        console.prepareInput("first password", "new password");
+        console.prepareInput("first password", "new password", "new password");
 
         new ChangePasswordCommand(console, STORE_FILE).run();
 
