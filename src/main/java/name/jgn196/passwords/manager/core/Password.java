@@ -29,10 +29,8 @@ public final class Password implements AutoCloseable {
     @Override
     public boolean equals(final Object obj) {
 
-        if (obj == this) return true;
-        if (! (obj instanceof Password)) return false;
-
-        return Arrays.equals(value, ((Password) obj).value);
+        return obj == this ||
+                (obj instanceof Password && Arrays.equals(value, ((Password) obj).value));
     }
 
     @Override
@@ -44,7 +42,7 @@ public final class Password implements AutoCloseable {
     @Override
     public String toString() {
 
-        return "Password ("+ maskedPassword() +")" + (closed ? " [closed]" : "");
+        return "Password (" + maskedPassword() + ")" + (closed ? " [closed]" : "");
     }
 
     private String maskedPassword() {
@@ -62,7 +60,7 @@ public final class Password implements AutoCloseable {
         closed = true;
     }
 
-    public boolean isClosed() {
+    boolean isClosed() {
 
         return closed;
     }

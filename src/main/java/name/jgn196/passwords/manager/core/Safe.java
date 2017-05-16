@@ -16,7 +16,7 @@ import static java.util.stream.Collectors.toMap;
 
 public class Safe implements AutoCloseable {
 
-    private SecureStore store;
+    private final SecureStore store;
     private Password filePassword;
 
     public Safe(final StoreFile file, final Password filePassword) {

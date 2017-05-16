@@ -3,8 +3,9 @@ package name.jgn196.passwords.manager.storage;
 import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
 
-// TODO - Should be closeable - wipe password on close
-final public class StoreEntry {
+import java.io.Closeable;
+
+final public class StoreEntry implements Closeable {
 
     private final Login login;
     private final Password password;
@@ -55,5 +56,11 @@ final public class StoreEntry {
     public String toString() {
 
         return "StoreEntry (" + login + ", " + password + ")";
+    }
+
+    @Override
+    public void close() {
+
+        password.close();
     }
 }

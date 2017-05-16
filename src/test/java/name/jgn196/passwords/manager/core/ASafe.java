@@ -5,7 +5,6 @@ import name.jgn196.passwords.manager.storage.SecureStore;
 import name.jgn196.passwords.manager.storage.StoreEntry;
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -15,8 +14,6 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 public class ASafe {

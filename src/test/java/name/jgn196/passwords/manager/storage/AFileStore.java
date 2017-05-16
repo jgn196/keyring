@@ -12,7 +12,6 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singleton;
