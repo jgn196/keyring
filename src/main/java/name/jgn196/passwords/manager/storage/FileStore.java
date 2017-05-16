@@ -47,7 +47,6 @@ public class FileStore implements SecureStore {
         return format.deserialiseEntries(pl).stream();
     }
 
-    // TODO - Changes should be written to a new file and then copied over the old one once writing is successful
     @Override
     public void writeEntries(final Collection<StoreEntry> entries, final Password password) throws IOException {
 
@@ -55,6 +54,8 @@ public class FileStore implements SecureStore {
         final Crc32 crc = Crc32.of(pl);
         final Salt salt = new SaltGenerator().get();
         final byte[] ct = encryption.encryptWithSalt(pl, salt, password);
-        io.writeAllTo(file, format.serialise(salt, crc, ct));
+        final File tempFile = io.createTempFile();
+        io.writeAllTo(tempFile, format.serialise(salt, crc, ct));
+        io.move(tempFile, file);
     }
 }

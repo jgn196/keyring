@@ -138,9 +138,14 @@ public class AFileStore {
     @Test
     public void writesToFile() throws IOException {
 
+        final File tempFile = new File("temp");
+        when(fileIO.createTempFile()).thenReturn(tempFile);
+
         fileStore.writeEntries(singleton(STORE_ENTRY), PASSWORD);
 
-        verify(fileIO).writeAllTo(TEST_FILE, FILE_DATA);
+        verify(fileIO).createTempFile();
+        verify(fileIO).writeAllTo(tempFile, FILE_DATA);
+        verify(fileIO).move(tempFile, TEST_FILE);
     }
 
     private void givenNoStoreFile() {
