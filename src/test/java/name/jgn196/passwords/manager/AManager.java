@@ -146,7 +146,7 @@ public class AManager {
 
         Preconditions.givenStoreWithPassword("file_password").containing(new Login("www.site.com", "Bill"), "bill_password");
 
-        givenInput("file_password", "new_file_password"); // TODO - Should confirm password when setting a new one
+        givenInput("file_password", "new_file_password", "new_file_password");
         manager.run(ChangePasswordCommand.NAME);
 
         assertThat(storedLogins("new_file_password"), hasItem(new Login("www.site.com", "Bill")));
