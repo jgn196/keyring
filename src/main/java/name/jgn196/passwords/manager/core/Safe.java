@@ -31,9 +31,8 @@ public class Safe implements AutoCloseable {
         try(final StoreEntries readEntries = readEntries()) {
 
             final Map<Login, StoreEntry> entries = readEntries.stream().collect(toMap(StoreEntry::login, e -> e));
-            final StoreEntry entry = new StoreEntry(login, password);
 
-            entries.put(login, entry);
+            entries.put(login, new StoreEntry(login, password));
 
             writeEntries(entries.values());
 
@@ -76,14 +75,13 @@ public class Safe implements AutoCloseable {
     public Optional<Password> passwordFor(final Login login) {
         try(final StoreEntries readEntries = readEntries()) {
 
-            Optional<Password> password = readEntries
+            final Optional<Password> password = readEntries
                     .stream()
                     .filter(entry -> entry.isFor(login))
                     .map(StoreEntry::password)
                     .findFirst();
-            if (password.isPresent()) password = Optional.of(password.get().copy());
 
-            return password;
+            return password.map(Password::copy);
 
         } catch (IOException e) {
             throw new EntriesNotRead(e);
@@ -103,10 +101,10 @@ public class Safe implements AutoCloseable {
     public boolean remove(final Login login) {
         try(final StoreEntries readEntries = readEntries()) {
 
-            final Collection<StoreEntry> entries = readEntries.stream().collect(toList());
-            final boolean entriesRemoved = entries.removeIf(e -> e.isFor(login));
+            final Collection<StoreEntry> updatedEntries = readEntries.stream().collect(toList());
+            final boolean entriesRemoved = updatedEntries.removeIf(e -> e.isFor(login));
 
-            if (entriesRemoved) writeEntries(entries);
+            if (entriesRemoved) writeEntries(updatedEntries);
 
             return entriesRemoved;
 
@@ -120,13 +118,10 @@ public class Safe implements AutoCloseable {
 
         try(final StoreEntries readEntries = readEntries()) {
 
-            final List<StoreEntry> entries = readEntries.stream().collect(toList());
-
             filePassword.close();
             filePassword = newPassword;
 
-            writeEntries(entries);
-            entries.forEach(e -> e.password().close());
+            writeEntries(readEntries.stream().collect(toList()));
 
         } catch (IOException | DecryptionFailed e) {
             throw new PasswordNotChanged(e);
