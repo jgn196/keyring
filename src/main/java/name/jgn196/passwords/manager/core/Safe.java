@@ -88,10 +88,12 @@ public class Safe implements AutoCloseable {
     public boolean remove(final Login login) {
         try {
 
-            final Collection<StoreEntry> entries = readEntries().collect(toList());
+            final List<StoreEntry> readEntries = readEntries().collect(toList());
+            final Collection<StoreEntry> entries = new ArrayList<>(readEntries);
             final boolean entriesRemoved = entries.removeIf(e -> e.isFor(login));
 
             if (entriesRemoved) writeEntries(entries);
+            readEntries.forEach(e -> e.password().close());
 
             return entriesRemoved;
 
@@ -111,6 +113,7 @@ public class Safe implements AutoCloseable {
             filePassword = newPassword;
 
             writeEntries(entries);
+            entries.forEach(e -> e.password().close());
 
         } catch (IOException | DecryptionFailed e) {
             throw new PasswordNotChanged(e);

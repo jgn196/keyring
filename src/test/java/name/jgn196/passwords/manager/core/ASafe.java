@@ -3,6 +3,7 @@ package name.jgn196.passwords.manager.core;
 import name.jgn196.passwords.manager.crypto.DecryptionFailed;
 import name.jgn196.passwords.manager.storage.SecureStore;
 import name.jgn196.passwords.manager.storage.StoreEntry;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
 
@@ -130,15 +131,21 @@ public class ASafe {
 
         givenStoreContains(
                 new StoreEntry(new Login("ignore me", "Bill"), Password.from("incorrect")),
-                new StoreEntry(new Login("www.site.net", "ignore me"), Password.from("incorrect")),
                 new StoreEntry(new Login("www.site.net", "Bill"), Password.from("super_secret")));
+        final List<StoreEntry> writtenEntries = new ArrayList<>();
+        doAnswer(invocation -> {
+            final Object[] arguments = invocation.getArguments();
+            final Collection<StoreEntry> entries = (Collection<StoreEntry>) arguments[0];
+            entries.forEach(e -> writtenEntries.add(new StoreEntry(e.login(), e.password().copy())));
+            return null;
+        })
+                .when(store)
+                .writeEntries(anyCollection(), any(Password.class));
 
         assertTrue(safe.remove(new Login("www.site.net", "Bill")));
-        verify(store).writeEntries(
-                hasEntries(
-                        new StoreEntry(new Login("ignore me", "Bill"), Password.from("incorrect")),
-                        new StoreEntry(new Login("www.site.net", "ignore me"), Password.from("incorrect"))),
-                eq(password));
+        verify(store).writeEntries(anyCollection(), eq(password));
+        assertThat(writtenEntries, Matchers.hasItems(new StoreEntry(new Login("ignore me", "Bill"), Password.from("incorrect"))));
+        passwordsReadFromStoreAreClosed();
     }
 
     @Test
@@ -161,13 +168,24 @@ public class ASafe {
     public void canChangeStorePassword() throws Exception {
 
         final Password newPassword = Password.from("new_password");
-        givenStoreIsEmpty();
+        givenStoreContains(new StoreEntry(new Login("ignore me", "Bill"), Password.from("incorrect")));
+        final List<StoreEntry> writtenEntries = new ArrayList<>();
+        doAnswer(invocation -> {
+            final Object[] arguments = invocation.getArguments();
+            final Collection<StoreEntry> entries = (Collection<StoreEntry>) arguments[0];
+            entries.forEach(e -> writtenEntries.add(new StoreEntry(e.login(), e.password().copy())));
+            return null;
+        })
+                .when(store)
+                .writeEntries(anyCollection(), any(Password.class));
 
         safe.changePasswordTo(newPassword);
 
         verify(store).readEntriesUsing(password);
-        verify(store).writeEntries(any(Collection.class), eq(newPassword));
+        verify(store).writeEntries(anyCollection(), eq(newPassword));
+        assertThat(writtenEntries, Matchers.hasItems(new StoreEntry(new Login("ignore me", "Bill"), Password.from("incorrect"))));
         assertTrue(password.isClosed());
+        passwordsReadFromStoreAreClosed();
     }
 
     @Test
