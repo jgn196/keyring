@@ -28,25 +28,44 @@ public class Safe implements AutoCloseable {
     }
 
     public void store(final Login login, final Password password) {
-        try {
+        try(final StoreEntries readEntries = readEntries()) {
 
-            final List<StoreEntry> readEntries = readEntries().collect(toList());
             final Map<Login, StoreEntry> entries = readEntries.stream().collect(toMap(StoreEntry::login, e -> e));
             final StoreEntry entry = new StoreEntry(login, password);
 
             entries.put(login, entry);
 
             writeEntries(entries.values());
-            readEntries.forEach(e -> e.password().close());
 
         } catch (IOException e) {
             throw new EntryNotStored(e);
         }
     }
 
-    private Stream<StoreEntry> readEntries() throws IOException {
+    private StoreEntries readEntries() throws IOException {
 
-        return store.readEntriesUsing(filePassword);
+        return new StoreEntries(store.readEntriesUsing(filePassword));
+    }
+
+    private static class StoreEntries implements AutoCloseable {
+
+        private final List<StoreEntry> entries;
+
+        StoreEntries(final Stream<StoreEntry> entries) {
+
+            this.entries = entries.collect(toList());
+        }
+
+        Stream<StoreEntry> stream(){
+
+            return entries.stream();
+        }
+
+        @Override
+        public void close() {
+
+            entries.forEach(e -> e.password().close());
+        }
     }
 
     private void writeEntries(final Collection<StoreEntry> values) throws IOException {
@@ -55,18 +74,16 @@ public class Safe implements AutoCloseable {
     }
 
     public Optional<Password> passwordFor(final Login login) {
-        try {
+        try(final StoreEntries readEntries = readEntries()) {
 
-            final List<StoreEntry> readEntries = readEntries().collect(toList());
             Optional<Password> password = readEntries
                     .stream()
                     .filter(entry -> entry.isFor(login))
                     .map(StoreEntry::password)
                     .findFirst();
             if (password.isPresent()) password = Optional.of(password.get().copy());
-            readEntries.forEach(e -> e.password().close());
-            return password;
 
+            return password;
 
         } catch (IOException e) {
             throw new EntriesNotRead(e);
@@ -74,10 +91,8 @@ public class Safe implements AutoCloseable {
     }
 
     public Stream<Login> logins() {
-        try {
+        try(final StoreEntries readEntries = readEntries()) {
 
-            final List<StoreEntry> readEntries = readEntries().collect(toList());
-            readEntries.forEach(e -> e.password().close());
             return readEntries.stream().map(StoreEntry::login);
 
         } catch (IOException e) {
@@ -86,14 +101,12 @@ public class Safe implements AutoCloseable {
     }
 
     public boolean remove(final Login login) {
-        try {
+        try(final StoreEntries readEntries = readEntries()) {
 
-            final List<StoreEntry> readEntries = readEntries().collect(toList());
-            final Collection<StoreEntry> entries = new ArrayList<>(readEntries);
+            final Collection<StoreEntry> entries = readEntries.stream().collect(toList());
             final boolean entriesRemoved = entries.removeIf(e -> e.isFor(login));
 
             if (entriesRemoved) writeEntries(entries);
-            readEntries.forEach(e -> e.password().close());
 
             return entriesRemoved;
 
@@ -103,11 +116,11 @@ public class Safe implements AutoCloseable {
     }
 
     public void changePasswordTo(final Password newPassword) {
-        try {
+        if (newPassword.equals(filePassword)) return;
 
-            if (newPassword.equals(filePassword)) return;
+        try(final StoreEntries readEntries = readEntries()) {
 
-            final List<StoreEntry> entries = readEntries().collect(toList());
+            final List<StoreEntry> entries = readEntries.stream().collect(toList());
 
             filePassword.close();
             filePassword = newPassword;
