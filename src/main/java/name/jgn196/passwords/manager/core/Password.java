@@ -2,6 +2,7 @@ package name.jgn196.passwords.manager.core;
 
 import java.util.Arrays;
 
+import static java.util.Arrays.copyOf;
 import static java.util.Arrays.fill;
 
 public final class Password implements AutoCloseable {
@@ -58,6 +59,11 @@ public final class Password implements AutoCloseable {
 
         fill(value, ' ');
         closed = true;
+    }
+
+    Password copy() {
+
+        return new Password(copyOf(value, value.length));
     }
 
     boolean isClosed() {

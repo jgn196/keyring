@@ -5,10 +5,7 @@ import name.jgn196.passwords.manager.storage.SecureStore;
 import name.jgn196.passwords.manager.storage.StoreEntry;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -33,12 +30,14 @@ public class Safe implements AutoCloseable {
     public void store(final Login login, final Password password) {
         try {
 
-            final Map<Login, StoreEntry> entries = readEntries().collect(toMap(StoreEntry::login, e -> e));
+            final List<StoreEntry> readEntries = readEntries().collect(toList());
+            final Map<Login, StoreEntry> entries = readEntries.stream().collect(toMap(StoreEntry::login, e -> e));
             final StoreEntry entry = new StoreEntry(login, password);
 
             entries.put(login, entry);
 
             writeEntries(entries.values());
+            readEntries.forEach(e -> e.password().close());
 
         } catch (IOException e) {
             throw new EntryNotStored(e);
@@ -58,10 +57,16 @@ public class Safe implements AutoCloseable {
     public Optional<Password> passwordFor(final Login login) {
         try {
 
-            return readEntries()
+            final List<StoreEntry> readEntries = readEntries().collect(toList());
+            Optional<Password> password = readEntries
+                    .stream()
                     .filter(entry -> entry.isFor(login))
                     .map(StoreEntry::password)
                     .findFirst();
+            if (password.isPresent()) password = Optional.of(password.get().copy());
+            readEntries.forEach(e -> e.password().close());
+            return password;
+
 
         } catch (IOException e) {
             throw new EntriesNotRead(e);
@@ -71,7 +76,9 @@ public class Safe implements AutoCloseable {
     public Stream<Login> logins() {
         try {
 
-            return readEntries().map(StoreEntry::login);
+            final List<StoreEntry> readEntries = readEntries().collect(toList());
+            readEntries.forEach(e -> e.password().close());
+            return readEntries.stream().map(StoreEntry::login);
 
         } catch (IOException e) {
             throw new EntriesNotRead(e);

@@ -7,8 +7,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -20,6 +19,7 @@ public class ASafe {
 
     private final Password password = Password.from("file password");
     private final SecureStore store = mock(SecureStore.class);
+    private final List<StoreEntry> entriesToRead = new ArrayList<>();
     private final Safe safe = new Safe(store, password);
 
     @Test
@@ -27,12 +27,13 @@ public class ASafe {
 
         final Login login = new Login("www.site.net", "Bill");
         final Password password = Password.from("super_secret");
-        givenStoreIsEmpty();
+        givenStoreContains(new StoreEntry(new Login("ignored", "ignored"), Password.from("ignored")));
 
         safe.store(login, password);
 
         verify(store).readEntriesUsing(this.password);
         verify(store).writeEntries(hasEntries(new StoreEntry(login, password)), eq(this.password));
+        passwordsReadFromStoreAreClosed();
     }
 
     @Test
@@ -46,6 +47,7 @@ public class ASafe {
 
         verify(store).readEntriesUsing(this.password);
         verify(store).writeEntries(hasEntries(new StoreEntry(login, password)), eq(this.password));
+        passwordsReadFromStoreAreClosed();
     }
 
     @Test(expected = EntryNotStored.class)
@@ -67,6 +69,7 @@ public class ASafe {
         assertEquals(
                 Optional.of(Password.from("super_secret")),
                 safe.passwordFor(new Login("www.site.net", "Bill")));
+        passwordsReadFromStoreAreClosed();
     }
 
     @Test
@@ -86,6 +89,7 @@ public class ASafe {
                 new StoreEntry(new Login("www.site.net", "Bill"), Password.from("super_secret")));
 
         assertEquals(Optional.empty(), safe.passwordFor(new Login("foo", "bar")));
+        passwordsReadFromStoreAreClosed();
     }
 
     @Test(expected = EntriesNotRead.class)
@@ -110,6 +114,7 @@ public class ASafe {
                         new Login("site 1", "Bill"),
                         new Login("site 1", "Ted"),
                         new Login("site 2", "Bill")));
+        passwordsReadFromStoreAreClosed();
     }
 
     @Test(expected = EntriesNotRead.class)
@@ -204,8 +209,14 @@ public class ASafe {
         givenStoreContains();
     }
 
+    private void passwordsReadFromStoreAreClosed() {
+
+        entriesToRead.forEach(e -> assertTrue(e.password().isClosed()));
+    }
+
     private void givenStoreContains(final StoreEntry... entries) throws IOException {
 
+        entriesToRead.addAll(Arrays.asList(entries));
         when(store.readEntriesUsing(password)).thenReturn(Stream.of(entries));
     }
 
