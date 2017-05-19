@@ -3,9 +3,9 @@ package name.jgn196.passwords.manager.core;
 import name.jgn196.passwords.manager.crypto.DecryptionFailed;
 import name.jgn196.passwords.manager.storage.SecureStore;
 import name.jgn196.passwords.manager.storage.StoreEntry;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.util.*;
@@ -129,22 +129,15 @@ public class ASafe {
     @Test
     public void removesLogin() throws IOException {
 
+        final List<StoreEntry> writtenEntries = new ArrayList<>();
+        captureWrittenStoreEntriesTo(writtenEntries);
         givenStoreContains(
                 new StoreEntry(new Login("ignore me", "Bill"), Password.from("incorrect")),
                 new StoreEntry(new Login("www.site.net", "Bill"), Password.from("super_secret")));
-        final List<StoreEntry> writtenEntries = new ArrayList<>();
-        doAnswer(invocation -> {
-            final Object[] arguments = invocation.getArguments();
-            final Collection<StoreEntry> entries = (Collection<StoreEntry>) arguments[0];
-            entries.forEach(e -> writtenEntries.add(new StoreEntry(e.login(), e.password().copy())));
-            return null;
-        })
-                .when(store)
-                .writeEntries(anyCollection(), any(Password.class));
 
         assertTrue(safe.remove(new Login("www.site.net", "Bill")));
-        verify(store).writeEntries(anyCollection(), eq(password));
-        assertThat(writtenEntries, Matchers.hasItems(new StoreEntry(new Login("ignore me", "Bill"), Password.from("incorrect"))));
+        verify(store).writeEntries(anyCollectionOf(StoreEntry.class), eq(password));
+        assertThat(writtenEntries, hasItems(new StoreEntry(new Login("ignore me", "Bill"), Password.from("incorrect"))));
         passwordsReadFromStoreAreClosed();
     }
 
@@ -168,22 +161,15 @@ public class ASafe {
     public void canChangeStorePassword() throws Exception {
 
         final Password newPassword = Password.from("new_password");
-        givenStoreContains(new StoreEntry(new Login("ignore me", "Bill"), Password.from("incorrect")));
         final List<StoreEntry> writtenEntries = new ArrayList<>();
-        doAnswer(invocation -> {
-            final Object[] arguments = invocation.getArguments();
-            final Collection<StoreEntry> entries = (Collection<StoreEntry>) arguments[0];
-            entries.forEach(e -> writtenEntries.add(new StoreEntry(e.login(), e.password().copy())));
-            return null;
-        })
-                .when(store)
-                .writeEntries(anyCollection(), any(Password.class));
+        givenStoreContains(new StoreEntry(new Login("ignore me", "Bill"), Password.from("incorrect")));
+        captureWrittenStoreEntriesTo(writtenEntries);
 
         safe.changePasswordTo(newPassword);
 
         verify(store).readEntriesUsing(password);
-        verify(store).writeEntries(anyCollection(), eq(newPassword));
-        assertThat(writtenEntries, Matchers.hasItems(new StoreEntry(new Login("ignore me", "Bill"), Password.from("incorrect"))));
+        verify(store).writeEntries(anyCollectionOf(StoreEntry.class), eq(newPassword));
+        assertThat(writtenEntries, hasItems(new StoreEntry(new Login("ignore me", "Bill"), Password.from("incorrect"))));
         assertTrue(password.isClosed());
         passwordsReadFromStoreAreClosed();
     }
@@ -194,7 +180,7 @@ public class ASafe {
         safe.changePasswordTo(password);
 
         verify(store, never()).readEntriesUsing(any(Password.class));
-        verify(store, never()).writeEntries(any(Collection.class), any(Password.class));
+        verify(store, never()).writeEntries(anyCollectionOf(StoreEntry.class), any(Password.class));
         assertFalse(password.isClosed());
     }
 
@@ -236,6 +222,21 @@ public class ASafe {
 
         entriesToRead.addAll(Arrays.asList(entries));
         when(store.readEntriesUsing(password)).thenReturn(Stream.of(entries));
+    }
+
+    private void captureWrittenStoreEntriesTo(final Collection<StoreEntry> writtenEntries) throws IOException {
+
+        final Answer answer = invocation -> {
+
+            final Object[] arguments = invocation.getArguments();
+            @SuppressWarnings("unchecked") final Collection<StoreEntry> entries = (Collection<StoreEntry>) arguments[0];
+
+            entries.forEach(e -> writtenEntries.add(new StoreEntry(e.login(), e.password().copy())));
+
+            return null;
+        };
+
+        doAnswer(answer).when(store).writeEntries(anyCollectionOf(StoreEntry.class), any(Password.class));
     }
 
     private Collection<StoreEntry> hasEntries(final StoreEntry... entries) {
