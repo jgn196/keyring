@@ -64,7 +64,7 @@ public class Safe implements AutoCloseable {
         @Override
         public void close() {
 
-            entries.forEach(e -> e.password().close());
+            entries.forEach(StoreEntry::close);
         }
     }
 

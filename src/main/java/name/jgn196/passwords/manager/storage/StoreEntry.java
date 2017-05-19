@@ -3,9 +3,7 @@ package name.jgn196.passwords.manager.storage;
 import name.jgn196.passwords.manager.core.Login;
 import name.jgn196.passwords.manager.core.Password;
 
-import java.io.Closeable;
-
-final public class StoreEntry implements Closeable {
+final public class StoreEntry implements AutoCloseable {
 
     private final Login login;
     private final Password password;
