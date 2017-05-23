@@ -10,8 +10,8 @@ class PutCommand extends Command {
 
     static final String NAME = "put";
     static final String USAGE = "Usage: KeyRing put <system> <user>\n" +
-            "\tsystem\tThe name of the secure system\n" +
-            "\tuser\tThe user name in the secure system";
+            SYSTEM_ARGUMENT_HELP + "\n" +
+            USER_ARGUMENT_HELP;
 
     private final String[] args;
 

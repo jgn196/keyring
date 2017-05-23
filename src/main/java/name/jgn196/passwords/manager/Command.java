@@ -8,6 +8,8 @@ abstract class Command {
 
     static final String NO_DATA_FILE_MESSAGE = "No data file.";
     static final String INCORRECT_STORE_PASSWORD = "Incorrect store password.";
+    static final String USER_ARGUMENT_HELP = "\tuser\tThe user name in the secure system";
+    static final String SYSTEM_ARGUMENT_HELP = "\tsystem\tThe name of the secure system";
 
     private final Console console;
     private final StoreFile storeFile;
