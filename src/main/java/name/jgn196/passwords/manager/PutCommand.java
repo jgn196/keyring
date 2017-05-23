@@ -35,10 +35,11 @@ class PutCommand extends Command {
         try (final Password password = readPassword();
              final Safe safe = new Safe(storeFile(), readStorePassword())) {
 
-            putPassword(password, safe);
+            safe.store(login, password);
+            printToConsole("Password stored");
 
-        } catch (Exception e) {
-            // Failed to close store - ignored
+        } catch (DecryptionFailed e) {
+            printToConsole(INCORRECT_STORE_PASSWORD);
         }
     }
 
@@ -57,15 +58,5 @@ class PutCommand extends Command {
     private Password readPassword() {
 
         return readPasswordFromConsole("Password for " + displayText(login) + ":");
-    }
-
-    private void putPassword(final Password password, final Safe safe) {
-        try {
-
-            safe.store(login, password);
-
-        } catch (DecryptionFailed e) {
-            printToConsole(INCORRECT_STORE_PASSWORD);
-        }
     }
 }

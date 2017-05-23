@@ -29,9 +29,10 @@ class ChangePasswordCommand extends Command {
              final Password confirmedPassword = readPasswordFromConsole("Confirm new store password:");
              final Safe safe = new Safe(storeFile(), storePassword)) {
 
-            if (newPassword.equals(confirmedPassword))
+            if (newPassword.equals(confirmedPassword)) {
                 safe.changePasswordTo(newPassword);
-            else
+                printToConsole("Store password changed");
+            } else
                 printToConsole("New store passwords do not match.");
 
         } catch (PasswordNotChanged e) {

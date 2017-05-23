@@ -46,17 +46,8 @@ class RemoveCommand extends Command {
         try (final Password storePassword = readStorePassword();
              final Safe safe = new Safe(storeFile(), storePassword)) {
 
-            removePasswordFrom(safe);
-
-        } catch (Exception e) {
-            // Failed to close store - ignored
-        }
-    }
-
-    private void removePasswordFrom(Safe safe) {
-        try {
-
-            if (!safe.remove(login)) printToConsole("Password for " + displayText(login) + " not found.");
+            if (safe.remove(login)) printToConsole("Password removed");
+            else printToConsole("Password for " + displayText(login) + " not found.");
 
         } catch (DecryptionFailed e) {
             printToConsole(INCORRECT_STORE_PASSWORD);
