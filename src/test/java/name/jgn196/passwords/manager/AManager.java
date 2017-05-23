@@ -24,7 +24,7 @@ public class AManager {
 
         manager.run();
 
-        assertEquals(HelpCommand.USAGE, capturedOutput());
+        assertThat(capturedOutput(), containsString(HelpCommand.USAGE));
     }
 
     @Test

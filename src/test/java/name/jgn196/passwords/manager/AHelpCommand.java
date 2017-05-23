@@ -1,10 +1,8 @@
 package name.jgn196.passwords.manager;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class AHelpCommand {
@@ -16,17 +14,16 @@ public class AHelpCommand {
 
         new HelpCommand(console).run();
 
-        assertEquals(HelpCommand.USAGE, console.capturedOutput());
+        assertThat(console.capturedOutput(), containsString(HelpCommand.USAGE));
     }
 
     @Test
-    @Ignore
     public void printsApplicationVersion() {
 
         final TestConsole console = new TestConsole();
 
         new HelpCommand(console).run();
 
-        assertThat(console.capturedOutput(), containsString("1.0.0"));
+        assertThat(console.capturedOutput(), containsString(Application.version()));
     }
 }

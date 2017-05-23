@@ -18,6 +18,8 @@ class HelpCommand extends Command {
     @Override
     public void run() {
 
+        printToConsole("KeyRing " + Application.version() + "\n");
         printToConsole(USAGE);
     }
+
 }
