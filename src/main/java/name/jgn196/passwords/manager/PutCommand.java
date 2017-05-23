@@ -9,7 +9,9 @@ import name.jgn196.passwords.manager.crypto.DecryptionFailed;
 class PutCommand extends Command {
 
     static final String NAME = "put";
-    static final String USAGE = "put usage: system user";
+    static final String USAGE = "Usage: KeyRing put <system> <user>\n" +
+            "\tsystem\tThe name of the secure system\n" +
+            "\tuser\tThe user name in the secure system";
 
     private final String[] args;
 

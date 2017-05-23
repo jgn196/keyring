@@ -9,7 +9,9 @@ import name.jgn196.passwords.manager.crypto.DecryptionFailed;
 class RemoveCommand extends Command {
 
     static final String NAME = "remove";
-    static final String USAGE = "remove usage: system user";
+    static final String USAGE = "Usage: KeyRing remove <system> <user>\n" +
+            "\tsystem\tThe name of the secure system\n" +
+            "\tuser\tThe user name in the secure system";
 
     private final String[] args;
 

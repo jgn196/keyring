@@ -11,7 +11,9 @@ import java.util.Optional;
 class GetCommand extends Command {
 
     static final String NAME = "get";
-    static final String USAGE = "get usage: system user";
+    static final String USAGE = "Usage: KeyRing get <system> <user>\n" +
+            "\tsystem\tThe name of the secure system\n" +
+            "\tuser\tThe user name in the secure system";
 
     private final String[] args;
 
