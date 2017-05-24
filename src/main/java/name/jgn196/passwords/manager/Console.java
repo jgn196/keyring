@@ -4,7 +4,12 @@ class Console {
 
     void printLine(final String text) {
 
-        System.console().printf(text + System.lineSeparator());
+        print(text + System.lineSeparator());
+    }
+
+    void print(final String text) {
+
+        System.console().printf(text);
     }
 
     char[] readPassword() {

@@ -27,7 +27,7 @@ public class APutCommand {
 
         new PutCommand(console, STORE_FILE, "put").run();
 
-        assertEquals(PutCommand.USAGE, console.capturedOutput());
+        assertEquals(PutCommand.USAGE, console.trimmedCapturedOutput());
     }
 
     @Test

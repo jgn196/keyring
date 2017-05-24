@@ -8,7 +8,7 @@ class TestConsole extends Console {
     private String[] inputs = new String[0];
 
     @Override
-    public void printLine(final String text) {
+    void print(final String text) {
 
         capturedOutput.append(text);
     }
@@ -17,6 +17,11 @@ class TestConsole extends Console {
     public char[] readPassword() {
 
         return nextInput < inputs.length ? inputs[nextInput++].toCharArray() : new char[0];
+    }
+
+    String trimmedCapturedOutput() {
+
+        return capturedOutput().trim();
     }
 
     String capturedOutput() {

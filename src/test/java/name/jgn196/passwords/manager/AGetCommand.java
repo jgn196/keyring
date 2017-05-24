@@ -24,7 +24,7 @@ public class AGetCommand {
 
         new GetCommand(console, STORE_FILE, "get").run();
 
-        assertEquals(USAGE, console.capturedOutput());
+        assertEquals(USAGE, console.trimmedCapturedOutput());
     }
 
     @Test
@@ -34,7 +34,7 @@ public class AGetCommand {
 
         new GetCommand(console, STORE_FILE, "get", "www.site.com", "Bill").run();
 
-        assertEquals(NO_DATA_FILE_MESSAGE, console.capturedOutput());
+        assertEquals(NO_DATA_FILE_MESSAGE, console.trimmedCapturedOutput());
     }
 
     @Test

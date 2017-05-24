@@ -127,7 +127,7 @@ public class AManager {
         givenInput("file_password");
         manager.run(ListCommand.NAME);
 
-        assertThat(capturedOutput(), endsWith("Passwords stored for:\n\tBill @ www.site.com\n"));
+        assertThat(capturedOutput(), endsWith("Passwords stored for:\n\r\n\tBill @ www.site.com"));
     }
 
     @Test
@@ -159,7 +159,7 @@ public class AManager {
 
     private String capturedOutput() {
 
-        return console.capturedOutput();
+        return console.trimmedCapturedOutput();
     }
 
     private boolean fileContains(final String pattern) throws IOException {

@@ -36,10 +36,10 @@ class PutCommand extends Command {
              final Safe safe = new Safe(storeFile(), readStorePassword())) {
 
             safe.store(login, password);
-            printToConsole("Password stored");
+            printLineToConsole("Password stored");
 
         } catch (DecryptionFailed e) {
-            printToConsole(INCORRECT_STORE_PASSWORD);
+            printLineToConsole(INCORRECT_STORE_PASSWORD);
         }
     }
 
@@ -47,7 +47,7 @@ class PutCommand extends Command {
 
         if (args.length < 3) {
 
-            printToConsole(USAGE);
+            printLineToConsole(USAGE);
             return false;
         }
 

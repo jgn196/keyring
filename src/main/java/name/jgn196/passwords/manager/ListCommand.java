@@ -36,12 +36,12 @@ class ListCommand extends Command {
     private void printLoginsFrom(final Safe safe) {
         try {
 
-            printToConsole("Passwords stored for:\n");
+            printLineToConsole("Passwords stored for:\n");
             safe.logins()
-                    .forEach(login -> printToConsole("\t" + displayText(login) + "\n"));
+                    .forEach(login -> printLineToConsole("\t" + displayText(login) + "\n"));
         } catch (DecryptionFailed e) {
 
-            printToConsole(INCORRECT_STORE_PASSWORD);
+            printLineToConsole(INCORRECT_STORE_PASSWORD);
         }
     }
 }

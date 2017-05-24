@@ -35,7 +35,7 @@ class RemoveCommand extends Command {
     private boolean parseArguments() {
 
         if (args.length < 3) {
-            printToConsole(USAGE);
+            printLineToConsole(USAGE);
             return false;
         }
         login = new Login(args[1], args[2]);
@@ -46,11 +46,11 @@ class RemoveCommand extends Command {
         try (final Password storePassword = readStorePassword();
              final Safe safe = new Safe(storeFile(), storePassword)) {
 
-            if (safe.remove(login)) printToConsole("Password removed");
-            else printToConsole("Password for " + displayText(login) + " not found.");
+            if (safe.remove(login)) printLineToConsole("Password removed");
+            else printLineToConsole("Password for " + displayText(login) + " not found.");
 
         } catch (DecryptionFailed e) {
-            printToConsole(INCORRECT_STORE_PASSWORD);
+            printLineToConsole(INCORRECT_STORE_PASSWORD);
         }
     }
 }

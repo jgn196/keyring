@@ -25,7 +25,7 @@ public class ARemoveCommand {
 
         new RemoveCommand(console, STORE_FILE, "remove").run();
 
-        assertEquals(USAGE, console.capturedOutput());
+        assertEquals(USAGE, console.trimmedCapturedOutput());
     }
 
     @Test
@@ -35,7 +35,7 @@ public class ARemoveCommand {
 
         new RemoveCommand(console, STORE_FILE, "remove", "www.site.com", "Bill").run();
 
-        assertEquals(NO_DATA_FILE_MESSAGE, console.capturedOutput());
+        assertEquals(NO_DATA_FILE_MESSAGE, console.trimmedCapturedOutput());
     }
 
     @Test
