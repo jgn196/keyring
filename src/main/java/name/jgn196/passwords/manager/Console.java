@@ -2,9 +2,9 @@ package name.jgn196.passwords.manager;
 
 class Console {
 
-    void print(final String text) {
+    void printLine(final String text) {
 
-        System.console().printf(text);
+        System.console().printf(text + System.lineSeparator());
     }
 
     char[] readPassword() {

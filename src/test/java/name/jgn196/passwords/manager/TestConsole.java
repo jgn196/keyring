@@ -8,7 +8,7 @@ class TestConsole extends Console {
     private String[] inputs = new String[0];
 
     @Override
-    public void print(final String text) {
+    public void printLine(final String text) {
 
         capturedOutput.append(text);
     }

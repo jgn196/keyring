@@ -36,7 +36,7 @@ abstract class Command {
 
     void printToConsole(final String message) {
 
-        console.print(message);
+        console.printLine(message);
     }
 
     static String displayText(final Login login) {
