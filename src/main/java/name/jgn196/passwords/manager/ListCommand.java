@@ -36,9 +36,9 @@ class ListCommand extends Command {
     private void printLoginsFrom(final Safe safe) {
         try {
 
-            printLineToConsole("Passwords stored for:\n");
+            printLineToConsole("Passwords stored for:");
             safe.logins()
-                    .forEach(login -> printLineToConsole("\t" + displayText(login) + "\n"));
+                    .forEach(login -> printLineToConsole("\t" + displayText(login)));
         } catch (DecryptionFailed e) {
 
             printLineToConsole(INCORRECT_STORE_PASSWORD);

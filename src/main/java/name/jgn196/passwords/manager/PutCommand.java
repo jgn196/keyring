@@ -6,12 +6,16 @@ import name.jgn196.passwords.manager.core.Safe;
 import name.jgn196.passwords.manager.core.StoreFile;
 import name.jgn196.passwords.manager.crypto.DecryptionFailed;
 
+import static java.lang.String.join;
+import static java.lang.System.lineSeparator;
+
 class PutCommand extends Command {
 
     static final String NAME = "put";
-    static final String USAGE = "Usage: KeyRing put <system> <user>\n" +
-            SYSTEM_ARGUMENT_HELP + "\n" +
-            USER_ARGUMENT_HELP;
+    static final String USAGE = join(lineSeparator(),
+            "Usage: KeyRing put <system> <user>",
+            SYSTEM_ARGUMENT_HELP,
+            USER_ARGUMENT_HELP);
 
     private final String[] args;
 
