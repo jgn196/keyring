@@ -8,12 +8,16 @@ import name.jgn196.passwords.manager.crypto.DecryptionFailed;
 
 import java.util.Optional;
 
+import static java.lang.String.join;
+import static java.lang.System.lineSeparator;
+
 class GetCommand extends Command {
 
     static final String NAME = "get";
-    static final String USAGE = "Usage: KeyRing get <system> <user>\n" +
-            SYSTEM_ARGUMENT_HELP + "\n" +
-            USER_ARGUMENT_HELP;
+    static final String USAGE = join(lineSeparator(),
+            "Usage: KeyRing get <system> <user>",
+            SYSTEM_ARGUMENT_HELP,
+            USER_ARGUMENT_HELP);
 
     private final String[] args;
 
@@ -40,7 +44,7 @@ class GetCommand extends Command {
 
             printPasswordFrom(safe);
 
-        } catch(Exception e) {
+        } catch (Exception e) {
             // Failed to close store - ignored
         }
     }
@@ -51,19 +55,19 @@ class GetCommand extends Command {
             final Optional<Password> password = safe.passwordFor(login);
 
             if (password.isPresent())
-                printToConsole(new String(password.get().characters()));
+                printLineToConsole(new String(password.get().characters()));
             else
-                printToConsole("Password for " + displayText(login) + " not found.");
-        } catch(DecryptionFailed e) {
+                printLineToConsole("Password for " + displayText(login) + " not found.");
+        } catch (DecryptionFailed e) {
 
-            printToConsole(INCORRECT_STORE_PASSWORD);
+            printLineToConsole(INCORRECT_STORE_PASSWORD);
         }
     }
 
     private boolean parseArguments() {
 
         if (args.length < 3) {
-            printToConsole(USAGE);
+            printLineToConsole(USAGE);
             return false;
         }
         login = new Login(args[1], args[2]);

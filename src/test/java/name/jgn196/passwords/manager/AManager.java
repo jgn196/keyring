@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
 import static name.jgn196.passwords.manager.Command.INCORRECT_STORE_PASSWORD;
 import static name.jgn196.passwords.manager.Manager.STORE_FILE;
@@ -127,7 +128,7 @@ public class AManager {
         givenInput("file_password");
         manager.run(ListCommand.NAME);
 
-        assertThat(capturedOutput(), endsWith("Passwords stored for:\n\tBill @ www.site.com\n"));
+        assertThat(capturedOutput(), endsWith("Passwords stored for:" + lineSeparator() + "\tBill @ www.site.com"));
     }
 
     @Test
@@ -159,7 +160,7 @@ public class AManager {
 
     private String capturedOutput() {
 
-        return console.capturedOutput();
+        return console.trimmedCapturedOutput();
     }
 
     private boolean fileContains(final String pattern) throws IOException {

@@ -29,12 +29,12 @@ abstract class Command {
 
     Password readPasswordFromConsole(final String prompt) {
 
-        printToConsole(prompt);
+        console.print(prompt);
 
         return new Password(console.readPassword());
     }
 
-    void printToConsole(final String message) {
+    void printLineToConsole(final String message) {
 
         console.printLine(message);
     }
@@ -47,7 +47,7 @@ abstract class Command {
     boolean checkStoreExists() {
 
         final boolean storeExists = storeFile.exists();
-        if (!storeExists) printToConsole(NO_DATA_FILE_MESSAGE);
+        if (!storeExists) printLineToConsole(NO_DATA_FILE_MESSAGE);
 
         return storeExists;
     }

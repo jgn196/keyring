@@ -27,7 +27,7 @@ public class AChangePasswordCommand {
 
         new ChangePasswordCommand(console, STORE_FILE).run();
 
-        assertEquals(NO_DATA_FILE_MESSAGE, console.capturedOutput());
+        assertEquals(NO_DATA_FILE_MESSAGE, console.trimmedCapturedOutput());
     }
 
     @Test

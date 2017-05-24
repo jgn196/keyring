@@ -26,7 +26,7 @@ public class AListCommand {
 
         new ListCommand(console, STORE_FILE).run();
 
-        assertEquals(NO_DATA_FILE_MESSAGE, console.capturedOutput());
+        assertEquals(NO_DATA_FILE_MESSAGE, console.trimmedCapturedOutput());
     }
 
     @Test
@@ -38,7 +38,7 @@ public class AListCommand {
 
         new ListCommand(console, STORE_FILE).run();
 
-        assertThat(console.capturedOutput(), endsWith(INCORRECT_STORE_PASSWORD));
+        assertThat(console.trimmedCapturedOutput(), endsWith(INCORRECT_STORE_PASSWORD));
     }
 
     @Test

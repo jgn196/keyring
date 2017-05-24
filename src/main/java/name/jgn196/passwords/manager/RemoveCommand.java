@@ -6,12 +6,16 @@ import name.jgn196.passwords.manager.core.Safe;
 import name.jgn196.passwords.manager.core.StoreFile;
 import name.jgn196.passwords.manager.crypto.DecryptionFailed;
 
+import static java.lang.String.join;
+import static java.lang.System.lineSeparator;
+
 class RemoveCommand extends Command {
 
     static final String NAME = "remove";
-    static final String USAGE = "Usage: KeyRing remove <system> <user>\n" +
-            SYSTEM_ARGUMENT_HELP + "\n" +
-            USER_ARGUMENT_HELP;
+    static final String USAGE = join(lineSeparator(),
+            "Usage: KeyRing remove <system> <user>",
+            SYSTEM_ARGUMENT_HELP,
+            USER_ARGUMENT_HELP);
 
     private final String[] args;
 
@@ -35,7 +39,7 @@ class RemoveCommand extends Command {
     private boolean parseArguments() {
 
         if (args.length < 3) {
-            printToConsole(USAGE);
+            printLineToConsole(USAGE);
             return false;
         }
         login = new Login(args[1], args[2]);
@@ -46,11 +50,11 @@ class RemoveCommand extends Command {
         try (final Password storePassword = readStorePassword();
              final Safe safe = new Safe(storeFile(), storePassword)) {
 
-            if (safe.remove(login)) printToConsole("Password removed");
-            else printToConsole("Password for " + displayText(login) + " not found.");
+            if (safe.remove(login)) printLineToConsole("Password removed");
+            else printLineToConsole("Password for " + displayText(login) + " not found.");
 
         } catch (DecryptionFailed e) {
-            printToConsole(INCORRECT_STORE_PASSWORD);
+            printLineToConsole(INCORRECT_STORE_PASSWORD);
         }
     }
 }

@@ -2,13 +2,14 @@ package name.jgn196.passwords.manager;
 
 class HelpCommand extends Command {
 
-    static final String USAGE = "Usage: KeyRing <command> [arguments...]\n" +
-            "Commands:\n" +
-            "\tlist\tLists all the stored logins.\n" +
-            "\tget\tGet a password for a login.\n" +
-            "\tput\tPut a password for a login into the store.\n" +
-            "\tremove\tRemove a password for a login.\n" +
-            "\tchange_password\tChange the store password.";
+    static final String USAGE = String.join(System.lineSeparator(),
+            "Usage: KeyRing <command> [arguments...]",
+            "Commands:",
+            "\tlist\tLists all the stored logins.",
+            "\tget\tGet a password for a login.",
+            "\tput\tPut a password for a login into the store.",
+            "\tremove\tRemove a password for a login.",
+            "\tchange_password\tChange the store password.");
 
     HelpCommand(final Console console) {
 
@@ -18,8 +19,8 @@ class HelpCommand extends Command {
     @Override
     public void run() {
 
-        printToConsole("KeyRing " + Application.version() + "\n");
-        printToConsole(USAGE);
+        printLineToConsole("KeyRing " + Application.version());
+        printLineToConsole(USAGE);
     }
 
 }

@@ -31,13 +31,13 @@ class ChangePasswordCommand extends Command {
 
             if (newPassword.equals(confirmedPassword)) {
                 safe.changePasswordTo(newPassword);
-                printToConsole("Store password changed");
+                printLineToConsole("Store password changed");
             } else
-                printToConsole("New store passwords do not match.");
+                printLineToConsole("New store passwords do not match.");
 
         } catch (PasswordNotChanged e) {
 
-            if (e.getCause() instanceof DecryptionFailed) printToConsole(INCORRECT_STORE_PASSWORD);
+            if (e.getCause() instanceof DecryptionFailed) printLineToConsole(INCORRECT_STORE_PASSWORD);
         }
     }
 }
